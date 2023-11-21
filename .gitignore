@@ -1,0 +1,22 @@
+# Secrets
+.npmrc
+
+# Build and auto-generated files
+*.js
+*.d.ts
+coverage
+node_modules
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+cdk.context.json
+
+# Mac files
+.DS_Store
+
+# Editor files
+.idea
+*~
+*.swp
+.vscode

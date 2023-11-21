@@ -1,0 +1,12 @@
+# Build outputs
+*.js
+*.d.ts
+
+# Generated files
+docs
+coverage
+cdk.json
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
