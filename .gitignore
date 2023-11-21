@@ -2,7 +2,7 @@
 .npmrc
 
 # Build and auto-generated files
-*.js
+# *.js
 *.d.ts
 coverage
 node_modules
