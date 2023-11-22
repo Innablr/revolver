@@ -1,11 +1,10 @@
-
 class Environ {
-    debugLevel: string;
-    configPath: string | undefined;
-    configBucket: string | undefined;
-    configKey: string;
-    baseBackoff: number;
-    maxRetries: number;
+  debugLevel: string;
+  configPath: string | undefined;
+  configBucket: string | undefined;
+  configKey: string;
+  baseBackoff: number;
+  maxRetries: number;
 }
 
 const environ = new Environ();

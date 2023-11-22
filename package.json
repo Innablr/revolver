@@ -1,6 +1,6 @@
 {
   "name": "revolver",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "Multipurpose AWS idler script",
   "main": "invoke.ts",
   "engines": {
@@ -8,8 +8,9 @@
   },
   "scripts": {
     "test": "mocha",
-    "bundle": "esbuild revolver.ts --bundle --platform=node --target=node18 --minify --outfile=bundle.js",
-    "clean": "rimraf bundle.js",
+    "build": "tsc",
+    "bundle": "zip -9rq revolver.zip node_modules drivers lib plugins revolver.js",
+    "clean": "rimraf revolver.zip",
     "start": "CONFIG_FILE=revolver-config.yaml node invoke.js"
   },
   "author": "Alex Bukharov",
@@ -24,11 +25,17 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.126",
+    "@types/lodash": "^4.14.201",
     "@types/node": "^20.9.0",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
     "chai": "^4.3.10",
     "esbuild": "^0.19.4",
-    "eslint": "^8.51.0",
+    "eslint": "^8.53.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.0.1",
     "mocha": "^10.2.0",
     "prettier": "^3.1.0",
     "rimraf": "^5.0.5",

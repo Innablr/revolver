@@ -11,10 +11,12 @@ module.exports = {
   root: true,
   rules: {
     'import/no-extraneous-dependencies': 'warn',
-    'import/no-commonjs': 'error',
+    'import/no-commonjs': 'warn',
     'import/no-amd': 'error',
     'import/no-absolute-path': 'error',
     'prettier/prettier': ['error', { endOfLine: 'auto' }],
+    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-var-requires': 'warn',
   },
   settings: {
     'import/resolver': {

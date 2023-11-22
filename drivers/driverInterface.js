@@ -31,33 +31,27 @@ class DriverInterface {
         logger.info(`Driver ${this.name} is processing actions...`);
         const that = this;
         return Promise.all(resources.reduce(function(o, xr) {
-            logger.debug('Aggregating actions for %s', xr.resourceId);
             const a = xr.actions.map(function(xa) {
-                logger.debug('Got action %s for %s', xa.present, xr.resourceId);
                 const allWithAction = resources.filter(function(xxr) {
                     const matchingAction = xxr.actions.find(xxa => {
-                        logger.debug('Checking action %s on resource %s: like %s, done %s', xxa.present, xxr.resourceId, xxa.like(xa), xxa.done);
                         return xxa.like(xa) && ! xxa.done;
                     });
                     if (matchingAction === undefined) {
-                        logger.debug('No action matching %s on resource %s', xa.present, xxr.resourceId);
                         return false;
                     }
-                    logger.debug('Resource %s also has action %s', xxr.resourceId, matchingAction.present);
                     if (typeof that[`mask${matchingAction.what}`] === 'function') {
-                        logger.debug(`Masking available on ${that.name} for ${matchingAction.what}. Executing...`);
                         const reason = that[`mask${matchingAction.what}`](xxr, matchingAction);
                         if (reason !== undefined) {
-                            logger.info(`${xxr.resourceType} ${xxr.resourceId} is rejecting ${matchingAction.present} because ${reason}`);
+                            logger.debug('Resource %s also has action %s, but it is masked because %s', xxr.resourceId, matchingAction.present, reason);
                             matchingAction.done = true;
                             return false;
                         }
                     }
+                    logger.debug('Resource %s also has action %s', xxr.resourceId, matchingAction.present);
                     matchingAction.done = true;
                     return true;
                 });
                 if (! allWithAction.length > 0) {
-                    logger.info(`Not executing ${xa.present} on ${xr.resourceId} because all resources have either rejected the action or been already processed`);
                     return null;
                 }
                 if (that.driverConfig.pretend !== false) {

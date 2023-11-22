@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk');
 const assume = require('../lib/assume');
 const moment = require('moment-timezone');
+const common = require('../lib/common');
 const ToolingInterface = require('../plugins/toolingInterface');
 const {DriverInterface} = require('./driverInterface');
 
@@ -44,14 +45,19 @@ class SnapshotDriver extends DriverInterface {
         return `EBS snapshot ${resource.resourceId} can't be started`;
     }
 
-    setTag(resources, action) {
-        this.logger.info('Snapshots %j will be set tags %j', resources.map(xr => xr.resourceId), action.tags);
-        return assume.connectTo(this.accountConfig.assumeRoleArn)
-            .then(creds => new AWS.EC2({credentials: creds, region: this.accountConfig.region}))
-            .then(ec2 => ec2.createTags({
-                Resources: resources.map(xr => xr.resourceId),
+    async setTag(resources, action) {
+        logger.info('Snapshots %j will be set tags %j', chunk.map(xr => xr.resourceId), action.tags);
+        const resourceChunks = common.chunkArray(resources, 200);
+
+        const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
+        const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
+
+        return Promise.all(resourceChunks.map((chunk) =>
+            ec2.createTags({
+                Resources: chunk.map(xr => xr.resourceId),
                 Tags: action.tags
-            }).promise());
+            }).promise()
+        ));
     }
 
     masksetTag(resource, action) {
@@ -60,14 +66,19 @@ class SnapshotDriver extends DriverInterface {
         }
     }
 
-    unsetTag(resources, action) {
-        this.logger.info('Snapshot %j will be unset tags %j', resources.map(xr => xr.resourceId), action.tags);
-        return assume.connectTo(this.accountConfig.assumeRoleArn)
-            .then(creds => new AWS.EC2({ credentials: creds, region: this.accountConfig.region }))
-            .then(ec2 => ec2.deleteTags({
-                Resources: resources.map(xr => xr.resourceId),
+    async unsetTag(resources, action) {
+        logger.info('Snapshots %j will be set tags %j', resources.map(xr => xr.resourceId), action.tags);
+        const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
+        const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
+
+        const resourceChunks = common.chunkArray(resources, 200);
+
+        return Promise.all(resourceChunks.map((chunk) =>
+            ec2.deleteTags({
+                Resources: chunk.map(xr => xr.resourceId),
                 Tags: action.tags
-            }).promise());
+            }).promise()
+        ));
     }
 
     maskunsetTag(resource, action) {
@@ -79,7 +90,6 @@ class SnapshotDriver extends DriverInterface {
     async collect() {
         const logger = this.logger;
         const that = this;
-        const inoperableStates = ['terminated', 'shutting-down'];
         logger.debug('Snapshot module collecting account: %j', that.accountConfig.name);
 
         const creds = await assume.connectTo(that.accountConfig.assumeRoleArn);
@@ -89,37 +99,23 @@ class SnapshotDriver extends DriverInterface {
             .then(r => r.Snapshots);
         logger.debug('Snapshots %d found', snapshots.length);
 
-        return Promise.all(snapshots.filter(xi => {
-            if (inoperableStates.find(x => x === xi.State)) {
-                logger.info('Snapshot %s state %s is inoperable', xi.SnapshotId, xi.State);
-                return false;
-            }
-            return true;
-        })
-            .map(async function (snapshot) {
-                if (snapshot.State === 'completed') {
-                    const volumeId = snapshot.VolumeId;
-                    snapshot.volumeDetails = await ec2.describeVolumes({VolumeIds: [volumeId]}).promise()
-                        .catch(function () {
-                            logger.debug('Volume %s parent of Snapshot %s does not exist anymore.', volumeId, snapshot.SnapshotId);
-                            return [];
-                        })
-                        .then(r => r.Volumes ? r.Volumes[0] : []);
-                    if (snapshot.volumeDetails) {
-                        const volumeDetails = snapshot.volumeDetails;
-                        if (volumeDetails.State === 'in-use') {
-                            const instanceId = volumeDetails.Attachments[0].InstanceId;
-                            snapshot.instanceDetails = await ec2.describeInstances({InstanceIds: [instanceId]}).promise()
-                                .catch(function () {
-                                    logger.debug('Volume %s parent of Snapshot %s does not exist anymore.', volumeId, snapshot.SnapshotId);
-                                    return [];
-                                })
-                                .then(r => r.Reservations[0].Instances[0]);
-                        }
+        const volumes = await common.paginateAwsCall(ec2.describeVolumes.bind(ec2), 'Volumes');
+        const instances = (await common.paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(xr => xr.Instances);
+
+        for (const snapshot of snapshots) {
+            if (snapshot.State === 'completed') {
+                snapshot.volumeDetails = volumes.find(xv => xv.VolumeId === snapshot.VolumeId);
+                if (snapshot.volumeDetails) {
+                    const volumeDetails = snapshot.volumeDetails;
+                    if (volumeDetails.State === 'in-use') {
+                        const instanceId = volumeDetails.Attachments[0].InstanceId;
+                        snapshot.instanceDetails = instances.find(xi => xi.InstanceId === instanceId);
                     }
                 }
-                return new InstrumentedSnapshot(snapshot);
-            }));
+            }
+        }
+
+        return snapshots.map((snapshot) => new InstrumentedSnapshot(snapshot));
     }
 }
 
