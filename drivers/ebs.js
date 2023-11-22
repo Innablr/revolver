@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk');
 const assume = require('../lib/assume');
 const moment = require('moment-timezone');
+const common = require('../lib/common');
 const ToolingInterface = require('../plugins/toolingInterface');
 const {DriverInterface} = require('./driverInterface');
 
@@ -85,30 +86,24 @@ class EBSDriver extends DriverInterface {
     async collect() {
         const logger = this.logger;
         const that = this;
-        const inoperableStates = ['terminated', 'shutting-down'];
         logger.debug('EBS module collecting account: %j', that.accountConfig.name);
 
         const creds = await assume.connectTo(that.accountConfig.assumeRoleArn);
         const ec2 = await new AWS.EC2({ credentials: creds, region: this.accountConfig.region });
 
         const ebsVolumes = await ec2.describeVolumes({}).promise().then(r => r.Volumes);
+        const ec2instances = (await common.paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(xr => xr.Instances);
 
         logger.debug('Found %d ebs volumes', ebsVolumes.length);
 
-        return Promise.all(ebsVolumes.filter(xi => {
-            if (inoperableStates.find(x => x === xi.State)) {
-                logger.info('EBS volume %s state %s is inoperable', xi.VolumeId, xi.State);
-                return false;
-            }
-            return true;
-        }).map(async function (volume) {
+        for (const volume of ebsVolumes) {
             if (volume.State === 'in-use') {
                 const instanceId = volume.Attachments[0].InstanceId;
-                const instanceDetails = await ec2.describeInstances({ InstanceIds: [instanceId] }).promise();
-                volume.instanceDetails = instanceDetails.Reservations[0].Instances[0]
+                volume.instanceDetails = ec2instances.find(xi => xi.InstanceId === instanceId);
             }
-            return new InstrumentedEBS(volume);
-        }));
+        }
+
+        return ebsVolumes.map((xe) => new InstrumentedEBS(xe));
     }
 }
 
