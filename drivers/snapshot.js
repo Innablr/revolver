@@ -46,7 +46,7 @@ class SnapshotDriver extends DriverInterface {
     }
 
     async setTag(resources, action) {
-        logger.info('Snapshots %j will be set tags %j', chunk.map(xr => xr.resourceId), action.tags);
+        this.logger.info('Snapshots %j will be set tags %j', chunk.map(xr => xr.resourceId), action.tags);
         const resourceChunks = common.chunkArray(resources, 200);
 
         const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
@@ -67,7 +67,7 @@ class SnapshotDriver extends DriverInterface {
     }
 
     async unsetTag(resources, action) {
-        logger.info('Snapshots %j will be set tags %j', resources.map(xr => xr.resourceId), action.tags);
+        this.logger.info('Snapshots %j will be set tags %j', resources.map(xr => xr.resourceId), action.tags);
         const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
         const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
 
@@ -88,16 +88,14 @@ class SnapshotDriver extends DriverInterface {
     }
 
     async collect() {
-        const logger = this.logger;
-        const that = this;
-        logger.debug('Snapshot module collecting account: %j', that.accountConfig.name);
+        this.logger.debug('Snapshot module collecting account: %j', this.accountConfig.name);
 
-        const creds = await assume.connectTo(that.accountConfig.assumeRoleArn);
+        const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
         const ec2 = await new AWS.EC2({credentials: creds, region: this.accountConfig.region});
 
         const snapshots = await ec2.describeSnapshots({OwnerIds: [this.Id]}).promise()
             .then(r => r.Snapshots);
-        logger.debug('Snapshots %d found', snapshots.length);
+        this.logger.debug('%d snapshots found', snapshots.length);
 
         const volumes = await common.paginateAwsCall(ec2.describeVolumes.bind(ec2), 'Volumes');
         const instances = (await common.paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(xr => xr.Instances);
