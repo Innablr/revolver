@@ -55,7 +55,7 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   });
 
   // Assume-role on each org (if any listed) and get the list of accounts from it
-  const orgsAccountsList = await Promise.all(
+  const organisationCreds = await Promise.all(
     config.organizations.flatMap((xa: any) => {
       logger.info('Getting list of accounts from %s organization..', xa.settings.name);
       return assume.connectTo(`arn:aws:iam::${xa.Id}:role/${xa.settings.organizationRoleName}`).then((cred: any) => {
@@ -63,7 +63,8 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
         return cred;
       });
     }),
-  ).then((creds) => configMethods.getOrganisationsAccounts(creds));
+  );
+  const orgsAccountsList = await configMethods.getOrganisationsAccounts(organisationCreds);
 
   // Filter final accounts list to be processed
   const filteredAccountsList = await configMethods.filterAccountsList(orgsAccountsList, config, environ.debugLevel);
