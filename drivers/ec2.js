@@ -137,7 +137,7 @@ class Ec2Driver extends DriverInterface {
     }
 
     async setTag(resources, action) {
-        that.logger.info('EC2 instances %j will be set tags %j', resources.map(xr => xr.resourceId), action.tags);
+        this.logger.info('EC2 instances %j will be set tags %j', resources.map(xr => xr.resourceId), action.tags);
         const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
         const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
 
@@ -174,11 +174,10 @@ class Ec2Driver extends DriverInterface {
 
     async collect() {
         const logger = this.logger;
-        const that = this;
         const inoperableStates = ['terminated', 'shutting-down'];
-        logger.debug('EC2 module collecting account: %j', that.accountConfig.name);
+        logger.debug('EC2 module collecting account: %j', this.accountConfig.name);
 
-        const creds = await assume.connectTo(that.accountConfig.assumeRoleArn);
+        const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
 
         const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
         const autoscaling = new AWS.AutoScaling({credentials: creds, region: this.accountConfig.region});
