@@ -46,7 +46,7 @@ class SnapshotDriver extends DriverInterface {
     }
 
     async setTag(resources, action) {
-        this.logger.info('Snapshots %j will be set tags %j', chunk.map(xr => xr.resourceId), action.tags);
+        this.logger.info('Snapshots %j will be set tags %j', resources.map(xr => xr.resourceId), action.tags);
         const resourceChunks = common.chunkArray(resources, 200);
 
         const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
