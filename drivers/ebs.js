@@ -1,9 +1,9 @@
 const AWS = require('aws-sdk');
-const assume = require('../lib/assume');
+const assume = require('../lib/assume').default;
 const moment = require('moment-timezone');
-const common = require('../lib/common');
-const ToolingInterface = require('../plugins/toolingInterface');
-const {DriverInterface} = require('./driverInterface');
+const { paginateAwsCall } = require('../lib/common');
+const { ToolingInterface } = require('./instrumentedResource');
+const { DriverInterface } = require('./driverInterface');
 
 class InstrumentedEBS extends ToolingInterface {
     get resourceId() {
@@ -92,7 +92,7 @@ class EBSDriver extends DriverInterface {
         const ec2 = await new AWS.EC2({ credentials: creds, region: this.accountConfig.region });
 
         const ebsVolumes = await ec2.describeVolumes({}).promise().then(r => r.Volumes);
-        const ec2instances = (await common.paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(xr => xr.Instances);
+        const ec2instances = (await paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(xr => xr.Instances);
 
         logger.debug('Found %d ebs volumes', ebsVolumes.length);
 

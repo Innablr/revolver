@@ -1,8 +1,8 @@
 const moment = require('moment-timezone');
 const AWS = require('aws-sdk');
-const assume = require('../lib/assume');
-const ToolingInterface = require('../plugins/toolingInterface');
-const {DriverInterface} = require('./driverInterface');
+const assume = require('../lib/assume').default;
+const { ToolingInterface } = require('./instrumentedResource');
+const { DriverInterface } = require('./driverInterface');
 const dateTime = require('../lib/dateTime');
 
 class InstrumentedRedshiftCluster extends ToolingInterface {

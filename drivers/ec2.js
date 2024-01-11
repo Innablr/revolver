@@ -1,9 +1,9 @@
 const moment = require('moment-timezone');
 const AWS = require('aws-sdk');
-const assume = require('../lib/assume');
-const ToolingInterface = require('../plugins/toolingInterface');
-const {DriverInterface} = require('./driverInterface');
-const common = require('../lib/common');
+const assume = require('../lib/assume').default;
+const { ToolingInterface } = require('./instrumentedResource');
+const { DriverInterface } = require('./driverInterface');
+const { chunkArray, paginateAwsCall } = require('../lib/common');
 
 class InstrumentedEc2 extends ToolingInterface {
     get resourceId() {
@@ -62,7 +62,7 @@ class Ec2Driver extends DriverInterface {
         const autoscaling = new AWS.AutoScaling({credentials: creds, region: this.accountConfig.region});
         const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
 
-        const resourceChunks = common.chunkArray(resources, 200);
+        const resourceChunks = chunkArray(resources, 200);
         const asgs = resources
             .map(xr => xr.resource.AutoScalingGroupName)
             .filter(xa => xa)
@@ -102,7 +102,7 @@ class Ec2Driver extends DriverInterface {
         const autoscaling = new AWS.AutoScaling({credentials: creds, region: this.accountConfig.region});
         const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
 
-        const resourceChunks = common.chunkArray(resources, 200);
+        const resourceChunks = chunkArray(resources, 200);
         const asgs = resources
             .map(xr => xr.resource.AutoScalingGroupName)
             .filter(xa => xa)
@@ -141,7 +141,7 @@ class Ec2Driver extends DriverInterface {
         const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
         const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
 
-        const resourceChunks = common.chunkArray(resources, 200);
+        const resourceChunks = chunkArray(resources, 200);
 
         return Promise.all(resourceChunks.map((chunk) =>
             ec2.createTags({
@@ -162,7 +162,7 @@ class Ec2Driver extends DriverInterface {
         const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
         const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
 
-        const resourceChunks = common.chunkArray(resources, 200);
+        const resourceChunks = chunkArray(resources, 200);
 
         return Promise.all(resourceChunks.map((chunk) =>
             ec2.deleteTags({
@@ -182,7 +182,7 @@ class Ec2Driver extends DriverInterface {
         const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
         const autoscaling = new AWS.AutoScaling({credentials: creds, region: this.accountConfig.region});
 
-        const allEc2Iinstances = (await common.paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(xr => xr.Instances);
+        const allEc2Iinstances = (await paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(xr => xr.Instances);
         const ec2Instances = allEc2Iinstances.filter(function (xi) {
             if (inoperableStates.find(x => x === xi.State.Name)) {
                 logger.info('EC2 instance %s state %s is inoperable', xi.InstanceId, xi.State.Name);
@@ -191,7 +191,7 @@ class Ec2Driver extends DriverInterface {
             return true;
         });
 
-        const autoscalingGroups = await common.paginateAwsCall(autoscaling.describeAutoScalingGroups.bind(autoscaling), 'AutoScalingGroups');
+        const autoscalingGroups = await paginateAwsCall(autoscaling.describeAutoScalingGroups.bind(autoscaling), 'AutoScalingGroups');
 
         for (const xi of ec2Instances) {
             const asg = autoscalingGroups.find(xa => xa.Instances.find(xai => xai.InstanceId === xi.InstanceId) !== undefined);

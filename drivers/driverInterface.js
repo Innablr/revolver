@@ -1,11 +1,11 @@
-const winston = require('winston');
+const logger = require('../lib/logger').default;
 
 class DriverInterface {
     constructor(accountConfig, driverConfig) {
         this.accountConfig = accountConfig.settings;
         this.Id = accountConfig.Id;
         this.driverConfig = driverConfig;
-        this.logger = winston.loggers.get(this.accountConfig.name);
+        this.logger = logger.getSubLogger({ name: this.accountConfig.name });
         this.logger.debug(`Initialising driver ${this.name} for account ${this.accountConfig.name}`);
     }
 

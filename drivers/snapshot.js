@@ -1,9 +1,9 @@
 const AWS = require('aws-sdk');
-const assume = require('../lib/assume');
+const assume = require('../lib/assume').default;
 const moment = require('moment-timezone');
-const common = require('../lib/common');
-const ToolingInterface = require('../plugins/toolingInterface');
-const {DriverInterface} = require('./driverInterface');
+const { chunkArray, paginateAwsCall } = require('../lib/common');
+const { ToolingInterface } = require('./instrumentedResource');
+const { DriverInterface } = require('./driverInterface');
 
 class InstrumentedSnapshot extends ToolingInterface {
     get resourceId() {
@@ -47,7 +47,7 @@ class SnapshotDriver extends DriverInterface {
 
     async setTag(resources, action) {
         logger.info('Snapshots %j will be set tags %j', chunk.map(xr => xr.resourceId), action.tags);
-        const resourceChunks = common.chunkArray(resources, 200);
+        const resourceChunks = chunkArray(resources, 200);
 
         const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
         const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
@@ -71,7 +71,7 @@ class SnapshotDriver extends DriverInterface {
         const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
         const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
 
-        const resourceChunks = common.chunkArray(resources, 200);
+        const resourceChunks = chunkArray(resources, 200);
 
         return Promise.all(resourceChunks.map((chunk) =>
             ec2.deleteTags({
@@ -99,8 +99,8 @@ class SnapshotDriver extends DriverInterface {
             .then(r => r.Snapshots);
         logger.debug('Snapshots %d found', snapshots.length);
 
-        const volumes = await common.paginateAwsCall(ec2.describeVolumes.bind(ec2), 'Volumes');
-        const instances = (await common.paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(xr => xr.Instances);
+        const volumes = await paginateAwsCall(ec2.describeVolumes.bind(ec2), 'Volumes');
+        const instances = (await paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(xr => xr.Instances);
 
         for (const snapshot of snapshots) {
             if (snapshot.State === 'completed') {
