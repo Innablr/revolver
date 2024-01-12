@@ -2,6 +2,7 @@
 .npmrc
 
 # Build and auto-generated files
+revolver.zip
 *.js
 *.d.ts
 coverage
