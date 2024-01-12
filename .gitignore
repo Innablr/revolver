@@ -20,3 +20,5 @@ cdk.context.json
 *~
 *.swp
 .vscode
+
+megalinter-reports/
