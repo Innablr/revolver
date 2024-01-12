@@ -9,6 +9,7 @@
   "scripts": {
     "test": "mocha",
     "build": "tsc",
+    "tsc-watch": "tsc --watch",
     "bundle": "zip -9rq revolver.zip node_modules drivers lib plugins revolver.js",
     "clean": "rimraf revolver.zip",
     "start": "CONFIG_FILE=revolver-config.yaml node invoke.js"

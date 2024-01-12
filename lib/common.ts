@@ -10,7 +10,7 @@ async function paginateAwsCall(fn: (...args: any[]) => any, what: string, params
   return entityList;
 }
 
-function chunkArray(arr: [any], len: number) {
+function chunkArray<T>(arr: T[], len: number): T[][] {
   const chunks = [];
   let i = 0;
   const n = arr.length;

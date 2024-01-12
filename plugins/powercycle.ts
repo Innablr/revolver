@@ -1,7 +1,7 @@
 import { RevolverPlugin } from './pluginInterface';
 import dateTime from '../lib/dateTime';
+import { NoopAction, SetTagAction, StartAction, StopAction } from '../actions/actions';
 const getParser = require('./parsers/all');
-const actions = require('../lib/actions');
 
 export default class PowerCyclePlugin extends RevolverPlugin {
   private parser: any;
@@ -38,7 +38,7 @@ export default class PowerCyclePlugin extends RevolverPlugin {
 
     if (scheduleTag === undefined) {
       logger.debug('Tag "%s" is missing, not analysing availability', this.scheduleTagName);
-      resource.addAction(new actions.SetTagAction(this, this.warningTagName, `Tag ${this.scheduleTagName} is missing`));
+      resource.addAction(new SetTagAction(this, this.warningTagName, `Tag ${this.scheduleTagName} is missing`));
       return Promise.resolve(resource);
     }
 
@@ -48,25 +48,25 @@ export default class PowerCyclePlugin extends RevolverPlugin {
     switch (r) {
       case 'UNPARSEABLE':
         logger.warn("Tag %s couldn't be parsed: %s", scheduleTag, reason);
-        resource.addAction(new actions.SetTagAction(this, this.warningTagName, reason));
+        resource.addAction(new SetTagAction(this, this.warningTagName, reason));
         break;
       case 'START':
         logger.debug('Resource should be started: %s', reason);
-        resource.addAction(new actions.StartAction(this));
+        resource.addAction(new StartAction(this));
         if (resource.resourceState !== 'running') {
-          resource.addAction(new actions.SetTagAction(this, this.reasonTagName, reason));
+          resource.addAction(new SetTagAction(this, this.reasonTagName, reason));
         }
         break;
       case 'STOP':
         logger.debug('Resource should be stopped: %s', reason);
-        resource.addAction(new actions.StopAction(this));
+        resource.addAction(new StopAction(this));
         if (resource.resourceState === 'running') {
-          resource.addAction(new actions.SetTagAction(this, this.reasonTagName, reason));
+          resource.addAction(new SetTagAction(this, this.reasonTagName, reason));
         }
         break;
       case 'NOOP':
         logger.debug('Resource should be left alone: %s', reason);
-        resource.addAction(new actions.NoopAction(this, reason));
+        resource.addAction(new NoopAction(this, reason));
         break;
       default:
         logger.error('Availability parser returns [%s], which is not supported');

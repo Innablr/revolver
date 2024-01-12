@@ -1,6 +1,6 @@
 import { RevolverPlugin } from './pluginInterface';
 import dateTime from '../lib/dateTime';
-const actions = require('../lib/actions');
+import { NoopAction, SetTagAction, UnsetTagAction, StopAction } from '../actions/actions';
 
 export default class ValidateTagsPlugin extends RevolverPlugin {
   protected supportedResources = [
@@ -20,18 +20,18 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
     (actionsDef || []).forEach((xa: string) => {
       switch (xa) {
         case 'copyFromParent':
-          resource.addAction(new actions.SetTagAction(this, tag, message));
+          resource.addAction(new SetTagAction(this, tag, message));
           break;
         case 'warn':
         case 'warning':
-          resource.addAction(new actions.SetTagAction(this, `Warning${tag}`, message));
+          resource.addAction(new SetTagAction(this, `Warning${tag}`, message));
           break;
         case 'stop':
           if (utcTimeNow.diff(resource.launchTimeUtc, 'minutes') > 30) {
-            resource.addAction(new actions.StopAction(this));
+            resource.addAction(new StopAction(this));
           } else {
             resource.addAction(
-              new actions.NoopAction(
+              new NoopAction(
                 this,
                 `${resource.resourceType} ${resource.resourceId} would've been stopped because tag ${tag} is missing but it was created less than 30 minutes ago`,
               ),
@@ -118,7 +118,7 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
           xa,
           tag,
         );
-        resource.addAction(new actions.UnsetTagAction(this, `Warning${xa}`));
+        resource.addAction(new UnsetTagAction(this, `Warning${xa}`));
 
         return xa;
       }),

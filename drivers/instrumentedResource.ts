@@ -1,15 +1,18 @@
 import logger from '../lib/logger';
+import { Moment } from 'moment-timezone';
+import { RevolverAction } from '../actions/actions';
 
-export class ToolingInterface {
+export abstract class ToolingInterface {
   private resource: any;
-  private actions: any[];
+  private actions: RevolverAction[];
 
   constructor(awsResource: any) {
     this.resource = awsResource;
     this.actions = [];
   }
 
-  addAction(action: any) {
+  addAction(action: RevolverAction) {
+    // If we are already doing this action, don't add it again
     if (this.actions.some((xa) => xa.like(action))) {
       logger.warn(
         'Not adding action %s on %s %s as there is already an action doing exactly that',
@@ -19,6 +22,7 @@ export class ToolingInterface {
       );
       return;
     }
+    // If we are doing an action that changes state, don't add any more actions that also change state
     if (action.changesState && this.actions.some((xa) => xa.changesState)) {
       logger.warn(
         'Not adding action %s on %s %s as there is already actions changing resource state.',
@@ -28,33 +32,24 @@ export class ToolingInterface {
       );
       return;
     }
-    if (typeof action.swallow === 'function') {
-      for (const xa of this.actions.filter((xxa) => xxa.what === action.what)) {
-        if (xa.swallow(action) === true) {
-          return;
-        }
+    // Try and see if we already have an action that can swallow this one
+    for (const xa of this.actions.filter((xxa) => xxa.what === action.what)) {
+      if (xa.swallow(action) === true) {
+        return;
       }
     }
     this.actions.push(action);
   }
 
-  get resourceId() {
-    throw new Error('Not implemented');
-  }
+  abstract get resourceId(): string;
 
-  get resourceType() {
-    throw new Error('Not implemented');
-  }
+  abstract get resourceType(): string;
 
-  get launchTimeUtc() {
-    throw new Error('Not implemented');
-  }
+  abstract get resourceArn(): string;
 
-  get resourceState() {
-    throw new Error('Not implemented');
-  }
+  abstract get launchTimeUtc(): Moment;
 
-  tag(key: any) {
-    throw new Error(`Tag ${key} is not implemented on resource ${this.resourceType}`);
-  }
+  abstract get resourceState(): string;
+
+  abstract tag(key: string): string;
 }

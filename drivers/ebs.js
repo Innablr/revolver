@@ -27,12 +27,6 @@ class InstrumentedEBS extends ToolingInterface {
 }
 
 class EBSDriver extends DriverInterface {
-    masksetTag(resource, action) {
-        if (action.tags.every(xt => resource.tag(xt.Key) === xt.Value)) {
-            return `${resource.resourceType} ${resource.resourceId} already has tags ${JSON.stringify(action.tags.map(xt => xt.Key))}`;
-        }
-    }
-
     stop() {
         this.logger.debug('An EBS volume can\'t be stopped directly, ignoring action');
         return Promise.resolve();
@@ -52,35 +46,30 @@ class EBSDriver extends DriverInterface {
     }
 
     async setTag(resources, action) {
-        this.logger.info('EBS volumes %j will be set tags %j', action.tags);
         const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
         const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
 
-        return ec2.createTags({
-            Resources: resources.map(xr => xr.resourceId),
-            Tags: action.tags
-        }).promise();
+        return ec2Tagger.setTag(ec2, this.logger, resources, action);
+    }
+
+    masksetTag(resource, action) {
+        return ec2Tagger.maskunsetTag(resource, action);
+    }
+
+    async unsetTag(resources, action) {
+        const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
+        const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
+
+        return ec2Tagger.unsetTag(ec2, this.logger, resources, action);
+    }
+
+    maskunsetTag(resource, action) {
+        return ec2Tagger.maskunsetTag(resource, action);
     }
 
     noop(resources, action) {
         this.logger.info('EBS volumes %j will noop because: %s', resources.map(xr => xr.resourceId), action.reason);
         return Promise.resolve();
-    }
-
-    maskunsetTag(resource, action) {
-        if (action.tags.every(xt => resource.tag(xt.Key) === undefined)) {
-            return `${resource.resourceType} ${resource.resourceId} has none tags of ${JSON.stringify(action.tags.map(xt => xt.Key))}`;
-        }
-    }
-
-    async unsetTag(resources, action) {
-        this.logger.info('EBS volumes %j will be unset tags %j', resources.map(xr => xr.resourceId), action.tags);
-        const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-        const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
-        return ec2.deleteTags({
-            Resources: resources.map(xr => xr.resourceId),
-            Tags: action.tags
-        }).promise();
     }
 
     async collect() {

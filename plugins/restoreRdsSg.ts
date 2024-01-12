@@ -1,5 +1,5 @@
 import { RevolverPlugin } from './pluginInterface';
-const actions = require('../lib/actions');
+import { RestoreRdsSg } from '../actions/actions';
 
 export default class RestoreRdsSecgroupsPlugin extends RevolverPlugin {
   protected supportedResources = ['rdsMultiAzSnapshot'];
@@ -16,7 +16,7 @@ export default class RestoreRdsSecgroupsPlugin extends RevolverPlugin {
       logger.info('Tag revolver/restore_commenced is not set on snapshot %s, skipping', resource.resourceId);
     } else {
       logger.info('Secgroups from snapshot %s will be restored', resource.resourceId);
-      resource.actions.push(new actions.RestoreRdsSg());
+      resource.actions.push(new RestoreRdsSg(this));
     }
 
     return Promise.resolve(resource);

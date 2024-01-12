@@ -2,7 +2,8 @@ const moment = require('moment-timezone');
 const AWS = require('aws-sdk');
 const assume = require('../lib/assume').default;
 const { ToolingInterface } = require('./instrumentedResource');
-const { DriverInterface, RDSTagger } = require('./driverInterface');
+const { DriverInterface } = require('./driverInterface');
+const { rdsTagger } = require('./tags');
 const dateTime = require('../lib/dateTime');
 
 class InstrumentedRdsCluster extends ToolingInterface {
@@ -139,22 +140,22 @@ class RdsClusterDriver extends DriverInterface {
         const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
         const rds = new AWS.RDS({credentials: creds, region: this.accountConfig.region});
 
-        return RDSTagger.setTag(rds, this.logger, resources, action);
+        return rdsTagger.setTag(rds, this.logger, resources, action);
     }
 
     masksetTag(resource, action) {
-        return RDSTagger.masksetTag(resource, action);
+        return rdsTagger.masksetTag(resource, action);
     }
 
     async unsetTag(resources, action) {
         const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
         const rds = new AWS.RDS({credentials: creds, region: this.accountConfig.region});
 
-        return RDSTagger.unsetTag(rds, this.logger, resources, action);
+        return rdsTagger.unsetTag(rds, this.logger, resources, action);
     }
 
     maskunsetTag(resource, action) {
-        return RDSTagger.maskunsetTag(resource, action);
+        return rdsTagger.maskunsetTag(resource, action);
     }
 
     async collect() {

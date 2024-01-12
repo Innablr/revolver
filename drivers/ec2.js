@@ -4,6 +4,7 @@ const assume = require('../lib/assume').default;
 const { ToolingInterface } = require('./instrumentedResource');
 const { DriverInterface } = require('./driverInterface');
 const { chunkArray, paginateAwsCall } = require('../lib/common');
+const { ec2Tagger } = require('./tags');
 
 class InstrumentedEc2 extends ToolingInterface {
     get resourceId() {
@@ -131,45 +132,25 @@ class Ec2Driver extends DriverInterface {
     }
 
     masksetTag(resource, action) {
-        if (action.tags.every(xt => resource.tag(xt.Key) === xt.Value)) {
-            return `${resource.resourceType} ${resource.resourceId} already has tags ${JSON.stringify(action.tags.map(xt => xt.Key))}`;
-        }
+        return ec2Tagger.masksetTag(resource, action);
     }
 
     async setTag(resources, action) {
-        this.logger.info('EC2 instances %j will be set tags %j', resources.map(xr => xr.resourceId), action.tags);
         const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
         const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
 
-        const resourceChunks = chunkArray(resources, 200);
-
-        return Promise.all(resourceChunks.map((chunk) =>
-            ec2.createTags({
-                Resources: chunk.map(xr => xr.resourceId),
-                Tags: action.tags
-            }).promise()
-        ));
+        return ec2Tagger.setTag(ec2, this.logger, resources, action);
     }
 
     maskunsetTag(resource, action) {
-        if (action.tags.every(xt => resource.tag(xt.Key) === undefined)) {
-            return `${resource.resourceType} ${resource.resourceId} has none tags of ${JSON.stringify(action.tags.map(xt => xt.Key))}`;
-        }
+        return ec2Tagger.maskunsetTag(resource, action);
     }
 
     async unsetTag(resources, action) {
-        this.logger.info('EC2 instances %j will be unset tags %s', resources.map(xr => xr.resourceId), action.tags);
         const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
         const ec2 = new AWS.EC2({credentials: creds, region: this.accountConfig.region});
 
-        const resourceChunks = chunkArray(resources, 200);
-
-        return Promise.all(resourceChunks.map((chunk) =>
-            ec2.deleteTags({
-                Resources: chunk.map(xr => xr.resourceId),
-                Tags: action.tags
-            }).promise()
-        ));
+        return ec2Tagger.unsetTag(ec2, this.logger, resources, action);
     }
 
     async collect() {
