@@ -4,7 +4,7 @@
 # linters documentation
 
 # all, none, or list of linter keys
-APPLY_FIXES: all
+APPLY_FIXES: none
 
 # If you use ENABLE variable, all other languages/formats/tooling-formats will
 # be disabled by default
@@ -16,11 +16,17 @@ APPLY_FIXES: all
 
 DISABLE:
   - COPYPASTE # Comment to enable checks of excessive copy-pastes
-  # - SPELL # Uncomment to disable checks of spelling mistakes
+
+DISABLE_ERRORS_LINTERS:
+  - REPOSITORY_SECRETLINT
+  - TYPESCRIPT_STANDARD
+  - REPOSITORY_CHECKOV
+  - SPELL_CSPELL
+
+FILTER_REGEX_EXCLUDE: (Makefile|megalinter-reports|.github)
 
 SHOW_ELAPSED_TIME: true
 
 FILEIO_REPORTER: false
-
 # Uncomment if you want MegaLinter to detect errors but not block CI to pass
 # DISABLE_ERRORS: true

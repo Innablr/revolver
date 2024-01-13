@@ -58,15 +58,15 @@ Revolver configuration is done in YAML. First line in the config file must be `-
 
 1. Section `defaults` defines default behavior for all accounts. Settings in this section will be overriden in the accounts section
 
-    | Option name | Description | Default |
-    |-|-|-|
-    | region | Specifies the default AWS region | - |
-    | timezone | Specifies the default time zone | - |
-    | timezone_tag | Revolver will read this tag on individual resources to override account-wide timezone | Timezone |
-    | organization_role_name | Role to be assumed on the main account from organizations to get the accounts list from it | - |
-    | revolver_role_name | Revolver role name to be assumed on each client account | - |
-    | drivers | List of enabled drivers and their options (see Drivers) | - |
-    | plugins | List of enabled plugins with their options (see Plugins) | - |
+    | Option name            | Description                                                                                | Default  |
+    |------------------------|--------------------------------------------------------------------------------------------|----------|
+    | region                 | Specifies the default AWS region                                                           | -        |
+    | timezone               | Specifies the default time zone                                                            | -        |
+    | timezone_tag           | Revolver will read this tag on individual resources to override account-wide timezone      | Timezone |
+    | organization_role_name | Role to be assumed on the main account from organizations to get the accounts list from it | -        |
+    | revolver_role_name     | Revolver role name to be assumed on each client account                                    | -        |
+    | drivers                | List of enabled drivers and their options (see Drivers)                                    | -        |
+    | plugins                | List of enabled plugins with their options (see Plugins)                                   | -        |
 
     Example `defaults` section:
 
@@ -159,26 +159,26 @@ Drivers define how to operate with a particular AWS resource, how to stop or sta
 
 All drivers support the following options:
 
-|Option|Description|Allowed values|Default|
-|-|-|-|-|
-|pretend|Prevents the driver from actually performing the actions. Good for debugging|`true` or `false`|`true`|
+| Option  | Description                                                                  | Allowed values    | Default |
+|---------|------------------------------------------------------------------------------|-------------------|---------|
+| pretend | Prevents the driver from actually performing the actions. Good for debugging | `true` or `false` | `true`  |
 
 Supported drivers:
 
-|Driver|Description|
-|-|-|
-|ec2|AWS EC2 instances and autoscaling groups|
-|rdsInstance|Standalone non-multiaz instances. Uses native RDS start/stop functionality|
-|rdsMultiAz|Multi-AZ RDS instances. Also requires configured `rdsMultiAzSnapshot` driver to be able to start instances|
-|rdsMultiAzSnapshot|Counterpart of `rdsMultiAz`. Restores snapshots created by rdsMultiAz|
-|rdsCluster|RDS Aurora clusters. Requires `rdsClusterSnapshot` to restore clusters in the morning|
-|rdsClusterSnapshot|Part of `rdsCluster`. Restores cluster snapshots|
+| Driver             | Description                                                                                                |
+|--------------------|------------------------------------------------------------------------------------------------------------|
+| ec2                | AWS EC2 instances and autoscaling groups                                                                   |
+| rdsInstance        | Standalone non-multiaz instances. Uses native RDS start/stop functionality                                 |
+| rdsMultiAz         | Multi-AZ RDS instances. Also requires configured `rdsMultiAzSnapshot` driver to be able to start instances |
+| rdsMultiAzSnapshot | Counterpart of `rdsMultiAz`. Restores snapshots created by rdsMultiAz                                      |
+| rdsCluster         | RDS Aurora clusters. Requires `rdsClusterSnapshot` to restore clusters in the morning                      |
+| rdsClusterSnapshot | Part of `rdsCluster`. Restores cluster snapshots                                                           |
 
 ##### ec2 driver
 
-|Option|Description|Allowed values|Default|
-|-|-|-|-|
-|inspector_assessment_target|Name of the Inspector Assessment Target|Inspector Assessment Target name| InspectorFull |
+| Option                      | Description                             | Allowed values                   | Default       |
+|-----------------------------|-----------------------------------------|----------------------------------|---------------|
+| inspector_assessment_target | Name of the Inspector Assessment Target | Inspector Assessment Target name | InspectorFull |
 
 EC2 Driver has an optional settings `inspector_assessment_target` that needs to be set if you want to use the plugin `inspectorAgent` plugin. The Inspector Assessment target if preferable a target under the AWS account that selects all instances running.
 
@@ -192,10 +192,10 @@ For every AWS resource plugins will be executed in the order they are listed in 
 
 Starts AWS resources in the worktime and stops them after hours based on their tagging. Supports pluggable tagging formats.
 
-|Option|Description|Allowed values|Default|
-|-|-|-|-|
-|tagging|Defines tagging format. See below|`strict`|`strict`|
-|availability_tag|Name of the tag that contains the schedule|AWS tag name|Schedule|
+| Option           | Description                                | Allowed values | Default  |
+|------------------|--------------------------------------------|----------------|----------|
+| tagging          | Defines tagging format. See below          | `strict`       | `strict` |
+| availability_tag | Name of the tag that contains the schedule | AWS tag name   | Schedule |
 
 When an operation is performed on a resource a tag with a name `ReasonSchedule` (Schedule is replaced with the actual name of the schedule tag) will be set explaining the reason.
 
@@ -248,20 +248,20 @@ plugins:
 
 This plugin will check an Inspector Assessment Target to get the agent status on all ec2 instances.
 
-|Option|Description|Allowed values|Default|
-|-|-|-|-|
-|tag|Name of the tag to mark the agent status|Aws tag name| - |
-|unhealthy_status|List of actions to perform on the resource if the Inspector scan have been failing|`warn`,`stop`| - |
-|unknown_status|List of actions to perform on the resource if the Inspector agent is either not installed or never run on the instance|`warn`,`stop`| - |
+| Option           | Description                                                                                                            | Allowed values | Default |
+|------------------|------------------------------------------------------------------------------------------------------------------------|----------------|---------|
+| tag              | Name of the tag to mark the agent status                                                                               | Aws tag name   | -       |
+| unhealthy_status | List of actions to perform on the resource if the Inspector scan have been failing                                     | `warn`,`stop`  | -       |
+| unknown_status   | List of actions to perform on the resource if the Inspector agent is either not installed or never run on the instance | `warn`,`stop`  | -       |
 
 ##### ssmAgent plugin
 
 This plugin will check if SSM Agent is not installed on all ec2 instances.
 
-|Option|Description|Allowed values|Default|
-|-|-|-|-|
-|tag|Name of the tag to mark the agent status|Aws tag name| - |
-|not_installed|List of actions to perform on the resource if the SSM Agent is not installed|`warn`,`stop`| - |
+| Option        | Description                                                                  | Allowed values | Default |
+|---------------|------------------------------------------------------------------------------|----------------|---------|
+| tag           | Name of the tag to mark the agent status                                     | Aws tag name   | -       |
+| not_installed | List of actions to perform on the resource if the SSM Agent is not installed | `warn`,`stop`  | -       |
 
 ##### validateTags plugin
 
@@ -269,13 +269,13 @@ This plugin will validate that a certain tag exist on AWS resources and optional
 
 To validate several tags include this plugin in the configuration once for every tag.
 
-|Option|Description|Allowed values|Default|
-|-|-|-|-|
-|tag|Name of the tag to validate|AWS tag name| - |
-|match|JS-compatible regular expression to match the value against (optional)|JS regex| - |
-|tag_missing|List of actions to perform on the resource if the tag is missing|`warn`,`stop`| - |
-|tag_not_match|List of actions to perform on the resource if the tag does not match the regex in `match`|`warn`,`stop`| - |
-|allow_set_from_parent|Allow Revolver to try to get tags from parent (instance/volumes) -- works only with ebs/snapshot drivers|`true`,`false`|`true`|
+| Option                | Description                                                                                              | Allowed values | Default |
+|-----------------------|----------------------------------------------------------------------------------------------------------|----------------|---------|
+| tag                   | Name of the tag to validate                                                                              | AWS tag name   | -       |
+| match                 | JS-compatible regular expression to match the value against (optional)                                   | JS regex       | -       |
+| tag_missing           | List of actions to perform on the resource if the tag is missing                                         | `warn`,`stop`  | -       |
+| tag_not_match         | List of actions to perform on the resource if the tag does not match the regex in `match`                | `warn`,`stop`  | -       |
+| allow_set_from_parent | Allow Revolver to try to get tags from parent (instance/volumes) -- works only with ebs/snapshot drivers | `true`,`false` | `true`  |
 
 ```yaml
 plugins:
