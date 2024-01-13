@@ -11,28 +11,28 @@ The most commonly used pattern is tagging your resources with some sort of sched
 Revolver does exactly that.
 
 Revolver:
- * is run in AWS Lambda, send log in Cloudwatch Logs
- * is controlled by a YAML config file in S3 and a handful of environment variables
- * supports IAM cross-account access, so you can use one Lambda function to control multiple accounts
- * is fully asynchronous, which gives it a better performance
- * has a responsibilty separation between drivers that directly operate the resources and plugins that work out what needs to be done with a resource, which gives Revolver an amazing extensibility potential
+
+* is run in AWS Lambda, send log in Cloudwatch Logs
+* is controlled by a YAML config file in S3 and a handful of environment variables
+* supports IAM cross-account access, so you can use one Lambda function to control multiple accounts
+* is fully asynchronous, which gives it a better performance
+* has a responsibilty separation between drivers that directly operate the resources and plugins that work out what needs to be done with a resource, which gives Revolver an amazing extensibility potential
 
 Apart from powercycling resources Revolver can validate that required tags are set on AWS resources and their values match a regular expression.
-
 
 What
 ------
 
 Revolver currently supports the following AWS resources:
- * EC2 instances including those run in Autoscaling, Revolver will pause the ASG prior to shutting down instances
- * EBS volumes. Revolver will tag these resources. Revolver can get the tags from the parent instance/volume.
- * Snapshots. Revolver will tag these resources. Revolver can get the tags from the parent instance/volume.
- * RDS single instances, Revolver will use the native start/stop featur
- * RDS multi-az instances, Revolver will snapshot the instance and delete it. In the morning it will be restored from snapshot
- * RDS Clusters, Revolver will snapshot the cluster and save the critical information about the cluster members on the snapshot
+
+* EC2 instances including those run in Autoscaling, Revolver will pause the ASG prior to shutting down instances
+* EBS volumes. Revolver will tag these resources. Revolver can get the tags from the parent instance/volume.
+* Snapshots. Revolver will tag these resources. Revolver can get the tags from the parent instance/volume.
+* RDS single instances, Revolver will use the native start/stop featur
+* RDS multi-az instances, Revolver will snapshot the instance and delete it. In the morning it will be restored from snapshot
+* RDS Clusters, Revolver will snapshot the cluster and save the critical information about the cluster members on the snapshot
 
 Revolver does not support RDS instances with read replicas, as it is very difficult to ensure integrity for such configurations
-
 
 How
 ------
@@ -45,8 +45,9 @@ suitable for deployment in AWS Lambda. You can find an example Cloudformation te
 You can include this repository as a submodule into the Innablr Cloudformation deployment automation and deploy using `INSTALLATION_NAME=your_name RUNTIME_ENVIRONMENT=your_env R53_DOMAIN=your_domain make deploy`
 
 For example, in Innablr environment it will be:
+
 ```bash
-$ INSTALLATION_NAME=innablr0 RUNTIME_ENVIRONMENT=innablr R53_DOMAIN=innablr.lan AWS_DEFAULT_REGION=ap-southeast-2 make deploy
+INSTALLATION_NAME=innablr0 RUNTIME_ENVIRONMENT=innablr R53_DOMAIN=innablr.lan AWS_DEFAULT_REGION=ap-southeast-2 make deploy
 ```
 
 Example configuration file is in `examples/config`.
@@ -69,7 +70,7 @@ Revolver configuration is done in YAML. First line in the config file must be `-
 
     Example `defaults` section:
 
-    ```
+    ```yaml
     defaults:
       region: ap-southeast-2
       timezone: Australia/Melbourne
@@ -95,12 +96,14 @@ Revolver configuration is done in YAML. First line in the config file must be `-
 2. Section `organizations` specifies per-organization options overriding the defaults from the `defaults section`. __Please note that are no need to specify any settings here a part of the Id per organization if following the defaults section__
 
     Leave as empty array if not being used
-    ```
+
+    ```yaml
     organizations: []
     ```
 
     Example organization configuration:
-    ```
+
+    ```yaml
     organizations:
       - account_id: "439001261645"
         settings:
@@ -117,7 +120,7 @@ Revolver configuration is done in YAML. First line in the config file must be `-
 
     Example account configuration:
 
-    ```
+    ```yaml
     accounts:
       include_list:
         - account_id: "050000000071"
@@ -179,7 +182,6 @@ Supported drivers:
 
 EC2 Driver has an optional settings `inspector_assessment_target` that needs to be set if you want to use the plugin `inspectorAgent` plugin. The Inspector Assessment target if preferable a target under the AWS account that selects all instances running.
 
-
 #### Plugins
 
 Plugins define what needs to be done on AWS resources. Some plugins support only some types of AWS resources but not the others.
@@ -201,7 +203,7 @@ When the schedule tag is missing or unreadable a tag with a name `WarningSchedul
 
 Powercycle respects the account-wide timezone specification as well as individual timezone tags on resources (see `defaults` and `accounts`).
 
-```
+```yaml
 plugins:
   - name: powercycle
     tagging: strict
@@ -221,9 +223,10 @@ If Start= or Stop= is omitted, the resource will be only brought up or down with
 `Override=On/Off` is optional, if set to `Override=On` resource will be ignored by the plugin.
 
 There is also special values for the schedule tag:
-  * `24x7` - resource will be always up. If you stop it manually Revolver will attempt to bring it up
-  * `24x5` - resource will be always up except for Saturday and Sunday
-  * `0x7` - resource will be always down. If you manually start it Revolver will bring it down
+
+* `24x7` - resource will be always up. If you stop it manually Revolver will attempt to bring it up
+* `24x5` - resource will be always up except for Saturday and Sunday
+* `0x7` - resource will be always down. If you manually start it Revolver will bring it down
 
 For RDS `|` and `;` must be replaces with `_` and '/' respectively as RDS does not support these characters in tags: `Start=08:00_mon-sat/Stop=17:55/Override=off`.
 
@@ -233,7 +236,7 @@ This is a sidekick plugin for `rdsMultiAzSnapshot`. When `rdsMultiAzSnapshot` re
 
 This plugin requires no configuration.
 
-```
+```yaml
 plugins:
   - name: powercycle
     tagging: strict
@@ -274,7 +277,7 @@ To validate several tags include this plugin in the configuration once for every
 |tag_not_match|List of actions to perform on the resource if the tag does not match the regex in `match`|`warn`,`stop`| - |
 |allow_set_from_parent|Allow Revolver to try to get tags from parent (instance/volumes) -- works only with ebs/snapshot drivers|`true`,`false`|`true`|
 
-```
+```yaml
 plugins:
   - name: validateTags
     tag: CostCentre
@@ -297,7 +300,7 @@ plugins:
 
 You also can concatenate tags that will share the same settings on the same block
 
-```
+```yaml
 plugins:
   - name: validateTags
     tag: [ CostCentre, OwnerDescription, Service ]
