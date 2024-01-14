@@ -1,5 +1,6 @@
 # Secrets
 .npmrc
+revolver-config.yaml
 
 # Build and auto-generated files
 revolver.zip
