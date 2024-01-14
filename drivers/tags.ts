@@ -1,4 +1,5 @@
 import { Logger } from 'tslog';
+import { RevolverLogObject } from '../lib/logger';
 import { ToolingInterface } from './instrumentedResource';
 import { RevolverActionWithTags } from '../actions/actions';
 import { chunkArray } from '../lib/common';
@@ -11,7 +12,7 @@ export interface TagInterface {
 export interface Tagger {
   setTag(
     awsClient: any,
-    logger: Logger<any>,
+    logger: Logger<RevolverLogObject>,
     resources: ToolingInterface[],
     action: RevolverActionWithTags,
   ): Promise<any>;
@@ -20,7 +21,7 @@ export interface Tagger {
 
   unsetTag(
     awsClient: any,
-    logger: Logger<any>,
+    logger: Logger<RevolverLogObject>,
     resources: ToolingInterface[],
     action: RevolverActionWithTags,
   ): Promise<any>;
@@ -29,7 +30,12 @@ export interface Tagger {
 }
 
 class RDSTagger implements Tagger {
-  setTag(rds: any, logger: Logger<any>, resources: ToolingInterface[], action: RevolverActionWithTags): Promise<any> {
+  setTag(
+    rds: any,
+    logger: Logger<RevolverLogObject>,
+    resources: ToolingInterface[],
+    action: RevolverActionWithTags,
+  ): Promise<any> {
     return Promise.all(
       resources.map(async function (xr) {
         const safeValues = action.tags.map((xt) => ({
@@ -61,7 +67,12 @@ class RDSTagger implements Tagger {
     return undefined;
   }
 
-  unsetTag(rds: any, logger: Logger<any>, resources: ToolingInterface[], action: RevolverActionWithTags): Promise<any> {
+  unsetTag(
+    rds: any,
+    logger: Logger<RevolverLogObject>,
+    resources: ToolingInterface[],
+    action: RevolverActionWithTags,
+  ): Promise<any> {
     return Promise.all(
       resources.map(async function (xr) {
         logger.info('RDS instance %s will be unset tags %j', xr.resourceId, action.tags);
@@ -91,7 +102,12 @@ class RDSTagger implements Tagger {
 }
 
 class EC2Tagger implements Tagger {
-  setTag(ec2: any, logger: Logger<any>, resources: ToolingInterface[], action: RevolverActionWithTags): Promise<any> {
+  setTag(
+    ec2: any,
+    logger: Logger<RevolverLogObject>,
+    resources: ToolingInterface[],
+    action: RevolverActionWithTags,
+  ): Promise<any> {
     logger.info(
       'EC2 instances %j will be set tags %j',
       resources.map((xr) => xr.resourceId),
@@ -121,7 +137,12 @@ class EC2Tagger implements Tagger {
     return undefined;
   }
 
-  unsetTag(ec2: any, logger: Logger<any>, resources: ToolingInterface[], action: RevolverActionWithTags): Promise<any> {
+  unsetTag(
+    ec2: any,
+    logger: Logger<RevolverLogObject>,
+    resources: ToolingInterface[],
+    action: RevolverActionWithTags,
+  ): Promise<any> {
     logger.info(
       'EC2 instances %j will be unset tags %s',
       resources.map((xr) => xr.resourceId),

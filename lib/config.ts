@@ -1,4 +1,4 @@
-import logger from './logger';
+import { logger } from './logger';
 import { promises as fs } from 'fs';
 import path = require('node:path');
 import * as yaml from 'js-yaml';

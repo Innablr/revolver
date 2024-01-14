@@ -2,7 +2,7 @@
 import { EventBridgeEvent, ScheduledEvent, ScheduledHandler } from 'aws-lambda';
 import environ from './lib/environ';
 import { AccountRevolver } from './lib/accountRevolver';
-import logger from './lib/logger';
+import { logger } from './lib/logger';
 import { RevolverConfig } from './lib/config';
 import dateTime from './lib/dateTime';
 import assume from './lib/assume';

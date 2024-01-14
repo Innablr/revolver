@@ -1,10 +1,10 @@
-import logger from '../lib/logger';
+import { logger } from '../lib/logger';
 import { Moment } from 'moment-timezone';
 import { RevolverAction } from '../actions/actions';
 
 export abstract class ToolingInterface {
-  private resource: any;
-  private actions: RevolverAction[];
+  public resource: any;
+  public actions: RevolverAction[];
 
   constructor(awsResource: any) {
     this.resource = awsResource;

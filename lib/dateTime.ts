@@ -1,8 +1,8 @@
-import { utc } from 'moment-timezone';
-import logger from './logger';
+import { Moment, utc } from 'moment-timezone';
+import { logger } from './logger';
 
 class DateTime {
-  private currentTime: moment.Moment;
+  private currentTime: Moment;
 
   freezeTime(t: string) {
     this.currentTime = utc(t);

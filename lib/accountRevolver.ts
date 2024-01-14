@@ -1,4 +1,4 @@
-import logger from './logger';
+import { logger } from './logger';
 import * as path from 'path';
 
 export class AccountRevolver {
@@ -25,7 +25,10 @@ export class AccountRevolver {
 
   constructor(accountConfig: any) {
     this.config = accountConfig;
-    this.logger = logger.getSubLogger({ name: this.config.settings.name });
+    this.logger = logger.getSubLogger(
+      { name: 'accountRevolver' },
+      { accountId: this.config.settings.Id, accountName: this.config.settings.name },
+    );
   }
 
   async initialise(): Promise<void> {

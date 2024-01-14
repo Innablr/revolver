@@ -1,5 +1,5 @@
 import { Logger } from 'tslog';
-import logger from '../lib/logger';
+import { logger } from '../lib/logger';
 
 export abstract class RevolverPlugin {
   protected accountConfig: any;
@@ -13,7 +13,10 @@ export abstract class RevolverPlugin {
     this.accountId = accountConfig.Id;
     this.pluginConfig = pluginConfig;
     this.pluginConfig.name = pluginName;
-    this.logger = logger.getSubLogger({ name: this.accountConfig.name });
+    this.logger = logger.getSubLogger(
+      { name: this.accountConfig.name },
+      { accountId: this.accountConfig.Id, accountName: this.accountConfig.name, pluginName },
+    );
     this.logger.debug(`Initialising plugin ${this.name} for account ${this.accountConfig.name}`);
   }
 

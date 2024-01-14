@@ -11,9 +11,15 @@ const logLevels: { [key: string]: number } = {
   fatal: 6,
 };
 
-const logger = new Logger({
+export interface RevolverLogObject {
+  accountId?: string;
+  accountName?: string;
+  pluginName?: string;
+  driverName?: string;
+}
+
+export const logger = new Logger<RevolverLogObject>({
   name: 'revolver',
   minLevel: logLevels[environ.logLevel],
+  hideLogPositionForProduction: logLevels[environ.logLevel] > 2,
 });
-
-export default logger;

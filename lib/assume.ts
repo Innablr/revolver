@@ -1,4 +1,4 @@
-import logger from './logger';
+import { logger } from './logger';
 import { STS, Credentials } from 'aws-sdk';
 import dateTime from './dateTime';
 import { utc } from 'moment-timezone';
