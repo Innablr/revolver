@@ -1,5 +1,6 @@
 import { RevolverPlugin } from './pluginInterface';
 import dateTime from '../lib/dateTime';
+import { Duration } from 'luxon';
 import { NoopAction, SetTagAction, UnsetTagAction, StopAction } from '../actions/actions';
 
 export default class ValidateTagsPlugin extends RevolverPlugin {
@@ -27,7 +28,7 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
           resource.addAction(new SetTagAction(this, `Warning${tag}`, message));
           break;
         case 'stop':
-          if (utcTimeNow.diff(resource.launchTimeUtc, 'minutes') > 30) {
+          if (utcTimeNow.diff(resource.launchTimeUtc, 'minutes') > Duration.fromObject({ minutes: 30 })) {
             resource.addAction(new StopAction(this));
           } else {
             resource.addAction(

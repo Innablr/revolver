@@ -20,13 +20,16 @@
     "aws-sdk": "^2.1472.0",
     "deepmerge-ts": "^5.1.0",
     "js-yaml": "^4.1.0",
-    "moment": "^2.29.4",
-    "moment-timezone": "^0.5.43",
+    "luxon": "^3.4.4",
+    "proxy-agent": "^6.3.1",
     "tslog": "^4.9.2"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.126",
+    "@types/chai": "^4.3.11",
+    "@types/jest": "^29.5.11",
     "@types/js-yaml": "^4.0.9",
+    "@types/luxon": "^3.4.1",
     "@types/node": "^20.9.0",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "chai": "^4.3.10",

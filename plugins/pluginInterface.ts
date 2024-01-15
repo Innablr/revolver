@@ -24,7 +24,7 @@ export abstract class RevolverPlugin {
     return this.pluginConfig.name;
   }
 
-  initialise() {
+  async initialise(): Promise<RevolverPlugin> {
     this.logger.info(`Plugin ${this.name} is initialising...`);
     return Promise.resolve(this);
   }

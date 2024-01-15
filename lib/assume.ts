@@ -1,10 +1,10 @@
 import { logger } from './logger';
 import { STS, Credentials } from 'aws-sdk';
 import dateTime from './dateTime';
-import { utc } from 'moment-timezone';
+import { DateTime } from 'luxon';
 
 export interface Creds {
-  expiration: moment.Moment;
+  expiration: DateTime;
   creds: Credentials;
 }
 
@@ -30,7 +30,7 @@ class RemoteCredentials {
     logger.debug('Requested connection via [%s]', remoteRole);
 
     if (remoteRole in this.creds) {
-      if (this.creds[remoteRole].expiration > utc()) {
+      if (this.creds[remoteRole].expiration > DateTime.now().setZone('UTC')) {
         logger.debug(
           'Role [%s] is cached, returning access key [%s], expire at [%s]',
           remoteRole,
@@ -50,7 +50,7 @@ class RemoteCredentials {
     const r = await sts
       .assumeRole({
         RoleArn: remoteRole,
-        RoleSessionName: `Revolver_${dateTime.getTime().format('YYYYMMDDHHmmss')}`,
+        RoleSessionName: `Revolver_${dateTime.getTime().toFormat('yyyyLLddHHmmss')}`,
       })
       .promise();
 
@@ -58,7 +58,7 @@ class RemoteCredentials {
       throw new Error(`No credentials returned from STS for role: ${remoteRole}`);
     }
 
-    const expireAt = utc(r.Credentials.Expiration).subtract(5, 'seconds');
+    const expireAt = DateTime.fromJSDate(r.Credentials.Expiration).setZone('UTC').minus({ seconds: 5 });
     const tokenCreds = new Credentials({
       accessKeyId: r.Credentials.AccessKeyId,
       secretAccessKey: r.Credentials.SecretAccessKey,

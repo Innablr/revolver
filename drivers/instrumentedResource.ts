@@ -1,5 +1,5 @@
 import { logger } from '../lib/logger';
-import { Moment } from 'moment-timezone';
+import { DateTime } from 'luxon';
 import { RevolverAction } from '../actions/actions';
 
 export abstract class ToolingInterface {
@@ -47,7 +47,7 @@ export abstract class ToolingInterface {
 
   abstract get resourceArn(): string;
 
-  abstract get launchTimeUtc(): Moment;
+  abstract get launchTimeUtc(): DateTime;
 
   abstract get resourceState(): string;
 

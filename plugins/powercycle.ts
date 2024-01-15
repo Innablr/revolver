@@ -1,7 +1,7 @@
 import { RevolverPlugin } from './pluginInterface';
 import dateTime from '../lib/dateTime';
 import { NoopAction, SetTagAction, StartAction, StopAction } from '../actions/actions';
-const getParser = require('./parsers/all');
+import getParser from './parsers';
 
 export default class PowerCyclePlugin extends RevolverPlugin {
   private parser: any;
@@ -22,11 +22,15 @@ export default class PowerCyclePlugin extends RevolverPlugin {
 
   constructor(accountConfig: any, pluginName: string, pluginConfig: any) {
     super(accountConfig, pluginName, pluginConfig);
-    this.parser = getParser(this.pluginConfig.tagging || 'strict');
     this.scheduleTagName = this.pluginConfig.availability_tag || 'Schedule';
     this.timezoneTagName = this.accountConfig.timezone_tag || 'Timezone';
     this.warningTagName = `Warning${this.scheduleTagName}`;
     this.reasonTagName = `Reason${this.scheduleTagName}`;
+  }
+
+  async initialise(): Promise<PowerCyclePlugin> {
+    this.parser = await getParser(this.pluginConfig.tagging || 'strict');
+    return Promise.resolve(this);
   }
 
   generateActions(resource: any): Promise<any> {
