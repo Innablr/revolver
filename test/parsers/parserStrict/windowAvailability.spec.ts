@@ -59,14 +59,14 @@ describe('Strict parser handles availability windows', async function () {
   const strictParser = await getParser('strict');
   describe('Strict parser handles availability windows normal Start=6:30;Stop=17:30', function () {
     const tag = 'Start=06:30;Stop=17:30';
-    ['monday629', 'monday630'].forEach(function (c) {
+    ['monday629'].forEach(function (c) {
       it(`stop at ${timePoints[c]}`, function () {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('STOP');
         expect(reason).to.equal(`It's ${timePoints[c]}, availability is from 6:30 till 17:30 all week`);
       });
     });
-    ['monday631', 'monday1330', 'monday1530', 'monday1729'].forEach(function (c) {
+    ['monday630', 'monday631', 'monday1330', 'monday1530', 'monday1729'].forEach(function (c) {
       it(`start at ${timePoints[c]}`, function () {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('START');
