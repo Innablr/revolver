@@ -131,8 +131,8 @@ Revolver configuration is done in YAML. First line in the config file must be `-
             - name: restoreRdsSg
             - name: validateTags
               tag: CostCentre
-      exclude_list: "610012345678"
-        - account_id:
+      exclude_list:
+        - account_id: "610012345678"
           settings:
             name: helix-dev
             timezone: Europe/Dublin
