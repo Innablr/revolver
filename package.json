@@ -7,7 +7,7 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "test": "mocha",
+    "test": "mocha --require ts-node/register --require source-map-support/register --recursive --exit test",
     "build": "tsc",
     "tsc-watch": "tsc --watch",
     "bundle": "zip -9rq revolver.zip node_modules drivers lib plugins revolver.js",
