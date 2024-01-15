@@ -102,7 +102,7 @@ Revolver configuration is done in YAML. First line in the config file must be `-
     Example organization configuration:
     ```
     organizations:
-      - account_id: "439001261645"
+      - account_id: "430012345678"
         settings:
           name: Innablr
           revolver_role_name: ssPowerCycle
@@ -120,7 +120,7 @@ Revolver configuration is done in YAML. First line in the config file must be `-
     ```
     accounts:
       include_list:
-        - account_id: "050000000071"
+        - account_id: "050012345678"
           settings:
             name: radix-dev
             timezone: Australia/Melbourne
@@ -131,7 +131,7 @@ Revolver configuration is done in YAML. First line in the config file must be `-
             - name: restoreRdsSg
             - name: validateTags
               tag: CostCentre
-      exclude_list:
+      exclude_list: "610012345678"
         - account_id:
           settings:
             name: helix-dev
