@@ -16,7 +16,7 @@ const timeVariety: { [key: string]: DateTime } = {
 
 describe('Strict parser handles literal availability', async function () {
   const strictParser = await getParser('strict');
-  describe('24x7', function () {
+  describe('Strict parser handles 24x7', function () {
     Object.keys(timeVariety).forEach(function (k) {
       it(`start at ${timeVariety[k]}`, function () {
         const [action, reason] = strictParser('24x7', timeVariety[k]);
@@ -25,7 +25,7 @@ describe('Strict parser handles literal availability', async function () {
       });
     });
   });
-  describe('0x7', function () {
+  describe('Strict parser handles 0x7', function () {
     Object.keys(timeVariety).forEach(function (k) {
       it(`stop at ${timeVariety[k]}`, function () {
         const [action, reason] = strictParser('0x7', timeVariety[k]);
@@ -34,7 +34,7 @@ describe('Strict parser handles literal availability', async function () {
       });
     });
   });
-  describe('24x5', function () {
+  describe('Strict parser handles 24x5', function () {
     Object.keys(timeVariety)
       .filter((k) => /mon|tue|wed|thu|fri/.test(k))
       .forEach(function (k) {

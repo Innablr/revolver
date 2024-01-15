@@ -1,11 +1,11 @@
 import { DateTime, Interval } from 'luxon';
 
 class ParsedComponent {
-  private timeHourLiteral: string;
-  private timeMinuteLiteral: string;
-  private dayFrom: number;
-  private dayTo: number;
-  private parsed: boolean;
+  private timeHourLiteral: string | null = null;
+  private timeMinuteLiteral: string | null;
+  private dayFrom: number | null = null;
+  private dayTo: number | null = null;
+  private parsed: boolean = false;
   private hasDays: boolean;
   private re: RegExp;
 
@@ -14,10 +14,16 @@ class ParsedComponent {
   }
 
   get timeHour(): number {
+    if (this.timeHourLiteral === null) {
+      return 0;
+    }
     return parseInt(this.timeHourLiteral);
   }
 
   get timeMinute(): number {
+    if (this.timeMinuteLiteral === null) {
+      return 0;
+    }
     return parseInt(this.timeMinuteLiteral);
   }
 
@@ -33,7 +39,7 @@ class ParsedComponent {
   }
 
   get isSet(): boolean {
-    return this.isSet;
+    return this.parsed;
   }
 
   parse(tag: string) {
@@ -63,10 +69,10 @@ class ParsedComponent {
     if (this.days === null) {
       return true;
     }
-    if (this.dayFrom > this.dayTo) {
-      return d <= this.dayTo || this.dayFrom <= d;
+    if (this.dayFrom! > this.dayTo!) {
+      return d <= this.dayTo! || this.dayFrom! <= d;
     }
-    return this.dayFrom <= d && d <= this.dayTo;
+    return this.dayFrom! <= d && d <= this.dayTo!;
   }
 
   timePast(t: DateTime) {
@@ -131,6 +137,9 @@ class ParsedAvailability {
   }
 
   timeIn(t: DateTime) {
+    if (!this.isWindow) {
+      return null;
+    }
     const startTime = t.set({ hour: this.start.timeHour, minute: this.start.timeMinute });
     const stopTime = t.set({ hour: this.stop.timeHour, minute: this.stop.timeMinute });
     if (startTime > stopTime) {
@@ -141,21 +150,23 @@ class ParsedAvailability {
 
   dayIn(t: DateTime) {
     const d = t.weekday;
-    const startTime = t.set({ hour: this.start.timeHour, minute: this.start.timeMinute });
-    const stopTime = t.set({ hour: this.stop.timeHour, minute: this.stop.timeMinute });
-    const dayIn = this.start.days === null ? this.stop.dayIn.bind(this.stop) : this.start.dayIn.bind(this.start);
-    if (this.isWindow && startTime > stopTime) {
-      if (dayIn(d)) {
-        return true;
+    const sideDayIn = this.start.days === null ? this.stop.dayIn.bind(this.stop) : this.start.dayIn.bind(this.start);
+    if (this.isWindow) {
+      const startTime = t.set({ hour: this.start.timeHour, minute: this.start.timeMinute });
+      const stopTime = t.set({ hour: this.stop.timeHour, minute: this.stop.timeMinute });
+      if (startTime > stopTime) {
+        if (sideDayIn(d)) {
+          return true;
+        }
+        if (t < stopTime && sideDayIn(d === 1 ? 7 : d - 1)) {
+          return true;
+        } else if (t >= startTime && sideDayIn(d === 7 ? 1 : d + 1)) {
+          return true;
+        }
+        return false;
       }
-      if (t < stopTime && dayIn(d === 1 ? 7 : d - 1)) {
-        return true;
-      } else if (t >= startTime && dayIn(d === 7 ? 1 : d + 1)) {
-        return true;
-      }
-      return false;
     }
-    return dayIn(d);
+    return sideDayIn(d);
   }
 }
 

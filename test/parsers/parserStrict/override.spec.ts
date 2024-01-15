@@ -6,7 +6,7 @@ const timeNow = DateTime.now();
 
 describe('Strict parser detects override', async function () {
   const strictParser = await getParser('strict');
-  describe('enabled', function () {
+  describe('Strict parser detects override enabled', function () {
     const cases = [
       'Start=08:30;Stop=17:30;Override=on',
       'Start=08:30;Stop=17:30;Override=yes',
@@ -24,7 +24,7 @@ describe('Strict parser detects override', async function () {
       });
     });
   });
-  describe('disabled', function () {
+  describe('Strict parser detects override disabled', function () {
     const cases = [
       'Start=08:30;Stop=17:30;Override=off',
       'Start=08:30;Stop=17:30',

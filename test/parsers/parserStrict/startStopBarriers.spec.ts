@@ -42,31 +42,31 @@ const stopBarriersWithDays: { [key: string]: DateTime } = {
 
 describe('Strict parser handles start/stop barriers', async function () {
   const strictParser = await getParser('strict');
-  describe('start', function () {
+  describe('Strict parser handles start barrier', function () {
     const tag = 'Start=06:30;Override=off';
     ['monday629', 'monday630'].forEach(function (c) {
       it(`not start at ${startBarriers[c]}`, function () {
         const [action, reason] = strictParser(tag, startBarriers[c]);
         expect(action).to.equal('NOOP');
-        expect(reason).to.equal(`It's now ${startBarriers[c]}, resource starts at 06:30 all week`);
+        expect(reason).to.equal(`It's now ${startBarriers[c]}, resource starts at 6:30 all week`);
       });
     });
     ['monday631', 'monday644', 'monday645'].forEach(function (c) {
       it(`start at ${startBarriers[c]}`, function () {
         const [action, reason] = strictParser(tag, startBarriers[c]);
         expect(action).to.equal('START');
-        expect(reason).to.equal(`It's now ${startBarriers[c]}, resource starts at 06:30 all week`);
+        expect(reason).to.equal(`It's now ${startBarriers[c]}, resource starts at 6:30 all week`);
       });
     });
     ['monday646'].forEach(function (c) {
       it(`not start at ${startBarriers[c]}`, function () {
         const [action, reason] = strictParser(tag, startBarriers[c]);
         expect(action).to.equal('NOOP');
-        expect(reason).to.equal(`It's now ${startBarriers[c]}, resource starts at 06:30 all week`);
+        expect(reason).to.equal(`It's now ${startBarriers[c]}, resource starts at 6:30 all week`);
       });
     });
   });
-  describe('stop', function () {
+  describe('Strict parser handles stop barrier', function () {
     const tag = 'Stop=17:30;Override=off';
     ['monday1729', 'monday1730'].forEach(function (c) {
       it(`not stop at ${stopBarriers[c]}`, function () {
@@ -90,48 +90,48 @@ describe('Strict parser handles start/stop barriers', async function () {
       });
     });
   });
-  describe('start with days', function () {
+  describe('Strict parser handles start barrier with days', function () {
     const tag = 'Start=06:30|mon-fri;Override=off';
     ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(function (c) {
       it(`start at ${startBarriersWithDays[c]}`, function () {
         const [action, reason] = strictParser(tag, startBarriersWithDays[c]);
         expect(action).to.equal('START');
-        expect(reason).to.equal(`It's now ${startBarriersWithDays[c]}, resource starts at 06:30 mon-fri`);
+        expect(reason).to.equal(`It's now ${startBarriersWithDays[c]}, resource starts at 6:30 mon-fri`);
       });
     });
     ['saturday', 'sunday'].forEach(function (c) {
       it(`not start at ${startBarriersWithDays[c]}`, function () {
         const [action, reason] = strictParser(tag, startBarriersWithDays[c]);
         expect(action).to.equal('NOOP');
-        expect(reason).to.equal(`It's now ${startBarriersWithDays[c]}, resource starts at 06:30 mon-fri`);
+        expect(reason).to.equal(`It's now ${startBarriersWithDays[c]}, resource starts at 6:30 mon-fri`);
       });
     });
   });
-  describe('start with days reversed', function () {
+  describe('Strict parser handles start barrier with days reversed', function () {
     const tag = 'Start=06:30|fri-tue;Override=off';
     ['monday', 'tuesday'].forEach(function (c) {
       it(`start at ${startBarriersWithDays[c]}`, function () {
         const [action, reason] = strictParser(tag, startBarriersWithDays[c]);
         expect(action).to.equal('START');
-        expect(reason).to.equal(`It's now ${startBarriersWithDays[c]}, resource starts at 06:30 fri-tue`);
+        expect(reason).to.equal(`It's now ${startBarriersWithDays[c]}, resource starts at 6:30 fri-tue`);
       });
     });
     ['wednesday', 'thursday'].forEach(function (c) {
       it(`not start at ${startBarriersWithDays[c]}`, function () {
         const [action, reason] = strictParser(tag, startBarriersWithDays[c]);
         expect(action).to.equal('NOOP');
-        expect(reason).to.equal(`It's now ${startBarriersWithDays[c]}, resource starts at 06:30 fri-tue`);
+        expect(reason).to.equal(`It's now ${startBarriersWithDays[c]}, resource starts at 6:30 fri-tue`);
       });
     });
     ['friday', 'saturday', 'sunday'].forEach(function (c) {
       it(`start at ${startBarriersWithDays[c]}`, function () {
         const [action, reason] = strictParser(tag, startBarriersWithDays[c]);
         expect(action).to.equal('START');
-        expect(reason).to.equal(`It's now ${startBarriersWithDays[c]}, resource starts at 06:30 fri-tue`);
+        expect(reason).to.equal(`It's now ${startBarriersWithDays[c]}, resource starts at 6:30 fri-tue`);
       });
     });
   });
-  describe('stop with days', function () {
+  describe('Strict parser handles stop barrier with days', function () {
     const tag = 'Stop=17:30|mon-fri;Override=off';
     ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(function (c) {
       it(`stop at ${stopBarriersWithDays[c]}`, function () {
@@ -148,7 +148,7 @@ describe('Strict parser handles start/stop barriers', async function () {
       });
     });
   });
-  describe('stop with days reversed', function () {
+  describe('Strict parser handles stop barrier with days reversed', function () {
     const tag = 'Stop=17:30|thu-mon;Override=off';
     ['monday'].forEach(function (c) {
       it(`stop at ${stopBarriersWithDays[c]}`, function () {

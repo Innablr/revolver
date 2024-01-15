@@ -6,7 +6,7 @@ const timeNow = DateTime.now();
 
 describe('Strict parser handles different corner cases', async function () {
   const strictParser = await getParser('strict');
-  describe('tag letters case', function () {
+  describe('Strict parser handles tag letters case', function () {
     const cases = [
       'Start=08:30;Stop=17:30;Override=No',
       'start=08:30;stop=17:30;override=no',
