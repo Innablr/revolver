@@ -26,7 +26,11 @@ function addAccountLogger(accountName: string, level: string) {
 
 function configureAWS(maxRetries: number, baseBackoff: number) {
   const logger = winston.loggers.get('global');
+  const { ProxyAgent } = require('proxy-agent')
   AWS.config.update({
+    httpOptions: {
+      agent: new ProxyAgent(),
+    },
     retryDelayOptions: {
       base: baseBackoff,
     },
