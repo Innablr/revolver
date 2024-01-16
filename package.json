@@ -7,6 +7,7 @@
     "node": ">=18.0.0"
   },
   "scripts": {
+    "lint": "eslint . --ext .ts",
     "test": "mocha --require ts-node/register --require source-map-support/register --recursive --exit test",
     "build": "tsc --build ./tsconfig.json",
     "watch": "tsc --build ./tsconfig.json --watch",

@@ -44,14 +44,32 @@ defaults:
       configs:
         -
           tag: Name
-          tag_missing:
+          tagMissing:
+            - copyFromParent
+          onlyResourceTypes:
+            - ebs
+            - snapshot
+          tagNotMatch: []
+        -
+          tag: Name
+          tagMissing:
             - warn
-          tag_not_match: []
+          onlyResourceTypes:
+            - ec2
+            - rdsInstance
+            - rdsMultiAz
+            - rdsCluster
+          tagNotMatch: []
         -
           tag: Schedule
-          tag_missing:
-            - warn
-          tag_not_match: []
+          tagMissing:
+            - setDefault: 24x7
+          onlyResourceTypes:
+            - ec2
+            - rdsInstance
+            - rdsMultiAz
+            - rdsCluster
+          tagNotMatch: []
     restoreRdsSg:
       active: true
       configs: []
