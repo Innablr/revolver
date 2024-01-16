@@ -47,13 +47,20 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
   }
 
   private isResourceTypeAllowed(resource: ToolingInterface) {
+    let result = true;
     if (typeof this.pluginConfig.onlyResourceTypes === 'string') {
-      return resource.resourceType === this.pluginConfig.onlyResourceTypes;
+      result = resource.resourceType === this.pluginConfig.onlyResourceTypes;
     }
     if (Array.isArray(this.pluginConfig.onlyResourceTypes)) {
-      return this.pluginConfig.onlyResourceTypes.includes(resource.resourceType);
+      result = this.pluginConfig.onlyResourceTypes.includes(resource.resourceType);
     }
-    return true;
+    if (typeof this.pluginConfig.excludeResourceTypes === 'string') {
+      result = resource.resourceType !== this.pluginConfig.onlyResourceTypes;
+    }
+    if (Array.isArray(this.pluginConfig.excludeResourceTypes)) {
+      result = !this.pluginConfig.onlyResourceTypes.includes(resource.resourceType);
+    }
+    return result;
   }
 
   private copyTagsFromParent(resource: ToolingInterface, tag: string, actions: any[]): any[] {
@@ -111,7 +118,7 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
           actionsTagMissing = this.setTagDefault(resource, xa, actionsTagMissing);
 
           this.setActions(resource, actionsTagMissing, xa, `Tag ${xa} is missing`);
-          return xa;
+          return;
         }
 
         if (this.pluginConfig.match) {
@@ -131,21 +138,18 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
               `Tag ${xa} doesn't match regex /${this.pluginConfig.match}/`,
             );
           }
-          return xa;
+          return;
         }
+        this.logger.debug(
+          '%s: %s %s tag [%s] = [%s], validation successful, removing warning tag',
+          this.name,
+          resource.resourceType,
+          resource.resourceId,
+          xa,
+          tag,
+        );
+        resource.addAction(new UnsetTagAction(this, `Warning${xa}`));
       }
-
-      this.logger.debug(
-        '%s: %s %s tag [%s] = [%s], validation successful, removing warning tag',
-        this.name,
-        resource.resourceType,
-        resource.resourceId,
-        xa,
-        tag,
-      );
-      resource.addAction(new UnsetTagAction(this, `Warning${xa}`));
-
-      return xa;
     });
 
     return Promise.resolve(resource);

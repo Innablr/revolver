@@ -9,16 +9,7 @@ export default class PowerCyclePlugin extends RevolverPlugin {
   private timezoneTagName: string;
   private warningTagName: string;
   private reasonTagName: string;
-  protected supportedResources = [
-    'ec2',
-    'rdsCluster',
-    'rdsInstance',
-    'rdsMultiAz',
-    'rdsMultiAzSnapshot',
-    'rdsClusterSnapshot',
-    'redshiftCluster',
-    'redshiftClusterSnapshot',
-  ];
+  protected supportedResources = ['ec2', 'rdsCluster', 'rdsInstance', 'redshiftCluster', 'redshiftClusterSnapshot'];
 
   constructor(accountConfig: any, pluginName: string, pluginConfig: any) {
     super(accountConfig, pluginName, pluginConfig);
