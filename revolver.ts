@@ -9,7 +9,11 @@ import assume from './lib/assume';
 import { config as awsConfig } from 'aws-sdk';
 
 function configureAWS(maxRetries: number, baseBackoff: number) {
+  const { ProxyAgent } = require('proxy-agent');
   awsConfig.update({
+    httpOptions: {
+      agent: new ProxyAgent(),
+    },
     retryDelayOptions: {
       base: baseBackoff,
     },
@@ -28,9 +32,10 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   // Set retry parameters
   configureAWS(environ.maxRetries, environ.baseBackoff);
 
-  const config = await (environ.configPath
-    ? configMethods.readConfigFromFile(environ.configPath)
-    : configMethods.readConfigFromS3(environ.configBucket!, environ.configKey!)
+  const config = await (
+    environ.configPath
+      ? configMethods.readConfigFromFile(environ.configPath)
+      : configMethods.readConfigFromS3(environ.configBucket!, environ.configKey!)
   ).catch(function (e: Error) {
     throw new Error(`Unable to parse config object: ${e}. Exiting.`);
   });

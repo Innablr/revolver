@@ -2,6 +2,7 @@ import { logger } from './logger';
 import { STS, Credentials } from 'aws-sdk';
 import dateTime from './dateTime';
 import { DateTime } from 'luxon';
+import { config as awsConfig } from 'aws-sdk';
 
 export interface Creds {
   expiration: DateTime;
@@ -28,6 +29,27 @@ class RemoteCredentials {
     const sts = new STS();
 
     logger.debug('Requested connection via [%s]', remoteRole);
+
+    if (remoteRole === undefined || remoteRole.endsWith("/none")) {
+      return new Promise((resolve, reject) => {
+        logger.debug('Skipping assume role since role name is "none". Using locally configured credentials');
+        awsConfig.getCredentials((err, creds) => {
+          if (err !== undefined) {
+            reject(err)
+          }
+          else {
+            resolve(creds)
+          }
+        })
+      })
+      .then((c) => {
+        return c
+      })
+      .catch((err) => {
+        logger.error('Failed to obtain local AWS credentials', err)
+        return false
+      })
+    }
 
     if (remoteRole in this.creds) {
       if (this.creds[remoteRole].expiration > DateTime.now().setZone('UTC')) {
