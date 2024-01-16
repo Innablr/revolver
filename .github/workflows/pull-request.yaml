@@ -20,4 +20,5 @@ jobs:
           registry-url: https://npm.pkg.github.com
       - uses: actions/checkout@v4
       - run: npm ci
-      - run: npm run test
+      - run: npm run build
+      - run: npm test
