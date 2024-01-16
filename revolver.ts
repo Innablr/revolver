@@ -26,7 +26,7 @@ function addAccountLogger(accountName: string, level: string) {
 
 function configureAWS(maxRetries: number, baseBackoff: number) {
   const logger = winston.loggers.get('global');
-  const { ProxyAgent } = require('proxy-agent')
+  const { ProxyAgent } = require('proxy-agent');
   AWS.config.update({
     httpOptions: {
       agent: new ProxyAgent(),
@@ -51,9 +51,10 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   // Set retry parameters
   configureAWS(environ.maxRetries, environ.baseBackoff);
 
-  const config = await (environ.configPath
-    ? configMethods.readConfigFromFile(environ.configPath)
-    : configMethods.readConfigFromS3(environ.configBucket, environ.configKey)
+  const config = await (
+    environ.configPath
+      ? configMethods.readConfigFromFile(environ.configPath)
+      : configMethods.readConfigFromS3(environ.configBucket, environ.configKey)
   ).catch(function (e: Error) {
     throw new Error(`Unable to parse config object: ${e}. Exiting.`);
   });
