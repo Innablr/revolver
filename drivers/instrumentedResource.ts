@@ -51,5 +51,5 @@ export abstract class ToolingInterface {
 
   abstract get resourceState(): string;
 
-  abstract tag(key: string): string;
+  abstract tag(key: string): string | undefined;
 }
