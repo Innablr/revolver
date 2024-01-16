@@ -2,6 +2,7 @@ import { RevolverPlugin } from './pluginInterface';
 import dateTime from '../lib/dateTime';
 import { Duration } from 'luxon';
 import { NoopAction, SetTagAction, UnsetTagAction, StopAction } from '../actions/actions';
+import { ToolingInterface } from '../drivers/instrumentedResource';
 
 export default class ValidateTagsPlugin extends RevolverPlugin {
   protected supportedResources = [
@@ -14,13 +15,13 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
     'redshiftCluster',
   ];
 
-  setActions(resource: any, actionsDef: string[], tag: string, message: string) {
+  private setActions(resource: any, actionsDef: string[], tag: string, message: string) {
     const logger = this.logger;
     const utcTimeNow = dateTime.getTime('utc');
 
     (actionsDef || []).forEach((xa: string) => {
       switch (xa) {
-        case 'copyFromParent':
+        case '_setTag':
           resource.addAction(new SetTagAction(this, tag, message));
           break;
         case 'warn':
@@ -45,84 +46,108 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
     });
   }
 
+  private isResourceTypeAllowed(resource: ToolingInterface) {
+    if (typeof this.pluginConfig.onlyResourceTypes === 'string') {
+      return resource.resourceType === this.pluginConfig.onlyResourceTypes;
+    }
+    if (Array.isArray(this.pluginConfig.onlyResourceTypes)) {
+      return this.pluginConfig.onlyResourceTypes.includes(resource.resourceType);
+    }
+    return true;
+  }
+
+  private copyTagsFromParent(resource: ToolingInterface, tag: string, actions: any[]): any[] {
+    if (!actions.includes('copyFromParent')) {
+      return actions;
+    }
+    if (resource.resourceType === 'ebs' || resource.resourceType === 'snapshot') {
+      // Try to get the tags from parent instance (ebs and snapshots)
+      this.logger.debug(`Trying to get tag ${tag} from parent instance`);
+      const instanceTag = resource.resource.instanceDetails?.Tags?.find((xi: any) => xi.Key === tag);
+      if (instanceTag) {
+        this.setActions(resource, ['_setTag'], tag, instanceTag.Value);
+        this.logger.debug(
+          `Tag '${instanceTag.Key}' found on parent instance ${resource.resource.instanceDetails.InstanceId} with value ` +
+            `'${instanceTag.Value}' and will attach to the ${resource.resourceType} ${resource.resourceId}`,
+        );
+      } else {
+        // Try to get the tags from parent volume (only snapshots)
+        this.logger.debug(`Trying to get tag ${tag} from parent volume`);
+        const volumeTag = resource.resource.volumeDetails?.Tags?.find((xi: any) => xi.Key === tag);
+        if (volumeTag) {
+          this.setActions(resource, ['_setTag'], tag, volumeTag.Value);
+          this.logger.debug(
+            `Tag '${instanceTag.Key}' found on parent volume ${resource.resource.volumeDetails.VolumeId} with value ` +
+              `'${instanceTag.Value}' and will attach to the ${resource.resourceType} ${resource.resourceId}`,
+          );
+        }
+      }
+    }
+    return actions.filter((xi: any) => xi !== 'copyFromParent');
+  }
+
+  private setTagDefault(resource: ToolingInterface, tag: string, actions: any[]): any[] {
+    const defaultValue = this.pluginConfig.tagMissing?.find((xi: any) => typeof xi.setDefault === 'string');
+    if (defaultValue) {
+      this.setActions(resource, ['_setTag'], tag, defaultValue.setDefault);
+    }
+    return actions.filter((xi: any) => !xi.setDefault);
+  }
+
   generateActions(resource: any): Promise<any> {
     const tagsSplit = Array.isArray(this.pluginConfig.tag) ? this.pluginConfig.tag : this.pluginConfig.tag.split(',');
     const tags = tagsSplit.filter((xi: string) => xi);
-    return Promise.all(
-      tags.map((xa: string) => {
-        this.logger.debug(`Plugin ${this.name} Processing ${resource.resourceType} ${resource.resourceId}...`);
-        const tag = resource.tag(xa);
 
+    tags.forEach((xa: string) => {
+      this.logger.debug(`Plugin ${this.name} Processing ${resource.resourceType} ${resource.resourceId}...`);
+      let actionsTagMissing = this.pluginConfig.tagMissing;
+      let actionsTagNotMatch = this.pluginConfig.tagNotMatch;
+      const tag = resource.tag(xa);
+
+      if (this.isResourceTypeAllowed(resource)) {
         if (tag === undefined) {
-          const resourceType = resource.resourceType;
-          if (this.pluginConfig.allow_set_from_parent && (resourceType === 'ebs' || resourceType === 'snapshot')) {
-            // Try to get the tags from parent instance (ebs and snapshots)
-            if (resource.resource.instanceDetails && resource.resource.instanceDetails.Tags) {
-              const instanceTag = resource.resource.instanceDetails.Tags.find((xi: any) => xi.Key === xa);
-              if (instanceTag) {
-                this.setActions(resource, ['copyFromParent'], xa, instanceTag.Value);
-                this.logger.debug(
-                  'Tag %s found on instance parent with value %s and will attach to the %s %s',
-                  instanceTag.Key,
-                  instanceTag.Value,
-                  resource,
-                  resourceType,
-                  resource.resourceId,
-                );
-                return xa;
-              }
-            }
-            // Try to get the tags from parent volume (only snapshots)
-            if (resource.resource.volumeDetails && resource.resource.volumeDetails.Tags) {
-              const volumeTag = resource.resource.volumeDetails.Tags.find((xi: any) => xi.Key === xa);
-              if (volumeTag) {
-                this.setActions(resource, ['copyFromParent'], xa, volumeTag.Value);
-                this.logger.debug(
-                  'Tag %s found on volume parent with value %s and will attach to the snapshot %s',
-                  volumeTag.Key,
-                  volumeTag.Value,
-                  resource.resourceId,
-                );
-                return xa;
-              }
-            }
-          }
-          // No tags retrieved from parents, add warning ones
-          this.logger.debug(
-            'Tag %s not found, attaching missing tag to %s %s',
-            xa,
-            resource.resourceType,
-            resource.resourceId,
-          );
-          this.setActions(resource, this.pluginConfig.tag_missing, xa, `Tag ${xa} is missing`);
+          this.logger.debug(`Tag ${xa} not found on ${resource.resourceType} ${resource.resourceId}`);
+          actionsTagMissing = this.copyTagsFromParent(resource, xa, actionsTagMissing);
+          actionsTagMissing = this.setTagDefault(resource, xa, actionsTagMissing);
+
+          this.setActions(resource, actionsTagMissing, xa, `Tag ${xa} is missing`);
           return xa;
         }
 
         if (this.pluginConfig.match) {
           const re = new RegExp(this.pluginConfig.match);
           if (!re.test(tag)) {
+            this.logger.debug(
+              `Tag ${xa}=${tag} does not match ${re} on ${resource.resourceType} ${resource.resourceId}`,
+            );
+
+            actionsTagNotMatch = this.copyTagsFromParent(resource, xa, actionsTagMissing);
+            actionsTagNotMatch = this.setTagDefault(resource, xa, actionsTagMissing);
+
             this.setActions(
               resource,
-              this.pluginConfig.tag_not_match,
+              actionsTagNotMatch,
               xa,
               `Tag ${xa} doesn't match regex /${this.pluginConfig.match}/`,
             );
           }
           return xa;
         }
+      }
 
-        this.logger.debug(
-          '%s: %s %s tag [%s] = [%s], validation successful, removing warning tag',
-          this.name,
-          resource.resourceType,
-          resource.resourceId,
-          xa,
-          tag,
-        );
-        resource.addAction(new UnsetTagAction(this, `Warning${xa}`));
+      this.logger.debug(
+        '%s: %s %s tag [%s] = [%s], validation successful, removing warning tag',
+        this.name,
+        resource.resourceType,
+        resource.resourceId,
+        xa,
+        tag,
+      );
+      resource.addAction(new UnsetTagAction(this, `Warning${xa}`));
 
-        return xa;
-      }),
-    ).then(() => Promise.resolve(resource));
+      return xa;
+    });
+
+    return Promise.resolve(resource);
   }
 }

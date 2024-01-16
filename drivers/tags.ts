@@ -2,7 +2,7 @@ import { Logger } from 'tslog';
 import { RevolverLogObject } from '../lib/logger';
 import { ToolingInterface } from './instrumentedResource';
 import { RevolverActionWithTags } from '../actions/actions';
-import { chunkArray } from '../lib/common';
+import { chunkArray, unique } from '../lib/common';
 
 export interface TagInterface {
   Key: string;
@@ -109,9 +109,8 @@ class EC2Tagger implements Tagger {
     action: RevolverActionWithTags,
   ): Promise<any> {
     logger.info(
-      'EC2 instances %j will be set tags %j',
-      resources.map((xr) => xr.resourceId),
-      action.tags,
+      `EC2 ${unique(resources.map((xr) => xr.resourceType)).join(', ')} ` +
+        `[${resources.map((xr) => xr.resourceId).join(', ')}] will be set tags ${JSON.stringify(action.tags)}`,
     );
 
     const resourceChunks = chunkArray(resources, 200);
@@ -144,9 +143,8 @@ class EC2Tagger implements Tagger {
     action: RevolverActionWithTags,
   ): Promise<any> {
     logger.info(
-      'EC2 instances %j will be unset tags %s',
-      resources.map((xr) => xr.resourceId),
-      action.tags,
+      `EC2 ${unique(resources.map((xr) => xr.resourceType)).join(', ')} ` +
+        `[${resources.map((xr) => xr.resourceId).join(', ')}] will be unset tags ${JSON.stringify(action.tags)}`,
     );
 
     const resourceChunks = chunkArray(resources, 200);

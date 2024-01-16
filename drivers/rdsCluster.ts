@@ -56,7 +56,7 @@ class InstrumentedRdsCluster extends ToolingInterface {
   }
 }
 
-export class RdsClusterDriver extends DriverInterface {
+class RdsClusterDriver extends DriverInterface {
   start() {
     this.logger.debug("An RDS cluster can't be started directly, ignoring");
     return Promise.resolve();
@@ -139,6 +139,7 @@ export class RdsClusterDriver extends DriverInterface {
     if (!resource.isAvailable) {
       return `Cluster ${resource.resourceId} or one of its instances is not in available state`;
     }
+    return undefined;
   }
 
   noop(resources: InstrumentedRdsCluster[], action: RevolverAction) {
@@ -193,3 +194,5 @@ export class RdsClusterDriver extends DriverInterface {
     return instrumentedClusters;
   }
 }
+
+export default RdsClusterDriver;

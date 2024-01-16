@@ -43,7 +43,7 @@ class InstrumentedRdsMultiAz extends ToolingInterface {
   }
 }
 
-export class RdsMultiAzDriver extends DriverInterface {
+class RdsMultiAzDriver extends DriverInterface {
   start() {
     this.logger.debug("A multi-az RDS instance can't be started directly, ignoring");
     return Promise.resolve();
@@ -197,3 +197,5 @@ export class RdsMultiAzDriver extends DriverInterface {
       );
   }
 }
+
+export default RdsMultiAzDriver;

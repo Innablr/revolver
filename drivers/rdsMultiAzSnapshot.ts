@@ -36,7 +36,7 @@ class InstrumentedRdsSnapshot extends ToolingInterface {
   }
 }
 
-export class RdsSnapshotDriver extends DriverInterface {
+class RdsSnapshotDriver extends DriverInterface {
   restoreRdsSg(resources: InstrumentedRdsSnapshot[]) {
     const logger = this.logger;
     return assume
@@ -218,3 +218,5 @@ export class RdsSnapshotDriver extends DriverInterface {
       );
   }
 }
+
+export default RdsSnapshotDriver;

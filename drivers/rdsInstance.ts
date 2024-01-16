@@ -42,7 +42,7 @@ class InstrumentedRdsInstance extends ToolingInterface {
   }
 }
 
-export class RdsInstanceDriver extends DriverInterface {
+class RdsInstanceDriver extends DriverInterface {
   start(resources: InstrumentedRdsInstance[]) {
     const logger = this.logger;
     return assume
@@ -212,3 +212,5 @@ export class RdsInstanceDriver extends DriverInterface {
       );
   }
 }
+
+export default RdsInstanceDriver;

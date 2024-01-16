@@ -35,4 +35,8 @@ function uniqueBy<T>(array: T[], criterion: (item: T) => any): T[] {
   return uniqueItems;
 }
 
-export { paginateAwsCall, chunkArray, uniqueBy };
+function unique<T>(array: T[]): T[] {
+  return uniqueBy(array, (x: T) => x);
+}
+
+export { paginateAwsCall, chunkArray, uniqueBy, unique };

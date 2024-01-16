@@ -59,7 +59,7 @@ class InstrumentedEc2 extends ToolingInterface {
   }
 }
 
-export class Ec2Driver extends DriverInterface {
+class Ec2Driver extends DriverInterface {
   maskstart(resource: InstrumentedEc2) {
     if (resource.resourceState === 'running') {
       return `EC2 instance ${resource.resourceId} is in status ${resource.resourceState}`;
@@ -241,3 +241,5 @@ export class Ec2Driver extends DriverInterface {
     );
   }
 }
+
+export default Ec2Driver;

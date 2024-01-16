@@ -8,10 +8,10 @@
   },
   "scripts": {
     "test": "mocha --require ts-node/register --require source-map-support/register --recursive --exit test",
-    "build": "tsc",
-    "tsc-watch": "tsc --watch",
+    "build": "tsc --build ./tsconfig.json",
+    "watch": "tsc --build ./tsconfig.json --watch",
     "bundle": "zip -9rq revolver.zip node_modules drivers lib plugins revolver.js",
-    "clean": "rimraf revolver.zip",
+    "clean": "tsc --build ./tsconfig.json --clean && rimraf revolver.zip",
     "start": "CONFIG_FILE=revolver-config.yaml node invoke.js"
   },
   "author": "Alex Bukharov",

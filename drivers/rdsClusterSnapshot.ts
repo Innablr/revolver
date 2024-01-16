@@ -35,7 +35,7 @@ class InstrumentedRdsClusterSnapshot extends ToolingInterface {
   }
 }
 
-export class RdsClusterSnapshotDriver extends DriverInterface {
+class RdsClusterSnapshotDriver extends DriverInterface {
   restoreRdsSg(resources: InstrumentedRdsClusterSnapshot[]) {
     const logger = this.logger;
     return assume
@@ -244,3 +244,5 @@ export class RdsClusterSnapshotDriver extends DriverInterface {
       );
   }
 }
+
+export default RdsClusterSnapshotDriver;

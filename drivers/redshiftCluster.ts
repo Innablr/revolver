@@ -61,7 +61,7 @@ class InstrumentedRedshiftCluster extends ToolingInterface {
   }
 }
 
-export class RedshiftClusterDriver extends DriverInterface {
+class RedshiftClusterDriver extends DriverInterface {
   start() {
     this.logger.debug("An redshift cluster can't be started directly, ignoring");
     return Promise.resolve();
@@ -245,3 +245,5 @@ export class RedshiftClusterDriver extends DriverInterface {
     );
   }
 }
+
+export default RedshiftClusterDriver;

@@ -55,7 +55,7 @@ export class AccountRevolver {
         .filter((xd: any) => this.supportedDrivers.indexOf(xd.name) > -1)
         .map(async (xd: any) => {
           const DriverModule = await import(path.join('..', 'drivers', xd.name));
-          return new DriverModule(this.config, xd);
+          return new DriverModule.default(this.config, xd);
         }),
     );
 

@@ -40,7 +40,7 @@ class InstrumentedRedshiftClusterSnapshot extends ToolingInterface {
   }
 }
 
-export class RedshiftClusterSnapshotDriver extends DriverInterface {
+class RedshiftClusterSnapshotDriver extends DriverInterface {
   startOneSnapshot(snapshot: InstrumentedRedshiftClusterSnapshot) {
     let redshift: Redshift;
     const logger = this.logger;
@@ -100,6 +100,7 @@ export class RedshiftClusterSnapshotDriver extends DriverInterface {
     if (resource.resource.Status !== 'available') {
       return `Redshift cluster snapshot ${resource.resourceId} is in state ${resource.resourceState}`;
     }
+    return undefined;
   }
 
   stop() {
@@ -239,3 +240,5 @@ export class RedshiftClusterSnapshotDriver extends DriverInterface {
     return redshiftClusterSnapshots;
   }
 }
+
+export default RedshiftClusterSnapshotDriver;

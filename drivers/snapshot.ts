@@ -34,7 +34,7 @@ class InstrumentedSnapshot extends ToolingInterface {
   }
 }
 
-export class SnapshotDriver extends DriverInterface {
+class SnapshotDriver extends DriverInterface {
   stop() {
     this.logger.debug("An EBS snapshot can't be stopped directly, ignoring action");
     return Promise.resolve();
@@ -83,7 +83,7 @@ export class SnapshotDriver extends DriverInterface {
     const ec2 = await new EC2({ credentials: creds, region: this.accountConfig.region });
 
     const snapshots = await paginateAwsCall(ec2.describeSnapshots.bind(ec2), 'Snapshots', {
-      OwnerIds: [this.accountConfig.Id],
+      OwnerIds: [this.Id],
     });
     logger.debug('Snapshots %d found', snapshots.length);
 
@@ -109,4 +109,4 @@ export class SnapshotDriver extends DriverInterface {
   }
 }
 
-module.exports = SnapshotDriver;
+export default SnapshotDriver;

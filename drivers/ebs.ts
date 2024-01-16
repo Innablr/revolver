@@ -43,7 +43,7 @@ class InstrumentedEBS extends ToolingInterface {
   }
 }
 
-export class EBSDriver extends DriverInterface {
+class EBSDriver extends DriverInterface {
   stop() {
     this.logger.debug("An EBS volume can't be stopped directly, ignoring action");
     return Promise.resolve();
@@ -70,7 +70,7 @@ export class EBSDriver extends DriverInterface {
   }
 
   masksetTag(resource: InstrumentedEBS, action: RevolverActionWithTags) {
-    return ec2Tagger.maskunsetTag(resource, action);
+    return ec2Tagger.masksetTag(resource, action);
   }
 
   async unsetTag(resources: InstrumentedEBS[], action: RevolverActionWithTags) {
@@ -123,3 +123,5 @@ export class EBSDriver extends DriverInterface {
     );
   }
 }
+
+export default EBSDriver;
