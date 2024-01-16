@@ -11,28 +11,28 @@ The most commonly used pattern is tagging your resources with some sort of sched
 Revolver does exactly that.
 
 Revolver:
- * is run in AWS Lambda, send log in Cloudwatch Logs
- * is controlled by a YAML config file in S3 and a handful of environment variables
- * supports IAM cross-account access, so you can use one Lambda function to control multiple accounts
- * is fully asynchronous, which gives it a better performance
- * has a responsibilty separation between drivers that directly operate the resources and plugins that work out what needs to be done with a resource, which gives Revolver an amazing extensibility potential
+
+* is run in AWS Lambda, send log in Cloudwatch Logs
+* is controlled by a YAML config file in S3 and a handful of environment variables
+* supports IAM cross-account access, so you can use one Lambda function to control multiple accounts
+* is fully asynchronous, which gives it a better performance
+* has a responsibilty separation between drivers that directly operate the resources and plugins that work out what needs to be done with a resource, which gives Revolver an amazing extensibility potential
 
 Apart from powercycling resources Revolver can validate that required tags are set on AWS resources and their values match a regular expression.
-
 
 What
 ------
 
 Revolver currently supports the following AWS resources:
- * EC2 instances including those run in Autoscaling, Revolver will pause the ASG prior to shutting down instances
- * EBS volumes. Revolver will tag these resources. Revolver can get the tags from the parent instance/volume.
- * Snapshots. Revolver will tag these resources. Revolver can get the tags from the parent instance/volume.
- * RDS single instances, Revolver will use the native start/stop feature
- * RDS multi-az instances, Revolver will use the native start/stop feature
- * RDS Clusters, Revolver will use the native start/stop feature
+
+* EC2 instances including those run in Autoscaling, Revolver will pause the ASG prior to shutting down instances
+* EBS volumes. Revolver will tag these resources. Revolver can get the tags from the parent instance/volume.
+* Snapshots. Revolver will tag these resources. Revolver can get the tags from the parent instance/volume.
+* RDS single instances, Revolver will use the native start/stop feature
+* RDS multi-az instances, Revolver will use the native start/stop feature
+* RDS Clusters, Revolver will use the native start/stop feature
 
 Revolver does not support RDS instances with read replicas, as it is very difficult to ensure integrity for such configurations
-
 
 How
 ------
@@ -60,8 +60,9 @@ Revolver reads some of the low-level configuration from environment variables an
 |LOG_FORMAT|Log format|pretty|
 
 In addition to that you can use:
-  * `CONFIG_FILE` to run Revolver with a local config file instead of the one in S3, this is implemented for debugging purposes
-  * `SDK_BASE_BACKOFF` and `SDK_MAX_RETRIES` to control the AWS SDK retry behavior, see [AWS SDK documentation](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property) for details
+
+* `CONFIG_FILE` to run Revolver with a local config file instead of the one in S3, this is implemented for debugging purposes
+* `SDK_BASE_BACKOFF` and `SDK_MAX_RETRIES` to control the AWS SDK retry behavior, see [AWS SDK documentation](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property) for details
 
 #### Config file
 
@@ -103,11 +104,13 @@ Main Revolver configuration is done in YAML. First line in the config file must 
 2. Section `organizations` specifies per-organization options overriding the defaults from the `defaults section`. You can override default settings on a per-organization basis, including *region*. You can also specify a list of drivers to be used for each organization.
 
     Leave as empty array if not being used
+
     ```yaml
     organizations: []
     ```
 
     Example organization configuration:
+
     ```yaml
     organizations:
       - account_id: "000000000000"
@@ -232,9 +235,10 @@ If Start= or Stop= is omitted, the resource will be only brought up or down with
 `Override=On/Off` is optional, if set to `Override=On` resource will be ignored by the plugin.
 
 There is also special values for the schedule tag:
-  * `24x7` - resource will be always up. If you stop it manually Revolver will attempt to bring it up
-  * `24x5` - resource will be always up except for Saturday and Sunday
-  * `0x7` - resource will be always down. If you manually start it Revolver will bring it down
+
+* `24x7` - resource will be always up. If you stop it manually Revolver will attempt to bring it up
+* `24x5` - resource will be always up except for Saturday and Sunday
+* `0x7` - resource will be always down. If you manually start it Revolver will bring it down
 
 For RDS `|` and `;` must be replaces with `_` and '/' respectively as RDS does not support these characters in tags: `Start=08:00_mon-sat/Stop=17:55/Override=off`.
 
