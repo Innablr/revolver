@@ -7,9 +7,13 @@
     "node": ">=18.0.0"
   },
   "scripts": {
+    "lint": "eslint --quiet .; secretlint '**/*'",
+    "lintall": "eslint .; secretlint '**/*'",
+    "lintfix": "eslint --fix .; secretlint '**/*'",
     "test": "mocha",
     "build": "tsc",
-    "bundle": "zip -9rq revolver.zip node_modules drivers lib plugins revolver.js",
+    "shake": "npm run lint; npm run test; npm run build",
+    "bundle": "zip -rq revolver.zip node_modules drivers lib plugins revolver.js",
     "clean": "rimraf revolver.zip",
     "start": "CONFIG_FILE=revolver-config.yaml node invoke.js"
   },
@@ -25,21 +29,26 @@
     "winston": "^2.4.4"
   },
   "devDependencies": {
+    "@secretlint/secretlint-rule-preset-recommend": "^8.1.0",
     "@types/aws-lambda": "^8.10.131",
     "@types/lodash": "^4.14.201",
     "@types/node": "^20.11.2",
-    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
     "chai": "^4.3.10",
     "esbuild": "^0.19.4",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-json": "^3.1.0",
+    "eslint-plugin-mocha": "^10.2.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "mocha": "^10.2.0",
     "prettier": "^3.2.2",
     "rimraf": "^5.0.5",
+    "secretlint": "^8.1.0",
     "source-map-support": "^0.5.21",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
