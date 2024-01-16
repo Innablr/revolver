@@ -4,15 +4,21 @@ on:
     branches: [main, develop]
 
 permissions:
-    id-token: write
-    contents: read
-    packages: read
+  id-token: write
+  contents: read
+  packages: read
 
 jobs:
-    test-and-lint:
-        name: Test and Lint
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v4
-          - run: npm run lint
-          - run: npm run test
+  test-and-lint:
+    name: Test and Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: https://npm.pkg.github.com
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test
