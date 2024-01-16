@@ -1,7 +1,7 @@
 import { logger } from './logger';
 import { promises as fs } from 'fs';
 import path = require('node:path');
-import * as yaml from 'js-yaml';
+import yaml from 'js-yaml';
 import { Organizations, S3 } from 'aws-sdk';
 import { paginateAwsCall, uniqueBy } from './common';
 import { deepmerge } from 'deepmerge-ts';
@@ -108,8 +108,6 @@ export class RevolverConfig {
       .concat(orgsAccountsList)
       // delete exclude_list
       .filter((xa: any) => !config.accounts.exclude_list.find((xi: any) => xi.Id === xa.Id))
-      // merge with default settings
-      .map((account: any) => deepmerge(config.defaults, account))
       // build assumeRoleArn string, extract account_id and revolver_role_name
       .map((account: any) => {
         account.settings.assumeRoleArn = `arn:aws:iam::${account.Id}:role/${account.settings.revolverRoleName}`;

@@ -40,7 +40,7 @@ export class AccountRevolver {
 
     this.logger.info('Configuring plugins');
     this.plugins = await Promise.all(
-      activePlugins.flatMap((xs: any) => {
+      activePlugins.flatMap((xs: string) => {
         this.logger.info(`Configuring plugin ${xs}...`);
         return this.config.plugins[xs].configs.map(async (xp: any) => {
           const PluginModule = await import(path.join('..', 'plugins', xs));
