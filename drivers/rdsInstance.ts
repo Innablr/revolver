@@ -25,7 +25,10 @@ class InstrumentedRdsInstance extends ToolingInterface {
     if (this.isAvailable) {
       return 'running';
     }
-    return 'stopped';
+    if (this.isStopped) {
+      return 'stopped';
+    }
+    return this.resource.DBInstanceStatus;
   }
 
   get launchTimeUtc() {
@@ -34,6 +37,10 @@ class InstrumentedRdsInstance extends ToolingInterface {
 
   get isAvailable() {
     return this.resource.DBInstanceStatus === 'available';
+  }
+
+  get isStopped() {
+    return this.resource.DBInstanceStatus === 'stopped';
   }
 
   tag(key: string) {
@@ -65,9 +72,6 @@ class RdsInstanceDriver extends DriverInterface {
   }
 
   maskstart(resource: InstrumentedRdsInstance) {
-    if (resource.isAvailable) {
-      return `RDS instance ${resource.resource.DBInstanceIdentifier} is already in status ${resource.resource.DBInstanceStatus}`;
-    }
     if (resource.resource.DBClusterIdentifier) {
       return `RDS instance ${resource.resource.DBInstanceIdentifier} is part of cluster ${resource.resource.DBClusterIdentifier}`;
     }
@@ -86,8 +90,8 @@ class RdsInstanceDriver extends DriverInterface {
     ) {
       return `RDS instance ${resource.resource.DBInstanceIdentifier} has read replica clusters`;
     }
-    if (resource.resource.MultiAZ === true) {
-      return `RDS instance ${resource.resource.DBInstanceIdentifier} is multi-az`;
+    if (!resource.isStopped) {
+      return `RDS instance ${resource.resource.DBInstanceIdentifier} is already in status ${resource.resourceState}`;
     }
     return undefined;
   }
@@ -118,9 +122,6 @@ class RdsInstanceDriver extends DriverInterface {
   }
 
   maskstop(resource: InstrumentedRdsInstance) {
-    if (!resource.isAvailable) {
-      return `RDS instance ${resource.resource.DBInstanceIdentifier} is already in status ${resource.resource.DBInstanceStatus}`;
-    }
     if (resource.resource.DBClusterIdentifier) {
       return `RDS instance ${resource.resource.DBInstanceIdentifier} is part of cluster ${resource.resource.DBClusterIdentifier}`;
     }
@@ -128,13 +129,19 @@ class RdsInstanceDriver extends DriverInterface {
       return `RDS instance ${resource.resource.DBInstanceIdentifier} is a read replica of ${resource.resource.ReadReplicaSourceDBInstanceIdentifier}`;
     }
     if (
-      resource.resource.ReadReplicaDBInstanceIdentifiers.length ||
-      resource.resource.ReadReplicaDBClusterIdentifiers.length
+      resource.resource.ReadReplicaDBInstanceIdentifiers !== undefined &&
+      resource.resource.ReadReplicaDBInstanceIdentifiers.length
     ) {
       return `RDS instance ${resource.resource.DBInstanceIdentifier} has read replicas`;
     }
-    if (resource.resource.MultiAZ === true) {
-      return `RDS instance ${resource.resource.DBInstanceIdentifier} is multi-az`;
+    if (
+      resource.resource.ReadReplicaDBClusterIdentifiers !== undefined &&
+      resource.resource.ReadReplicaDBClusterIdentifiers.length
+    ) {
+      return `RDS instance ${resource.resource.DBInstanceIdentifier} has read replica clusters`;
+    }
+    if (!resource.isAvailable) {
+      return `RDS instance ${resource.resource.DBInstanceIdentifier} is already in status ${resource.resourceState}`;
     }
     return undefined;
   }
@@ -177,18 +184,7 @@ class RdsInstanceDriver extends DriverInterface {
       .connectTo(this.accountConfig.assumeRoleArn)
       .then((creds) => new RDS({ credentials: creds, region: this.accountConfig.region }))
       .then((rds) => rds.describeDBInstances({}).promise())
-      .then((r) => {
-        const dbInstances = r.DBInstances!.filter(function (xi) {
-          if (xi.MultiAZ === true) {
-            logger.info('RDS instance %s is multi-az, skipping', xi.DBInstanceIdentifier);
-            return false;
-          }
-          return true;
-        });
-        logger.debug('Found %d non-clustered RDS instances', dbInstances.length);
-        return dbInstances;
-      })
-      .then((r) => r.map((xr) => new InstrumentedRdsInstance(xr)))
+      .then((r) => r.DBInstances!.map((xr) => new InstrumentedRdsInstance(xr)))
       .then((r) =>
         Promise.all([
           Promise.resolve(r),

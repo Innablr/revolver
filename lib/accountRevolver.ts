@@ -10,10 +10,7 @@ export class AccountRevolver {
     'ebs',
     'snapshot',
     'rdsInstance',
-    'rdsMultiAz',
-    'rdsMultiAzSnapshot',
     'rdsCluster',
-    'rdsClusterSnapshot',
     'redshiftCluster',
     'redshiftClusterSnapshot',
   ];

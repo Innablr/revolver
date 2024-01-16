@@ -80,7 +80,7 @@ class RDSTagger implements Tagger {
           return await rds
             .removeTagsFromResource({
               ResourceName: xr.resourceArn,
-              TagKeys: action.tags,
+              TagKeys: action.tags.map((xt: TagInterface) => xt.Key),
             })
             .promise();
         } catch (e) {
