@@ -23,7 +23,7 @@ DISABLE_ERRORS_LINTERS:
   - REPOSITORY_CHECKOV
   - SPELL_CSPELL
 
-FILTER_REGEX_EXCLUDE: (Makefile|megalinter-reports|.github)
+FILTER_REGEX_EXCLUDE: (megalinter-reports|.github)
 
 SHOW_ELAPSED_TIME: true
 
