@@ -7,13 +7,9 @@ import { RevolverConfig } from './lib/config';
 import dateTime from './lib/dateTime';
 import assume from './lib/assume';
 import { config as awsConfig } from 'aws-sdk';
-import { ProxyAgent } from 'proxy-agent';
 
 function configureAWS(maxRetries: number, baseBackoff: number) {
   awsConfig.update({
-    httpOptions: {
-      agent: new ProxyAgent(),
-    },
     retryDelayOptions: {
       base: baseBackoff,
     },
