@@ -212,7 +212,7 @@ To validate several tags include this plugin in the configuration once for every
 |tag_missing|List of actions to perform on the resource if the tag is missing|`warn`,`stop`| - |
 |tag_not_match|List of actions to perform on the resource if the tag does not match the regex in `match`|`warn`,`stop`| - |
 
-```
+```yaml
   plugins:
     validateTags:
       active: true
