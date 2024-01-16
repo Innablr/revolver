@@ -1,3 +1,6 @@
+import { DriverInterface } from '../drivers/driverInterface';
+import { ToolingInterface } from '../drivers/instrumentedResource';
+import { RevolverPlugin } from '../plugins/pluginInterface';
 import { logger } from './logger';
 import * as path from 'path';
 
@@ -19,9 +22,9 @@ export class AccountRevolver {
   readonly config;
   readonly logger;
 
-  private plugins: any[];
-  private drivers: any[];
-  private resources: any[];
+  private plugins: RevolverPlugin[];
+  private drivers: DriverInterface[];
+  private resources: ToolingInterface[];
 
   constructor(accountConfig: any) {
     this.config = accountConfig;
