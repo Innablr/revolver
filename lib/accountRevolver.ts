@@ -1,5 +1,5 @@
+import { logger } from './logger';
 import * as path from 'path';
-const winston = require('winston');
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -25,7 +25,10 @@ export class AccountRevolver {
 
   constructor(accountConfig: any) {
     this.config = accountConfig;
-    this.logger = winston.loggers.get(this.config.settings.name);
+    this.logger = logger.getSubLogger(
+      { name: 'accountRevolver' },
+      { accountId: this.config.settings.Id, accountName: this.config.settings.name },
+    );
   }
 
   async initialise(): Promise<void> {
@@ -41,7 +44,7 @@ export class AccountRevolver {
         this.logger.info(`Configuring plugin ${xs}...`);
         return this.config.plugins[xs].configs.map(async (xp: any) => {
           const PluginModule = await import(path.join('..', 'plugins', xs));
-          return new PluginModule(this.config, xs, xp);
+          return new PluginModule['default'](this.config, xs, xp);
         });
       }),
     );
@@ -52,7 +55,7 @@ export class AccountRevolver {
         .filter((xd: any) => this.supportedDrivers.indexOf(xd.name) > -1)
         .map(async (xd: any) => {
           const DriverModule = await import(path.join('..', 'drivers', xd.name));
-          return new DriverModule(this.config, xd);
+          return new DriverModule.default(this.config, xd);
         }),
     );
 
