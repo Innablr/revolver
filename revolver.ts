@@ -2,31 +2,18 @@
 import { EventBridgeEvent, ScheduledEvent, ScheduledHandler } from 'aws-lambda';
 import environ from './lib/environ';
 import { AccountRevolver } from './lib/accountRevolver';
-const RevolverConfig = require('./lib/config');
-const dateTime = require('./lib/dateTime');
-const assume = require('./lib/assume');
-const winston = require('winston');
-const AWS = require('aws-sdk');
-
-function configureLogTransport(label: string, level: string) {
-  return new winston.transports.Console({
-    timestamp: true,
-    showLevel: true,
-    debugStdout: true,
-    label,
-    level,
-  });
-}
-
-function addAccountLogger(accountName: string, level: string) {
-  winston.loggers.add(accountName, {
-    transports: [configureLogTransport(accountName, level)],
-  });
-}
+import { logger } from './lib/logger';
+import { RevolverConfig } from './lib/config';
+import dateTime from './lib/dateTime';
+import assume from './lib/assume';
+import { config as awsConfig } from 'aws-sdk';
 
 function configureAWS(maxRetries: number, baseBackoff: number) {
-  const logger = winston.loggers.get('global');
-  AWS.config.update({
+  const { ProxyAgent } = require('proxy-agent');
+  awsConfig.update({
+    httpOptions: {
+      agent: new ProxyAgent(),
+    },
     retryDelayOptions: {
       base: baseBackoff,
     },
@@ -36,8 +23,6 @@ function configureAWS(maxRetries: number, baseBackoff: number) {
 }
 
 export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Scheduled Event', ScheduledEvent>) => {
-  addAccountLogger('global', environ.debugLevel);
-  const logger = winston.loggers.get('global');
   const configMethods = new RevolverConfig();
   logger.info('Starting revolver, got event %j', event);
 
@@ -47,9 +32,10 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   // Set retry parameters
   configureAWS(environ.maxRetries, environ.baseBackoff);
 
-  const config = await (environ.configPath
-    ? configMethods.readConfigFromFile(environ.configPath)
-    : configMethods.readConfigFromS3(environ.configBucket, environ.configKey)
+  const config = await (
+    environ.configPath
+      ? configMethods.readConfigFromFile(environ.configPath)
+      : configMethods.readConfigFromS3(environ.configBucket!, environ.configKey!)
   ).catch(function (e: Error) {
     throw new Error(`Unable to parse config object: ${e}. Exiting.`);
   });
@@ -67,7 +53,7 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   const orgsAccountsList = await configMethods.getOrganisationsAccounts(organisationCreds);
 
   // Filter final accounts list to be processed
-  const filteredAccountsList = await configMethods.filterAccountsList(orgsAccountsList, config, environ.debugLevel);
+  const filteredAccountsList = await configMethods.filterAccountsList(orgsAccountsList, config);
 
   // Try to assume role on the listed accounts and remove from the list if fails
   logger.info('Caching STS credentials...');

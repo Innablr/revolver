@@ -1,5 +1,6 @@
 class Environ {
-  debugLevel: string;
+  logFormat: string;
+  logLevel: string;
   configPath: string | undefined;
   configBucket: string | undefined;
   configKey: string;
@@ -9,7 +10,8 @@ class Environ {
 
 const environ = new Environ();
 
-environ.debugLevel = process.env['DEBUG_LEVEL'] || 'debug';
+environ.logFormat = process.env['LOG_FORMAT'] || 'pretty';
+environ.logLevel = process.env['DEBUG_LEVEL'] || 'debug';
 environ.configPath = process.env['CONFIG_FILE'];
 environ.configBucket = process.env['S3_BUCKET'];
 environ.configKey = process.env['S3_KEY'] || 'config/revolver.yaml';
