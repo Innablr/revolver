@@ -25,30 +25,29 @@ class RemoteCredentials {
     return accountId;
   }
 
-  async connectTo(remoteRole: string) {
+  async connectTo(remoteRole: string): Promise<Credentials> {
     const sts = new STS();
 
     logger.debug('Requested connection via [%s]', remoteRole);
 
-    if (remoteRole === undefined || remoteRole.endsWith("/none")) {
+    if (remoteRole === undefined || remoteRole.endsWith('/none')) {
       return new Promise((resolve, reject) => {
         logger.debug('Skipping assume role since role name is "none". Using locally configured credentials');
         awsConfig.getCredentials((err, creds) => {
           if (err !== undefined) {
-            reject(err)
+            reject(err);
+          } else {
+            resolve(creds);
           }
-          else {
-            resolve(creds)
-          }
+        });
+      })
+        .then((c) => {
+          return c;
         })
-      })
-      .then((c) => {
-        return c
-      })
-      .catch((err) => {
-        logger.error('Failed to obtain local AWS credentials', err)
-        return false
-      })
+        .catch((err) => {
+          logger.error('Failed to obtain local AWS credentials', err);
+          return false;
+        }) as Promise<Credentials>;
     }
 
     if (remoteRole in this.creds) {
