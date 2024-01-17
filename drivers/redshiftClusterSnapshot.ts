@@ -1,15 +1,15 @@
 import { DateTime } from 'luxon';
-import { Redshift } from 'aws-sdk';
+import { Cluster, Redshift, Tag } from '@aws-sdk/client-redshift';
 import assume from '../lib/assume';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 
 class InstrumentedRedshiftClusterSnapshot extends ToolingInterface {
-  public tags: Redshift.Tag[] = [];
+  public tags: Tag[] = [];
   private snapshotARN: string;
 
-  constructor(resource: Redshift.Cluster, snapshotARN: string) {
+  constructor(resource: Cluster, snapshotARN: string) {
     super(resource);
     this.snapshotARN = snapshotARN;
   }
@@ -46,21 +46,23 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
     const logger = this.logger;
     return assume
       .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new Redshift({ credentials: creds, region: this.accountConfig.region }))
+      .then((creds) => new Redshift({
+      credentials: creds,
+      region: this.accountConfig.region,
+    }))
       .then((r) => {
         redshift = r;
       })
       .then(async function () {
         logger.info('Checking if Redshift Cluster %s have been restored before..', snapshot.resource.ClusterIdentifier);
-        const clusterRestored: Redshift.ClusterList = await redshift
+        const clusterRestored: Array<Cluster> = await redshift
           .describeClusters({ ClusterIdentifier: snapshot.resource.ClusterIdentifier })
-          .promise()
           .then((r) => r.Clusters!);
 
         if (clusterRestored) {
           if (clusterRestored[0].ClusterStatus === 'available') {
             logger.info('Redshift Cluster %s is already running, erasing Redshift snapshot %s ..', snapshot.resourceId);
-            return redshift.deleteClusterSnapshot({ SnapshotIdentifier: snapshot.resourceId }).promise();
+            return redshift.deleteClusterSnapshot({ SnapshotIdentifier: snapshot.resourceId });
           }
         }
 
@@ -81,7 +83,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
         if (sgTag !== undefined) {
           opts.VpcSecurityGroupIds = sgTag.split('/');
         }
-        return redshift.restoreFromClusterSnapshot(opts).promise();
+        return redshift.restoreFromClusterSnapshot(opts);
       })
       .catch(function (err) {
         logger.error('Error restoring Redshift snapshot %s, stack trace will follow:', snapshot.resourceId);
@@ -125,7 +127,10 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
     const logger = this.logger;
     return assume
       .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new Redshift({ credentials: creds, region: this.accountConfig.region }))
+      .then((creds) => new Redshift({
+      credentials: creds,
+      region: this.accountConfig.region,
+    }))
       .then(function (redshift) {
         return Promise.all(
           resources.map(function (xr) {
@@ -139,7 +144,6 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
                 ResourceName: xr.resourceArn,
                 Tags: safeValues,
               })
-              .promise()
               .catch(function (err) {
                 logger.error('Error settings tags for Redshift cluster %s, stack trace will follow:', xr.resourceId);
                 logger.error(err);
@@ -162,7 +166,10 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
     const logger = this.logger;
     return assume
       .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new Redshift({ credentials: creds, region: this.accountConfig.region }))
+      .then((creds) => new Redshift({
+      credentials: creds,
+      region: this.accountConfig.region,
+    }))
       .then(function (redshift) {
         return Promise.all(
           resources.map(function (xs) {
@@ -176,7 +183,6 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
                 ResourceName: xs.resourceArn,
                 TagKeys: action.tags.map((xt) => xt.Key),
               })
-              .promise()
               .catch(function (err) {
                 logger.error('Error unsettings tags for Redshift snapshot %s, stack trace will follow:', xs.resourceId);
                 logger.error(err);
@@ -200,11 +206,13 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
     logger.debug('Redshift Cluster Snapshot module collecting account: %j', this.accountConfig.name);
 
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const redshift = new Redshift({ credentials: creds, region: this.accountConfig.region });
+    const redshift = new Redshift({
+      credentials: creds,
+      region: this.accountConfig.region,
+    });
 
     const redshiftClusterSnapshots = await redshift
       .describeClusterSnapshots({})
-      .promise()
       .then((c) =>
         c.Snapshots!.filter((ss) => {
           if (!/^revolver-cluster-/.test(ss.SnapshotIdentifier || '')) {
@@ -228,9 +236,8 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
           r.map(function (xs) {
             return redshift
               .describeTags({ ResourceName: xs.resourceArn })
-              .promise()
               .then((t) => {
-                xs.tags = t.TaggedResources!.map((xt) => xt.Tag).filter((xt) => xt) as Redshift.Tag[];
+                xs.tags = t.TaggedResources!.map((xt) => xt.Tag).filter((xt) => xt) as Tag[];
               })
               .then(() => xs);
           }),

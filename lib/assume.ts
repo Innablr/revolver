@@ -1,5 +1,6 @@
 import { logger } from './logger';
-import { STS, Credentials } from 'aws-sdk';
+import { Credentials } from 'aws-sdk';
+import { STS } from '@aws-sdk/client-sts';
 import dateTime from './dateTime';
 import { DateTime } from 'luxon';
 import { config as awsConfig } from 'aws-sdk';
@@ -65,7 +66,6 @@ class RemoteCredentials {
         RoleArn: remoteRole,
         RoleSessionName: `Revolver_${dateTime.getTime().toFormat('yyyyLLddHHmmss')}`,
       })
-      .promise()
       .then((r) => r.Credentials);
 
     if (!creds) {

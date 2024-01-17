@@ -2,7 +2,8 @@ import { logger } from './logger';
 import { promises as fs } from 'fs';
 import path = require('node:path');
 import yaml from 'js-yaml';
-import { Organizations, S3 } from 'aws-sdk';
+import { Organizations } from '@aws-sdk/client-organizations';
+import { S3 } from '@aws-sdk/client-s3';
 import { paginateAwsCall } from './common';
 import merge from 'ts-deepmerge';
 
@@ -38,7 +39,7 @@ export class RevolverConfig {
     const s3 = new S3();
     logger.debug(`Fetching config from bucket [${configBucket}] key [${configKey}]`);
 
-    const configObject = await s3.getObject({ Bucket: configBucket, Key: configKey }).promise();
+    const configObject = await s3.getObject({ Bucket: configBucket, Key: configKey });
     logger.debug(`Found S3 object MIME ${configObject.ContentType}`);
     return this.validateConfig(configObject.Body!.toString('utf8'));
   }
@@ -47,7 +48,10 @@ export class RevolverConfig {
     const orgsRegion = 'us-east-1';
     const allAccounts = await Promise.all(
       creds.map(async (cr: any) => {
-        const client = new Organizations({ credentials: cr, region: orgsRegion });
+        const client = new Organizations({
+          credentials: cr,
+          region: orgsRegion,
+        });
         const accounts = await paginateAwsCall(client.listAccounts.bind(client), 'Accounts');
         accounts.forEach((account) => {
           account.accountId = account.Id;

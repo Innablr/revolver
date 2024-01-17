@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { EC2 } from 'aws-sdk';
+import { EC2, Tag } from '@aws-sdk/client-ec2';
 import assume from '../lib/assume';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
@@ -29,7 +29,7 @@ class InstrumentedSnapshot extends ToolingInterface {
   }
 
   tag(key: string) {
-    const tag = this.resource.Tags.find((xt: EC2.Tag) => xt.Key === key);
+    const tag = this.resource.Tags.find((xt: Tag) => xt.Key === key);
     return tag?.Value;
   }
 }
@@ -55,7 +55,10 @@ class SnapshotDriver extends DriverInterface {
 
   async setTag(resources: InstrumentedSnapshot[], action: RevolverActionWithTags) {
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = new EC2({ credentials: creds, region: this.accountConfig.region });
+    const ec2 = new EC2({
+      credentials: creds,
+      region: this.accountConfig.region,
+    });
 
     return ec2Tagger.setTag(ec2, this.logger, resources, action);
   }
@@ -66,7 +69,10 @@ class SnapshotDriver extends DriverInterface {
 
   async unsetTag(resources: InstrumentedSnapshot[], action: RevolverActionWithTags) {
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = new EC2({ credentials: creds, region: this.accountConfig.region });
+    const ec2 = new EC2({
+      credentials: creds,
+      region: this.accountConfig.region,
+    });
 
     return ec2Tagger.unsetTag(ec2, this.logger, resources, action);
   }
@@ -80,7 +86,10 @@ class SnapshotDriver extends DriverInterface {
     logger.debug('Snapshot module collecting account: %j', this.accountConfig.name);
 
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = await new EC2({ credentials: creds, region: this.accountConfig.region });
+    const ec2 = await new EC2({
+      credentials: creds,
+      region: this.accountConfig.region,
+    });
 
     const snapshots = await paginateAwsCall(ec2.describeSnapshots.bind(ec2), 'Snapshots', {
       OwnerIds: [this.accountId],

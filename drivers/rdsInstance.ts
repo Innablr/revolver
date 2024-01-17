@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { RDS } from 'aws-sdk';
+import { RDS, Tag } from '@aws-sdk/client-rds';
 import assume from '../lib/assume';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
@@ -7,7 +7,7 @@ import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { rdsTagger } from './tags';
 
 class InstrumentedRdsInstance extends ToolingInterface {
-  public tags: RDS.Tag[] = [];
+  public tags: Tag[] = [];
 
   get resourceId() {
     return this.resource.DBInstanceIdentifier;
@@ -54,14 +54,16 @@ class RdsInstanceDriver extends DriverInterface {
     const logger = this.logger;
     return assume
       .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new RDS({ credentials: creds, region: this.accountConfig.region }))
+      .then((creds) => new RDS({
+      credentials: creds,
+      region: this.accountConfig.region
+    }))
       .then(function (rds) {
         return Promise.all(
           resources.map(function (xr) {
             logger.info('RDS instance %s will start', xr.resourceId);
             return rds
               .startDBInstance({ DBInstanceIdentifier: xr.resourceId })
-              .promise()
               .catch(function (err) {
                 logger.error('Error starting RDS instance %s, stack trace will follow:', xr.resourceId);
                 logger.error(err);
@@ -100,7 +102,10 @@ class RdsInstanceDriver extends DriverInterface {
     const logger = this.logger;
     return assume
       .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new RDS({ credentials: creds, region: this.accountConfig.region }))
+      .then((creds) => new RDS({
+      credentials: creds,
+      region: this.accountConfig.region
+    }))
       .then(function (rds) {
         return Promise.all(
           resources.map(function (xr) {
@@ -111,7 +116,6 @@ class RdsInstanceDriver extends DriverInterface {
             logger.info('RDS instance %s will stop', xr.resourceId);
             return rds
               .stopDBInstance({ DBInstanceIdentifier: xr.resourceId })
-              .promise()
               .catch(function (err) {
                 logger.error('Error stopping RDS instance %s, stack trace will follow:', xr.resourceId);
                 logger.error(err);
@@ -157,7 +161,10 @@ class RdsInstanceDriver extends DriverInterface {
 
   async setTag(resources: InstrumentedRdsInstance[], action: RevolverActionWithTags) {
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({ credentials: creds, region: this.accountConfig.region });
+    const rds = new RDS({
+      credentials: creds,
+      region: this.accountConfig.region
+    });
 
     return rdsTagger.setTag(rds, this.logger, resources, action);
   }
@@ -168,7 +175,10 @@ class RdsInstanceDriver extends DriverInterface {
 
   async unsetTag(resources: InstrumentedRdsInstance[], action: RevolverActionWithTags) {
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({ credentials: creds, region: this.accountConfig.region });
+    const rds = new RDS({
+      credentials: creds,
+      region: this.accountConfig.region
+    });
 
     return rdsTagger.unsetTag(rds, this.logger, resources, action);
   }
@@ -182,15 +192,21 @@ class RdsInstanceDriver extends DriverInterface {
     logger.debug('RDS module collecting account: %j', this.accountConfig.name);
     return assume
       .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new RDS({ credentials: creds, region: this.accountConfig.region }))
-      .then((rds) => rds.describeDBInstances({}).promise())
+      .then((creds) => new RDS({
+      credentials: creds,
+      region: this.accountConfig.region
+    }))
+      .then((rds) => rds.describeDBInstances({}))
       .then((r) => r.DBInstances!.map((xr) => new InstrumentedRdsInstance(xr)))
       .then((r) =>
         Promise.all([
           Promise.resolve(r),
           assume
             .connectTo(this.accountConfig.assumeRoleArn)
-            .then((creds) => new RDS({ credentials: creds, region: this.accountConfig.region })),
+            .then((creds) => new RDS({
+            credentials: creds,
+            region: this.accountConfig.region
+          })),
         ]),
       )
       .then(([r, rds]) =>
@@ -198,7 +214,6 @@ class RdsInstanceDriver extends DriverInterface {
           r.map(function (xr) {
             return rds
               .listTagsForResource({ ResourceName: xr.resourceArn })
-              .promise()
               .then((t) => {
                 xr.tags = t.TagList || [];
               })

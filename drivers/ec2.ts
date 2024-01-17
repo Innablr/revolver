@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
-import { EC2, AutoScaling } from 'aws-sdk';
+import { AutoScaling } from '@aws-sdk/client-auto-scaling';
+import { CreateVolumeCommandOutput, EC2, Instance, Tag } from '@aws-sdk/client-ec2';
 import assume from '../lib/assume';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
@@ -10,7 +11,7 @@ import { ec2Tagger } from './tags';
 class InstrumentedEc2 extends ToolingInterface {
   private instanceARN: string;
 
-  constructor(resource: EC2.Volume, instanceARN: string) {
+  constructor(resource: CreateVolumeCommandOutput, instanceARN: string) {
     super(resource);
     this.instanceARN = instanceARN;
   }
@@ -45,14 +46,14 @@ class InstrumentedEc2 extends ToolingInterface {
   }
 
   tag(key: string) {
-    const tag = this.resource.Tags.find((xt: EC2.Tag) => xt.Key === key);
+    const tag = this.resource.Tags.find((xt: Tag) => xt.Key === key);
     if (tag !== undefined) {
       return tag.Value;
     }
   }
 
   ebsTag(key: string) {
-    const tag = this.resource.Tags.find((xt: EC2.Tag) => xt.Key === key);
+    const tag = this.resource.Tags.find((xt: Tag) => xt.Key === key);
     if (tag !== undefined) {
       return tag.Value;
     }
@@ -73,8 +74,14 @@ class Ec2Driver extends DriverInterface {
   async start(resources: InstrumentedEc2[]) {
     const logger = this.logger;
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const autoscaling = new AutoScaling({ credentials: creds, region: this.accountConfig.region });
-    const ec2 = new EC2({ credentials: creds, region: this.accountConfig.region });
+    const autoscaling = new AutoScaling({
+      credentials: creds,
+      region: this.accountConfig.region,
+    });
+    const ec2 = new EC2({
+      credentials: creds,
+      region: this.accountConfig.region,
+    });
 
     const resourceChunks = chunkArray(resources, 200);
     const asgs = resources
@@ -91,8 +98,7 @@ class Ec2Driver extends DriverInterface {
         return ec2
           .startInstances({
             InstanceIds: chunk.map((xr) => xr.resourceId),
-          })
-          .promise();
+          });
       }),
     );
 
@@ -103,7 +109,6 @@ class Ec2Driver extends DriverInterface {
           logger.info('Resuming ASG %s', xa);
           return autoscaling
             .resumeProcesses({ AutoScalingGroupName: xa })
-            .promise()
             .catch((e) => {
               logger.error('Autoscaling group %s failed to resume: %s', xa, e);
             });
@@ -127,8 +132,14 @@ class Ec2Driver extends DriverInterface {
   async stop(resources: InstrumentedEc2[]) {
     const logger = this.logger;
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const autoscaling = new AutoScaling({ credentials: creds, region: this.accountConfig.region });
-    const ec2 = new EC2({ credentials: creds, region: this.accountConfig.region });
+    const autoscaling = new AutoScaling({
+      credentials: creds,
+      region: this.accountConfig.region,
+    });
+    const ec2 = new EC2({
+      credentials: creds,
+      region: this.accountConfig.region,
+    });
 
     const resourceChunks = chunkArray(resources, 200);
     const asgs = resources
@@ -141,7 +152,6 @@ class Ec2Driver extends DriverInterface {
         logger.info('Pausing ASG %s', xa);
         return autoscaling
           .suspendProcesses({ AutoScalingGroupName: xa })
-          .promise()
           .catch((e) => {
             logger.error('Autoscaling group %s failed to resume: %s', xa, e);
           });
@@ -157,8 +167,7 @@ class Ec2Driver extends DriverInterface {
         return ec2
           .stopInstances({
             InstanceIds: chunk.map((xr) => xr.resourceId),
-          })
-          .promise();
+          });
       }),
     );
 
@@ -180,7 +189,10 @@ class Ec2Driver extends DriverInterface {
 
   async setTag(resources: InstrumentedEc2[], action: RevolverActionWithTags) {
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = new EC2({ credentials: creds, region: this.accountConfig.region });
+    const ec2 = new EC2({
+      credentials: creds,
+      region: this.accountConfig.region,
+    });
 
     return ec2Tagger.setTag(ec2, this.logger, resources, action);
   }
@@ -191,7 +203,10 @@ class Ec2Driver extends DriverInterface {
 
   async unsetTag(resources: InstrumentedEc2[], action: RevolverActionWithTags) {
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = new EC2({ credentials: creds, region: this.accountConfig.region });
+    const ec2 = new EC2({
+      credentials: creds,
+      region: this.accountConfig.region,
+    });
 
     return ec2Tagger.unsetTag(ec2, this.logger, resources, action);
   }
@@ -203,8 +218,14 @@ class Ec2Driver extends DriverInterface {
 
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
 
-    const ec2 = new EC2({ credentials: creds, region: this.accountConfig.region });
-    const autoscaling = new AutoScaling({ credentials: creds, region: this.accountConfig.region });
+    const ec2 = new EC2({
+      credentials: creds,
+      region: this.accountConfig.region,
+    });
+    const autoscaling = new AutoScaling({
+      credentials: creds,
+      region: this.accountConfig.region,
+    });
 
     const allEc2Iinstances = (await paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(
       (xr) => xr.Instances,
@@ -224,7 +245,7 @@ class Ec2Driver extends DriverInterface {
 
     for (const xi of ec2Instances) {
       const asg = autoscalingGroups.find(
-        (xa) => xa.Instances.find((xai: EC2.Instance) => xai.InstanceId === xi.InstanceId) !== undefined,
+        (xa) => xa.Instances.find((xai: Instance) => xai.InstanceId === xi.InstanceId) !== undefined,
       );
       xi.AutoScalingGroupName = asg ? asg.AutoScalingGroupName : undefined;
       if (xi.AutoScalingGroupName !== undefined) {

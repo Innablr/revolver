@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { Redshift } from 'aws-sdk';
+import { Cluster, Redshift, Tag } from '@aws-sdk/client-redshift';
 import assume from '../lib/assume';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
@@ -7,10 +7,10 @@ import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import dateTime from '../lib/dateTime';
 
 class InstrumentedRedshiftCluster extends ToolingInterface {
-  public tags: Redshift.Tag[] = [];
+  public tags: Tag[] = [];
   private clusterARN: string;
 
-  constructor(resource: Redshift.Cluster, clusterARN: string) {
+  constructor(resource: Cluster, clusterARN: string) {
     super(resource);
     this.clusterARN = clusterARN;
   }
@@ -92,7 +92,10 @@ class RedshiftClusterDriver extends DriverInterface {
 
     return assume
       .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new Redshift({ credentials: creds, region: this.accountConfig.region }))
+      .then((creds) => new Redshift({
+      credentials: creds,
+      region: this.accountConfig.region,
+    }))
       .then((r) => {
         redshift = r;
       })
@@ -103,8 +106,7 @@ class RedshiftClusterDriver extends DriverInterface {
             ClusterIdentifier: cluster.resourceId,
             FinalClusterSnapshotIdentifier: snapshotId,
             SkipFinalClusterSnapshot: false,
-          })
-          .promise();
+          });
       })
       .then(function () {
         logger.debug('Saving cluster %s tags in snapshot %s', cluster.resourceId, snapshotId);
@@ -112,8 +114,7 @@ class RedshiftClusterDriver extends DriverInterface {
           .createTags({
             ResourceName: snapshotArn,
             Tags: preserveTags,
-          })
-          .promise();
+          });
       })
       .catch(function (err) {
         logger.error('Error stopping Redshift cluster %s, stack trace will follow:', cluster.resourceId);
@@ -145,7 +146,10 @@ class RedshiftClusterDriver extends DriverInterface {
     const logger = this.logger;
     return assume
       .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new Redshift({ credentials: creds, region: this.accountConfig.region }))
+      .then((creds) => new Redshift({
+      credentials: creds,
+      region: this.accountConfig.region,
+    }))
       .then(function (redshift) {
         return Promise.all(
           resources.map(function (xr) {
@@ -159,7 +163,6 @@ class RedshiftClusterDriver extends DriverInterface {
                 ResourceName: xr.resourceArn,
                 Tags: safeValues,
               })
-              .promise()
               .catch(function (err) {
                 logger.error('Error settings tags for Redshift cluster %s, stack trace will follow:', xr.resourceId);
                 logger.error(err);
@@ -182,7 +185,10 @@ class RedshiftClusterDriver extends DriverInterface {
     const logger = this.logger;
     return assume
       .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new Redshift({ credentials: creds, region: this.accountConfig.region }))
+      .then((creds) => new Redshift({
+      credentials: creds,
+      region: this.accountConfig.region,
+    }))
       .then(function (redshift) {
         return Promise.all(
           resources.map(function (xr) {
@@ -196,7 +202,6 @@ class RedshiftClusterDriver extends DriverInterface {
                 ResourceName: xr.resourceArn,
                 TagKeys: action.tags.map((xt) => xt.Key),
               })
-              .promise()
               .catch(function (err) {
                 logger.error('Error unsettings tags for Redshift cluster %s, stack trace will follow:', xr.resourceId);
                 logger.error(err);
@@ -223,13 +228,15 @@ class RedshiftClusterDriver extends DriverInterface {
     const redshift = await new Redshift({
       credentials: creds,
       region: this.accountConfig.region,
+
+      // The key apiVersion is no longer supported in v3, and can be removed.
+      // @deprecated The client uses the "latest" apiVersion.
       apiVersion: '2012-12-01',
     });
 
     const redshiftClusters =
       (await redshift
         .describeClusters({})
-        .promise()
         .then((c) => c.Clusters)) || [];
 
     logger.info('Found %d Redshift clusters', redshiftClusters.length);

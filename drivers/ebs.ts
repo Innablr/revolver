@@ -1,4 +1,4 @@
-import { EC2 } from 'aws-sdk';
+import { CreateVolumeCommandOutput, EC2, Tag } from '@aws-sdk/client-ec2';
 import assume from '../lib/assume';
 import { DateTime } from 'luxon';
 import { paginateAwsCall } from '../lib/common';
@@ -10,7 +10,7 @@ import { ec2Tagger } from './tags';
 class InstrumentedEBS extends ToolingInterface {
   private volumeARN: string;
 
-  constructor(resource: EC2.Volume, volumeARN: string) {
+  constructor(resource: CreateVolumeCommandOutput, volumeARN: string) {
     super(resource);
     this.volumeARN = volumeARN;
   }
@@ -36,7 +36,7 @@ class InstrumentedEBS extends ToolingInterface {
   }
 
   tag(key: string) {
-    const tag = this.resource.Tags.find((xt: EC2.Tag) => xt.Key === key);
+    const tag = this.resource.Tags.find((xt: Tag) => xt.Key === key);
     if (tag !== undefined) {
       return tag.Value;
     }
@@ -64,7 +64,10 @@ class EBSDriver extends DriverInterface {
 
   async setTag(resources: InstrumentedEBS[], action: RevolverActionWithTags) {
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = new EC2({ credentials: creds, region: this.accountConfig.region });
+    const ec2 = new EC2({
+      credentials: creds,
+      region: this.accountConfig.region
+    });
 
     return ec2Tagger.setTag(ec2, this.logger, resources, action);
   }
@@ -75,7 +78,10 @@ class EBSDriver extends DriverInterface {
 
   async unsetTag(resources: InstrumentedEBS[], action: RevolverActionWithTags) {
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = new EC2({ credentials: creds, region: this.accountConfig.region });
+    const ec2 = new EC2({
+      credentials: creds,
+      region: this.accountConfig.region
+    });
 
     return ec2Tagger.unsetTag(ec2, this.logger, resources, action);
   }
@@ -98,7 +104,10 @@ class EBSDriver extends DriverInterface {
     logger.debug('EBS module collecting account: %j', this.accountConfig.name);
 
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = await new EC2({ credentials: creds, region: this.accountConfig.region });
+    const ec2 = await new EC2({
+      credentials: creds,
+      region: this.accountConfig.region
+    });
 
     const ebsVolumes = await paginateAwsCall(ec2.describeVolumes.bind(ec2), 'Volumes');
     const ec2instances = (await paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(
