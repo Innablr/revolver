@@ -1,6 +1,6 @@
 {
   "name": "revolver",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Multipurpose AWS idler script",
   "main": "invoke.ts",
   "engines": {
@@ -11,7 +11,7 @@
     "test": "mocha --require ts-node/register --require source-map-support/register --recursive --exit test",
     "build": "tsc --build ./tsconfig.json",
     "watch": "tsc --build ./tsconfig.json --watch",
-    "bundle": "zip -9rq revolver.zip node_modules drivers lib plugins revolver.js",
+    "bundle": "zip -9rq revolver.zip node_modules actions drivers lib plugins revolver.js",
     "clean": "tsc --build ./tsconfig.json --clean && rimraf revolver.zip",
     "start": "CONFIG_FILE=revolver-config.yaml node invoke.js"
   },
