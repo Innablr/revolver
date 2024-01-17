@@ -83,7 +83,7 @@ class SnapshotDriver extends DriverInterface {
     const ec2 = await new EC2({ credentials: creds, region: this.accountConfig.region });
 
     const snapshots = await paginateAwsCall(ec2.describeSnapshots.bind(ec2), 'Snapshots', {
-      OwnerIds: [this.Id],
+      OwnerIds: [this.accountId],
     });
     logger.debug('Snapshots %d found', snapshots.length);
 

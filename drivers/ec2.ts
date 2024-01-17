@@ -234,10 +234,7 @@ class Ec2Driver extends DriverInterface {
 
     return ec2Instances.map(
       (xi) =>
-        new InstrumentedEc2(
-          xi,
-          `arn:aws:ec2:${this.accountConfig.region}:${this.accountConfig.Id}:volume/${xi.InstanceId}`,
-        ),
+        new InstrumentedEc2(xi, `arn:aws:ec2:${this.accountConfig.region}:${this.accountId}:volume/${xi.InstanceId}`),
     );
   }
 }

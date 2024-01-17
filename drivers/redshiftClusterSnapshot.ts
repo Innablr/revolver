@@ -219,7 +219,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
           (xs) =>
             new InstrumentedRedshiftClusterSnapshot(
               xs,
-              `arn:aws:redshift:${this.accountConfig.region}:${this.Id}:snapshot:${xs.ClusterIdentifier}/${xs.SnapshotIdentifier}`,
+              `arn:aws:redshift:${this.accountConfig.region}:${this.accountId}:snapshot:${xs.ClusterIdentifier}/${xs.SnapshotIdentifier}`,
             ),
         ),
       )

@@ -116,10 +116,7 @@ class EBSDriver extends DriverInterface {
 
     return ebsVolumes.map(
       (xe) =>
-        new InstrumentedEBS(
-          xe,
-          `arn:aws:ec2:${this.accountConfig.region}:${this.accountConfig.Id}:volume/${xe.VolumeId}`,
-        ),
+        new InstrumentedEBS(xe, `arn:aws:ec2:${this.accountConfig.region}:${this.accountId}:volume/${xe.VolumeId}`),
     );
   }
 }
