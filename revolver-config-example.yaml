@@ -20,16 +20,7 @@ defaults:
     - name: rdsInstance
       active: true
       pretend: false
-    - name: rdsMultiAz
-      active: true
-      pretend: false
-    - name: rdsMultiAzSnapshot
-      active: true
-      pretend: false
     - name: rdsCluster
-      active: true
-      pretend: false
-    - name: rdsClusterSnapshot
       active: true
       pretend: false
 
@@ -44,17 +35,29 @@ defaults:
       configs:
         -
           tag: Name
-          tag_missing:
+          tagMissing:
+            - copyFromParent
+          onlyResourceTypes:
+            - ebs
+            - snapshot
+          tagNotMatch: []
+        -
+          tag: Name
+          tagMissing:
             - warn
-          tag_not_match: []
+          excludeResourceTypes:
+            - ebs
+            - snapshot
+          tagNotMatch: []
         -
           tag: Schedule
-          tag_missing:
-            - warn
-          tag_not_match: []
-    restoreRdsSg:
-      active: true
-      configs: []
+          tagMissing:
+            - setDefault: 24x7
+          onlyResourceTypes:
+            - ec2
+            - rdsInstance
+            - rdsCluster
+          tagNotMatch: []
 
 organizations: []
 

@@ -1,3 +1,6 @@
+import { DriverInterface } from '../drivers/driverInterface';
+import { ToolingInterface } from '../drivers/instrumentedResource';
+import { RevolverPlugin } from '../plugins/pluginInterface';
 import { logger } from './logger';
 import * as path from 'path';
 
@@ -7,10 +10,7 @@ export class AccountRevolver {
     'ebs',
     'snapshot',
     'rdsInstance',
-    'rdsMultiAz',
-    'rdsMultiAzSnapshot',
     'rdsCluster',
-    'rdsClusterSnapshot',
     'redshiftCluster',
     'redshiftClusterSnapshot',
   ];
@@ -19,9 +19,9 @@ export class AccountRevolver {
   readonly config;
   readonly logger;
 
-  private plugins: any[];
-  private drivers: any[];
-  private resources: any[];
+  private plugins: RevolverPlugin[];
+  private drivers: DriverInterface[];
+  private resources: ToolingInterface[];
 
   constructor(accountConfig: any) {
     this.config = accountConfig;
@@ -40,7 +40,7 @@ export class AccountRevolver {
 
     this.logger.info('Configuring plugins');
     this.plugins = await Promise.all(
-      activePlugins.flatMap((xs: any) => {
+      activePlugins.flatMap((xs: string) => {
         this.logger.info(`Configuring plugin ${xs}...`);
         return this.config.plugins[xs].configs.map(async (xp: any) => {
           const PluginModule = await import(path.join('..', 'plugins', xs));

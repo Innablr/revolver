@@ -7,9 +7,9 @@ import { RevolverConfig } from './lib/config';
 import dateTime from './lib/dateTime';
 import assume from './lib/assume';
 import { config as awsConfig } from 'aws-sdk';
+import { ProxyAgent } from 'proxy-agent';
 
 function configureAWS(maxRetries: number, baseBackoff: number) {
-  const { ProxyAgent } = require('proxy-agent');
   awsConfig.update({
     httpOptions: {
       agent: new ProxyAgent(),
@@ -59,7 +59,14 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   logger.info('Caching STS credentials...');
   const authenticatedAccounts = await Promise.all(
     filteredAccountsList.flatMap((account: any) =>
-      assume.connectTo(account.settings.assumeRoleArn).then((auth: any) => (auth ? account : undefined)),
+      assume
+        .connectTo(account.settings.assumeRoleArn)
+        .then((auth: any) => (auth ? account : undefined))
+        .catch((err) => {
+          logger.error(`Unable to assume role ${account.settings.assumeRoleArn} on ${account.account_id}: ${err}`);
+          logger.error(`Account ${account.account_id} will be skipped`);
+          return undefined;
+        }),
     ),
   ).then((xaccts) => xaccts.filter((x: any) => x));
 

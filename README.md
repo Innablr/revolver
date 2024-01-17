@@ -28,9 +28,9 @@ Revolver currently supports the following AWS resources:
 * EC2 instances including those run in Autoscaling, Revolver will pause the ASG prior to shutting down instances
 * EBS volumes. Revolver will tag these resources. Revolver can get the tags from the parent instance/volume.
 * Snapshots. Revolver will tag these resources. Revolver can get the tags from the parent instance/volume.
-* RDS single instances, Revolver will use the native start/stop featur
-* RDS multi-az instances, Revolver will snapshot the instance and delete it. In the morning it will be restored from snapshot
-* RDS Clusters, Revolver will snapshot the cluster and save the critical information about the cluster members on the snapshot
+* RDS single instances, Revolver will use the native start/stop feature
+* RDS multi-az instances, Revolver will use the native start/stop feature
+* RDS Clusters, Revolver will use the native start/stop feature
 
 Revolver does not support RDS instances with read replicas, as it is very difficult to ensure integrity for such configurations
 
@@ -39,24 +39,36 @@ How
 
 ### Deploy
 
-This repository only contains the Revolver code and no deployment mechanisms. The make target `bundle` produces a zip-file
-suitable for deployment in AWS Lambda. You can find an example Cloudformation template in the `examples/cloudformation` directory.
+Revolver is packaged as an AWS Lambda function and is triggered by a Cloudwatch Event.
 
-You can include this repository as a submodule into the Innablr Cloudformation deployment automation and deploy using `INSTALLATION_NAME=your_name RUNTIME_ENVIRONMENT=your_env R53_DOMAIN=your_domain make deploy`
+This repository only contains the Revolver code and no deployment mechanisms. To prepare it for deploying you should use `npm run build` and `npm run bundle` commands to build the code and create a zip file.
+suitable for deployment in AWS Lambda.
 
-For example, in Innablr environment it will be:
-
-```bash
-INSTALLATION_NAME=innablr0 RUNTIME_ENVIRONMENT=innablr R53_DOMAIN=innablr.lan AWS_DEFAULT_REGION=ap-southeast-2 make deploy
-```
-
-Example configuration file is in `examples/config`.
+You are free to choose your own deployment mechanism. We use [CDK](https://docs.aws.amazon.com/cdk/latest/guide/home.html) to deploy Revolver.
 
 ### Configure
 
-Revolver configuration is done in YAML. First line in the config file must be `---` as per YAML specification.
+Revolver reads some of the low-level configuration from environment variables and the rest from a YAML file in S3.
 
-1. Section `defaults` defines default behavior for all accounts. Settings in this section will be overriden in the accounts section
+#### Environment variables
+
+|Variable|Description|Default|
+|-|-|-|
+|S3_BUCKET|S3 bucket where the config file is stored|-|
+|S3_KEY|S3 key of the config file|-|
+|DEBUG_LEVEL|Log level|info|
+|LOG_FORMAT|Log format|pretty|
+
+In addition to that you can use:
+
+* `CONFIG_FILE` to run Revolver with a local config file instead of the one in S3, this is implemented for debugging purposes
+* `SDK_BASE_BACKOFF` and `SDK_MAX_RETRIES` to control the AWS SDK retry behavior, see [AWS SDK documentation](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property) for details
+
+#### Config file
+
+Main Revolver configuration is done in YAML. First line in the config file must be `---` as per YAML specification.
+
+1. Section `defaults` defines default behavior for all accounts. Settings in this section can be overriden in the accounts section
 
     | Option name            | Description                                                                                | Default  |
     |------------------------|--------------------------------------------------------------------------------------------|----------|
@@ -79,21 +91,17 @@ Revolver configuration is done in YAML. First line in the config file must be `-
       revolver_role_name: ssPowerCycle
       drivers:
         - name: ec2
+          active: true
           pretend: false
-          inspector_assessment_target: InspectorFull # optional
         - name: rdsInstance
-          pretend: false
-        - name: rdsMultiAz
-          pretend: false
-        - name: rdsMultiAzSnapshot
+          active: true
           pretend: false
         - name: rdsCluster
-          pretend: false
-        - name: rdsClusterSnapshot
+          active: true
           pretend: false
     ```
 
-2. Section `organizations` specifies per-organization options overriding the defaults from the `defaults section`. __Please note that are no need to specify any settings here a part of the Id per organization if following the defaults section__
+2. Section `organizations` specifies per-organization options overriding the defaults from the `defaults section`. You can override default settings on a per-organization basis, including *region*. You can also specify a list of drivers to be used for each organization.
 
     Leave as empty array if not being used
 
@@ -105,25 +113,28 @@ Revolver configuration is done in YAML. First line in the config file must be `-
 
     ```yaml
     organizations:
-      - account_id: "439001261645"
+      - account_id: "000000000000"
         settings:
           name: Innablr
           revolver_role_name: ssPowerCycle
           organization_role_name: AWSOrganizationsReadOnly
         drivers:
           - name: ec2
-            inspector_assessment_target: AnotherInspectorName
             pretend: false
     ```
 
-3. Section `accounts` have two lists `include_list` (specify individual accounts to run Revolver) and `exclude_list` (make sure Revolver won't run on these accounts) options overriding the defaults from the `defaults section`. __Please note that individual accounts added to include_list will have priority on the settings and will override the defaults from the `default section` AND the ones by organization on `organizations section`__
+3. Section `accounts` have two lists:
+    * in the `include_list` you can specify a list of accounts to be included in the run. If AWS Organisation is configured, these accounts will be added to the list of accounts from the organization. If AWS Organisation is not configured, only these accounts will be processed.
+    * accounts specified in the `exclude_list` will be excluded from processing, this takes the highest priority.
+
+    Under every account in the `include_list` you can specify account-specific settings, drivers and plugins. These settings will override the defaults from the `defaults` section.
 
     Example account configuration:
 
     ```yaml
     accounts:
       include_list:
-        - account_id: "050000000071"
+        - account_id: "000000000000"
           settings:
             name: radix-dev
             timezone: Australia/Melbourne
@@ -131,62 +142,61 @@ Revolver configuration is done in YAML. First line in the config file must be `-
             - name: powercycle
               tagging: strict
               availability_tag: Schedule
-            - name: restoreRdsSg
             - name: validateTags
               tag: CostCentre
       exclude_list:
-        - account_id:
+        - account_id: "111111111111"
           settings:
             name: helix-dev
             timezone: Europe/Dublin
             timezone_tag: TZ
           plugins:
-            - name: powercycle
-              tagging: strict
-              availability_tag: Availability
-            - name: restoreRdsSg
-            - name: validateTags
-              tag: Owner
+            powercycle:
+              active: true
+              configs:
+                - tagging: strict
+                  availability_tag: Schedule
+            validateTags:
+              active: true
+              configs:
+                -
+                  tag: Name
+                  tagMissing:
+                    - warn
     ```
 
     Supported options are the same as `defaults`
 
 #### Drivers
 
-Drivers define how to operate with a particular AWS resource, how to stop or start it or retrieve a tag.
+Drivers define how to operate a particular type of AWS resource, how to stop or start it or set a tag.
 
 `drivers` section in the config file is a list of dicts, every dict represents an instance of a driver. Attribute `name` is the name of the driver.
 
 All drivers support the following options:
 
-| Option  | Description                                                                  | Allowed values    | Default |
-|---------|------------------------------------------------------------------------------|-------------------|---------|
-| pretend | Prevents the driver from actually performing the actions. Good for debugging | `true` or `false` | `true`  |
+|Option|Description|Allowed values|Default|
+|-|-|-|-|
+|active|Whether the driver is active|`true` or `false`|`true`|
+|pretend|Prevents the driver from actually performing the actions. Good for debugging|`true` or `false`|`true`|
 
 Supported drivers:
 
-| Driver             | Description                                                                                                |
-|--------------------|------------------------------------------------------------------------------------------------------------|
-| ec2                | AWS EC2 instances and autoscaling groups                                                                   |
-| rdsInstance        | Standalone non-multiaz instances. Uses native RDS start/stop functionality                                 |
-| rdsMultiAz         | Multi-AZ RDS instances. Also requires configured `rdsMultiAzSnapshot` driver to be able to start instances |
-| rdsMultiAzSnapshot | Counterpart of `rdsMultiAz`. Restores snapshots created by rdsMultiAz                                      |
-| rdsCluster         | RDS Aurora clusters. Requires `rdsClusterSnapshot` to restore clusters in the morning                      |
-| rdsClusterSnapshot | Part of `rdsCluster`. Restores cluster snapshots                                                           |
-
-##### ec2 driver
-
-| Option                      | Description                             | Allowed values                   | Default       |
-|-----------------------------|-----------------------------------------|----------------------------------|---------------|
-| inspector_assessment_target | Name of the Inspector Assessment Target | Inspector Assessment Target name | InspectorFull |
-
-EC2 Driver has an optional settings `inspector_assessment_target` that needs to be set if you want to use the plugin `inspectorAgent` plugin. The Inspector Assessment target if preferable a target under the AWS account that selects all instances running.
+|Driver|Description|
+|-|-|
+|ec2|AWS EC2 instances and autoscaling groups|
+|ebs|EBS volumes|
+|snapshot|EBS snapshots|
+|rdsInstance|RDS instances|
+|rdsCluster|RDS Aurora clusters|
 
 #### Plugins
 
 Plugins define what needs to be done on AWS resources. Some plugins support only some types of AWS resources but not the others.
 
 For every AWS resource plugins will be executed in the order they are listed in the config file. Plugins that run earlier will have the priority on the state-changing actions. For example if `validateTags` wants to shut an EC2 instance down and at the same time the `powercycle` plugin wants to start it, the plugin that is listed first wins.
+
+`plugins` section in the config file is a dict where keys are plugin names. Every plugin can have a list of configs, every config is a dict with plugin-specific options.
 
 ##### powercycle plugin
 
@@ -205,9 +215,11 @@ Powercycle respects the account-wide timezone specification as well as individua
 
 ```yaml
 plugins:
-  - name: powercycle
-    tagging: strict
-    availability_tag: Schedule
+  powercycle:
+    active: true
+    configs:
+      - tagging: strict
+        availability_tag: Schedule
 ```
 
 Powercycle plugin supports the following tagging standards:
@@ -230,83 +242,47 @@ There is also special values for the schedule tag:
 
 For RDS `|` and `;` must be replaces with `_` and '/' respectively as RDS does not support these characters in tags: `Start=08:00_mon-sat/Stop=17:55/Override=off`.
 
-##### restoreRdsSg
-
-This is a sidekick plugin for `rdsMultiAzSnapshot`. When `rdsMultiAzSnapshot` restores the database from a snapshot the security groups on the database can only be set after the restore is fully complete. So Revolver will attempt setting the security groups on its subsequent runs by running the snapshot through this plugin.
-
-This plugin requires no configuration.
-
-```yaml
-plugins:
-  - name: powercycle
-    tagging: strict
-    availability_tag: Schedule
-  - name: restoreRdsSg
-```
-
-##### inspectorAgent plugin
-
-This plugin will check an Inspector Assessment Target to get the agent status on all ec2 instances.
-
-| Option           | Description                                                                                                            | Allowed values | Default |
-|------------------|------------------------------------------------------------------------------------------------------------------------|----------------|---------|
-| tag              | Name of the tag to mark the agent status                                                                               | Aws tag name   | -       |
-| unhealthy_status | List of actions to perform on the resource if the Inspector scan have been failing                                     | `warn`,`stop`  | -       |
-| unknown_status   | List of actions to perform on the resource if the Inspector agent is either not installed or never run on the instance | `warn`,`stop`  | -       |
-
-##### ssmAgent plugin
-
-This plugin will check if SSM Agent is not installed on all ec2 instances.
-
-| Option        | Description                                                                  | Allowed values | Default |
-|---------------|------------------------------------------------------------------------------|----------------|---------|
-| tag           | Name of the tag to mark the agent status                                     | Aws tag name   | -       |
-| not_installed | List of actions to perform on the resource if the SSM Agent is not installed | `warn`,`stop`  | -       |
-
 ##### validateTags plugin
 
-This plugin will validate that a certain tag exist on AWS resources and optionally match the provided regular expression. If the tag is missing or does not match, the resource can be optionally shut down and/or set a warning tag.
+This plugin will validate that a certain tag exist on AWS resources and optionally match the provided regular expression. If the tag is missing or does not match, the resource can be optionally shut down or set a warning tag or set the tag with a specified default value, or any combination of these actions.
 
-To validate several tags include this plugin in the configuration once for every tag.
-
-| Option                | Description                                                                                              | Allowed values | Default |
-|-----------------------|----------------------------------------------------------------------------------------------------------|----------------|---------|
-| tag                   | Name of the tag to validate                                                                              | AWS tag name   | -       |
-| match                 | JS-compatible regular expression to match the value against (optional)                                   | JS regex       | -       |
-| tag_missing           | List of actions to perform on the resource if the tag is missing                                         | `warn`,`stop`  | -       |
-| tag_not_match         | List of actions to perform on the resource if the tag does not match the regex in `match`                | `warn`,`stop`  | -       |
-| allow_set_from_parent | Allow Revolver to try to get tags from parent (instance/volumes) -- works only with ebs/snapshot drivers | `true`,`false` | `true`  |
-
-```yaml
-plugins:
-  - name: validateTags
-    tag: CostCentre
-    match: PROJ\d{4}
-    allow_set_from_parent: true
-    tag_missing:
-      - warn
-      - stop
-    tag_not_match:
-      - warn
-  - name: validateTags
-    tag: OwnerDescription
-    match: ^.*@.*$
-    tag_missing:
-      - warn
-      - stop
-    tag_not_match:
-      - warn
-```
-
-You also can concatenate tags that will share the same settings on the same block
+|Option|Description|Allowed values|Default|
+|-|-|-|-|
+|tag|Name of the tag to validate|AWS tag name| - |
+|match|JS-compatible regular expression to match the value against (optional)|JS regex| - |
+|tagMissing|List of actions to perform on the resource if the tag is missing|`warn`,`stop`,`copyFromParent`,`setDefault`| - |
+|tagNotMatch|List of actions to perform on the resource if the tag does not match the regex in `match`|`warn`,`stop`,`copyFromParent`,`setDefault`| - |
+|onlyResourceTypes|List of resource types to apply the plugin to. If not specified, the plugin will be applied to all resource types|`ec2`,`ebs`,`snapshot`,`rdsInstance`,`rdsCluster`| - |
+|excludeResourceTypes|List of resource types to exclude from the plugin. If not specified, the plugin will be applied to all resource types|`ec2`,`ebs`,`snapshot`,`rdsInstance`,`rdsCluster`| - |
 
 ```yaml
-plugins:
-  - name: validateTags
-    tag: [ CostCentre, OwnerDescription, Service ]
-    tag_missing:
-      - warn
-      - stop
-    tag_not_match:
-      - warn
+  plugins:
+    validateTags:
+      active: true
+      configs:
+        -
+          tag: Name
+          tagMissing:
+            - copyFromParent
+          onlyResourceTypes:
+            - ebs
+            - snapshot
+          tagNotMatch: []
+        -
+          tag: Name
+          tagMissing:
+            - warn
+          excludeResourceTypes:
+            - ebs
+            - snapshot
+          tagNotMatch: []
+        -
+          tag: Schedule
+          tagMissing:
+            - setDefault: 24x7
+          onlyResourceTypes:
+            - ec2
+            - rdsInstance
+            - rdsCluster
+          tagNotMatch: []
 ```
