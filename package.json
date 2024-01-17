@@ -19,7 +19,6 @@
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.1472.0",
-    "deepmerge-ts": "^5.1.0",
     "js-yaml": "^4.1.0",
     "luxon": "^3.4.4",
     "proxy-agent": "^6.3.1",
