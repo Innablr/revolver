@@ -1,5 +1,5 @@
 class Environ {
-  logFormat: string;
+  logFormat: 'json' | 'pretty' | 'hidden' | undefined;
   logLevel: string;
   configPath: string | undefined;
   configBucket: string | undefined;
@@ -10,7 +10,7 @@ class Environ {
 
 const environ = new Environ();
 
-environ.logFormat = process.env['LOG_FORMAT'] || 'pretty';
+environ.logFormat = (process.env['LOG_FORMAT'] as 'json' | 'pretty' | 'hidden' | undefined) || 'pretty';
 environ.logLevel = process.env['DEBUG_LEVEL'] || 'debug';
 environ.configPath = process.env['CONFIG_FILE'];
 environ.configBucket = process.env['S3_BUCKET'];
