@@ -32,9 +32,10 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   // Set retry parameters
   configureAWS(environ.maxRetries, environ.baseBackoff);
 
-  const config = await (environ.configPath
-    ? configMethods.readConfigFromFile(environ.configPath)
-    : configMethods.readConfigFromS3(environ.configBucket!, environ.configKey!)
+  const config = await (
+    environ.configPath
+      ? configMethods.readConfigFromFile(environ.configPath)
+      : configMethods.readConfigFromS3(environ.configBucket!, environ.configKey!)
   ).catch(function (e: Error) {
     throw new Error(`Unable to parse config object: ${e}. Exiting.`);
   });
@@ -58,7 +59,14 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   logger.info('Caching STS credentials...');
   const authenticatedAccounts = await Promise.all(
     filteredAccountsList.flatMap((account: any) =>
-      assume.connectTo(account.settings.assumeRoleArn).then((auth: any) => (auth ? account : undefined)),
+      assume
+        .connectTo(account.settings.assumeRoleArn)
+        .then((auth: any) => (auth ? account : undefined))
+        .catch((err) => {
+          logger.error(`Unable to assume role ${account.settings.assumeRoleArn} on ${account.account_id}: ${err}`);
+          logger.error(`Account ${account.account_id} will be skipped`);
+          return undefined;
+        }),
     ),
   ).then((xaccts) => xaccts.filter((x: any) => x));
 
