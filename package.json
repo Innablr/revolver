@@ -23,6 +23,7 @@
     "js-yaml": "^4.1.0",
     "luxon": "^3.4.4",
     "proxy-agent": "^6.3.1",
+    "ts-deepmerge": "^6.2.0",
     "tslog": "^4.9.2"
   },
   "devDependencies": {

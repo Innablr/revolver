@@ -44,10 +44,12 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   const organisationCreds = await Promise.all(
     config.organizations.flatMap((xa: any) => {
       logger.info('Getting list of accounts from %s organization..', xa.settings.name);
-      return assume.connectTo(`arn:aws:iam::${xa.Id}:role/${xa.settings.organizationRoleName}`).then((cred: any) => {
-        cred.settings = xa.settings;
-        return cred;
-      });
+      return assume
+        .connectTo(`arn:aws:iam::${xa.accountId}:role/${xa.settings.organizationRoleName}`)
+        .then((cred: any) => {
+          cred.settings = xa.settings;
+          return cred;
+        });
     }),
   );
   const orgsAccountsList = await configMethods.getOrganisationsAccounts(organisationCreds);

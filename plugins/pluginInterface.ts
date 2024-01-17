@@ -10,12 +10,12 @@ export abstract class RevolverPlugin {
 
   constructor(accountConfig: any, pluginName: string, pluginConfig: any) {
     this.accountConfig = accountConfig.settings;
-    this.accountId = accountConfig.Id;
+    this.accountId = accountConfig.accountId;
     this.pluginConfig = pluginConfig;
     this.pluginConfig.name = pluginName;
     this.logger = logger.getSubLogger(
       { name: this.accountConfig.name },
-      { accountId: this.accountConfig.Id, accountName: this.accountConfig.name, pluginName },
+      { accountId: this.accountId, accountName: this.accountConfig.name, pluginName },
     );
     this.logger.debug(`Initialising plugin ${this.name} for account ${this.accountConfig.name}`);
   }

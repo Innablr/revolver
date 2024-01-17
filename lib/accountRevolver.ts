@@ -27,12 +27,12 @@ export class AccountRevolver {
     this.config = accountConfig;
     this.logger = logger.getSubLogger(
       { name: 'accountRevolver' },
-      { accountId: this.config.settings.Id, accountName: this.config.settings.name },
+      { accountId: this.config.accountId, accountName: this.config.settings.name },
     );
   }
 
   async initialise(): Promise<void> {
-    this.logger.info('Initialising revolver');
+    this.logger.info(`Initialising revolver for account ${this.config.settings.name}(${this.config.accountId})`);
 
     const activePlugins = Object.keys(this.config.plugins)
       .filter((xp) => this.supportedPlugins.indexOf(xp) > -1)
