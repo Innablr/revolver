@@ -4,7 +4,7 @@
 # linters documentation
 
 # all, none, or list of linter keys
-APPLY_FIXES: none
+APPLY_FIXES: all
 
 # If you use ENABLE variable, all other languages/formats/tooling-formats will
 # be disabled by default
@@ -12,23 +12,14 @@ APPLY_FIXES: none
 
 # If you use ENABLE_LINTERS variable, all other linters will be disabled by
 # default
-# ENABLE_LINTERS:
-#   - TYPESCRIPT_ES
-#   - TYPESCRIPT_PRETTIER
-
-DISABLE:
-  - COPYPASTE # Comment to enable checks of excessive copy-pastes
-  - SPELL
-
-DISABLE_LINTERS:
-  - REPOSITORY_CHECKOV
-  - REPOSITORY_KICS
-  - TYPESCRIPT_STANDARD
-
-DISABLE_ERRORS_LINTERS:
-  - REPOSITORY_SECRETLINT
-#   - REPOSITORY_CHECKOV
-#   - SPELL_CSPELL
+ENABLE_LINTERS:
+  - TYPESCRIPT_ES
+  - TYPESCRIPT_PRETTIER # doesn't run??
+  - MARKDOWN_MARKDOWN_LINK_CHECK
+  - MARKDOWN_MARKDOWN_TABLE_FORMATTER
+  - MARKDOWN_MARKDOWNLINT
+  - YAML_PRETTIER
+  - YAML_YAMLLINT
 
 FILTER_REGEX_EXCLUDE: (megalinter-reports|.github)
 
