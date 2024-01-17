@@ -33,24 +33,21 @@ defaults:
     validateTags:
       active: true
       configs:
-        -
-          tag: Name
+        - tag: Name
           tagMissing:
             - copyFromParent
           onlyResourceTypes:
             - ebs
             - snapshot
           tagNotMatch: []
-        -
-          tag: Name
+        - tag: Name
           tagMissing:
             - warn
           excludeResourceTypes:
             - ebs
             - snapshot
           tagNotMatch: []
-        -
-          tag: Schedule
+        - tag: Schedule
           tagMissing:
             - setDefault: 24x7
           onlyResourceTypes:
@@ -63,7 +60,7 @@ organizations: []
 
 accounts:
   include_list:
-    - account_id: "000000000000"
+    - account_id: '000000000000'
       settings:
         name: whatdev
 
