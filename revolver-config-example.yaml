@@ -1,0 +1,70 @@
+---
+defaults:
+  settings:
+    region: ap-southeast-2
+    timezone: Australia/Melbourne
+    timezone_tag: Timezone
+    organization_role_name: AWSOrganizationsReadOnly
+    revolver_role_name: ssPowerCycle
+
+  drivers:
+    - name: ec2
+      active: true
+      pretend: false
+    - name: ebs
+      active: true
+      pretend: false
+    - name: snapshot
+      active: true
+      pretend: false
+    - name: rdsInstance
+      active: true
+      pretend: false
+    - name: rdsCluster
+      active: true
+      pretend: false
+
+  plugins:
+    powercycle:
+      active: true
+      configs:
+        - tagging: strict
+          availability_tag: Schedule
+    validateTags:
+      active: true
+      configs:
+        -
+          tag: Name
+          tagMissing:
+            - copyFromParent
+          onlyResourceTypes:
+            - ebs
+            - snapshot
+          tagNotMatch: []
+        -
+          tag: Name
+          tagMissing:
+            - warn
+          excludeResourceTypes:
+            - ebs
+            - snapshot
+          tagNotMatch: []
+        -
+          tag: Schedule
+          tagMissing:
+            - setDefault: 24x7
+          onlyResourceTypes:
+            - ec2
+            - rdsInstance
+            - rdsCluster
+          tagNotMatch: []
+
+organizations: []
+
+accounts:
+  include_list:
+    - account_id: "000000000000"
+      settings:
+        name: whatdev
+
+  exclude_list: []
