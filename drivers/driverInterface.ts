@@ -6,16 +6,16 @@ import { RevolverAction } from '../actions/actions';
 export abstract class DriverInterface {
   protected accountConfig: any;
   protected driverConfig: any;
-  protected Id: string;
+  protected accountId: string;
   protected logger: Logger<RevolverLogObject>;
 
   constructor(accountConfig: any, driverConfig: any) {
     this.accountConfig = accountConfig.settings;
     this.driverConfig = driverConfig;
-    this.Id = accountConfig.Id;
+    this.accountId = accountConfig.accountId;
     this.logger = logger.getSubLogger(
-      { name: `${this.accountConfig.name}(${this.Id})` },
-      { accountId: this.Id, accountName: this.accountConfig.name, driverName: this.name },
+      { name: `${this.accountConfig.name}(${this.accountId})` },
+      { accountId: this.accountId, accountName: this.accountConfig.name, driverName: this.name },
     );
     this.logger.debug(`Initialising driver ${this.name} for account ${this.accountConfig.name}`);
   }

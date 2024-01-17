@@ -74,7 +74,7 @@ Main Revolver configuration is done in YAML. First line in the config file must 
     |-|-|-|
     | region | Specifies the default AWS region | - |
     | timezone | Specifies the default time zone | - |
-    | timezone_tag | Revolver will read this tag on individual resources to override account-wide timezone | Timezone |
+    | timezoneTag | Revolver will read this tag on individual resources to override account-wide timezone | Timezone |
     | organization_role_name | Role to be assumed on the main account from organizations to get the accounts list from it | - |
     | revolver_role_name | Revolver role name to be assumed on each client account | - |
     | drivers | List of enabled drivers and their options (see Drivers) | - |
@@ -86,7 +86,7 @@ Main Revolver configuration is done in YAML. First line in the config file must 
     defaults:
       region: ap-southeast-2
       timezone: Australia/Melbourne
-      timezone_tag: Timezone
+      timezoneTag: Timezone
       organization_role_name: AWSOrganizationsReadOnly
       revolver_role_name: ssPowerCycle
       drivers:
@@ -141,7 +141,7 @@ Main Revolver configuration is done in YAML. First line in the config file must 
           plugins:
             - name: powercycle
               tagging: strict
-              availability_tag: Schedule
+              availabilityTag: Schedule
             - name: validateTags
               tag: CostCentre
       exclude_list:
@@ -149,13 +149,13 @@ Main Revolver configuration is done in YAML. First line in the config file must 
           settings:
             name: helix-dev
             timezone: Europe/Dublin
-            timezone_tag: TZ
+            timezoneTag: TZ
           plugins:
             powercycle:
               active: true
               configs:
                 - tagging: strict
-                  availability_tag: Schedule
+                  availabilityTag: Schedule
             validateTags:
               active: true
               configs:
@@ -205,7 +205,7 @@ Starts AWS resources in the worktime and stops them after hours based on their t
 |Option|Description|Allowed values|Default|
 |-|-|-|-|
 |tagging|Defines tagging format. See below|`strict`|`strict`|
-|availability_tag|Name of the tag that contains the schedule|AWS tag name|Schedule|
+|availabilityTag|Name of the tag that contains the schedule|AWS tag name|Schedule|
 
 When an operation is performed on a resource a tag with a name `ReasonSchedule` (Schedule is replaced with the actual name of the schedule tag) will be set explaining the reason.
 
@@ -219,7 +219,7 @@ plugins:
     active: true
     configs:
       - tagging: strict
-        availability_tag: Schedule
+        availabilityTag: Schedule
 ```
 
 Powercycle plugin supports the following tagging standards:

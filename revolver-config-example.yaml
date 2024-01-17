@@ -3,9 +3,9 @@ defaults:
   settings:
     region: ap-southeast-2
     timezone: Australia/Melbourne
-    timezone_tag: Timezone
-    organization_role_name: AWSOrganizationsReadOnly
-    revolver_role_name: ssPowerCycle
+    timezoneTag: Timezone
+    organizationRoleName: AWSOrganizationsReadOnly
+    revolverRoleName: ssPowerCycle
 
   drivers:
     - name: ec2
@@ -29,7 +29,7 @@ defaults:
       active: true
       configs:
         - tagging: strict
-          availability_tag: Schedule
+          availabilityTag: Schedule
     validateTags:
       active: true
       configs:
@@ -45,9 +45,8 @@ defaults:
           tag: Name
           tagMissing:
             - warn
-          excludeResourceTypes:
-            - ebs
-            - snapshot
+          onlyResourceTypes:
+            - ec2
           tagNotMatch: []
         -
           tag: Schedule
@@ -59,12 +58,22 @@ defaults:
             - rdsCluster
           tagNotMatch: []
 
-organizations: []
+organizations:
+  - accountId: 000000000000
+    settings:
+      region: ap-southeast-2
+      name: eh-global-apse2
+  - accountId: 111111111111
+    settings:
+      region: eu-west-1
+      name: eh-global-euw1
 
 accounts:
-  include_list:
-    - account_id: "000000000000"
+  includeList:
+    - accountId: "222222222222"
       settings:
         name: whatdev
-
-  exclude_list: []
+  excludeList:
+    - accountId: "333333333333"
+      settings:
+        name: whatprod

@@ -70,7 +70,7 @@ class RedshiftClusterDriver extends DriverInterface {
   stopOneCluster(cluster: InstrumentedRedshiftCluster) {
     let redshift: Redshift;
     const logger = this.logger;
-    const tzTagName = this.accountConfig.timezone_tag || 'Timezone';
+    const tzTagName = this.accountConfig.timezoneTag || 'Timezone';
     const tz = cluster.tag(tzTagName) || this.accountConfig.timezone || 'utc';
     const locaTimeNow = dateTime.getTime(tz);
     const snapshotId = `revolver-cluster-${cluster.resourceId}-${locaTimeNow.toFormat('yyyyLLddHHmmss')}`;
@@ -239,7 +239,7 @@ class RedshiftClusterDriver extends DriverInterface {
         (cluster) =>
           new InstrumentedRedshiftCluster(
             cluster,
-            `arn:aws:redshift:${this.accountConfig.region}:${this.Id}:cluster:${cluster.ClusterIdentifier}`,
+            `arn:aws:redshift:${this.accountConfig.region}:${this.accountId}:cluster:${cluster.ClusterIdentifier}`,
           ),
       ),
     );
