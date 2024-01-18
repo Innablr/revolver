@@ -7,6 +7,7 @@ import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { chunkArray, paginateAwsCall } from '../lib/common';
 import { ec2Tagger } from './tags';
+import { getAwsConfig } from '../lib/awsConfig';
 
 class InstrumentedEc2 extends ToolingInterface {
   private instanceARN: string;
@@ -74,14 +75,9 @@ class Ec2Driver extends DriverInterface {
   async start(resources: InstrumentedEc2[]) {
     const logger = this.logger;
     const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const autoscaling = new AutoScaling({
-      credentials: creds,
-      region: this.accountConfig.region,
-    });
-    const ec2 = new EC2({
-      credentials: creds,
-      region: this.accountConfig.region,
-    });
+    const awsConfig = getAwsConfig(creds, this.accountConfig.region);
+    const autoscaling = new AutoScaling(awsConfig);
+    const ec2 = new EC2(awsConfig);
 
     const resourceChunks = chunkArray(resources, 200);
     const asgs = resources
