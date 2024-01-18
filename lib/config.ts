@@ -41,7 +41,7 @@ export class RevolverConfig {
 
     const configObject = await s3.getObject({ Bucket: configBucket, Key: configKey });
     logger.debug(`Found S3 object MIME ${configObject.ContentType}`);
-    return this.validateConfig(configObject.Body!.toString('utf8'));
+    return this.validateConfig(configObject.Body!.toString());
   }
 
   async getOrganisationsAccounts(creds: any[]) {

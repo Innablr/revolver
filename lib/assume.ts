@@ -1,9 +1,8 @@
 import { logger } from './logger';
-import { Credentials } from 'aws-sdk';
 import { STS } from '@aws-sdk/client-sts';
 import dateTime from './dateTime';
 import { DateTime } from 'luxon';
-import { config as awsConfig } from 'aws-sdk';
+import { AwsCredentialIdentity as Credentials } from '@aws-sdk/types';
 
 export interface Creds {
   expiration: DateTime;
@@ -29,13 +28,15 @@ class RemoteCredentials {
   async connectLocal(): Promise<Credentials> {
     const creds = await new Promise((resolve, reject) => {
       logger.debug('Skipping assume role since role name is "none". Using locally configured credentials');
-      awsConfig.getCredentials((err, creds) => {
-        if (err !== undefined) {
-          reject(err);
-        } else {
-          resolve(creds);
-        }
-      });
+      // TODO: fix local credentials
+      // awsConfig.getCredentials((err, creds) => {
+      //   if (err !== undefined) {
+      //     reject(err);
+      //   } else {
+      //     resolve(creds);
+      //   }
+      // });
+      reject('bad things');
     });
 
     return creds as Credentials;
@@ -71,13 +72,16 @@ class RemoteCredentials {
     if (!creds) {
       throw new Error(`Unable to assume role ${remoteRole}, got empty creds`);
     }
-
+    if (creds.Expiration === undefined) {
+      throw new Error(`Credentials have no expiry time`);
+    }
     const expireAt = DateTime.fromJSDate(creds.Expiration).setZone('UTC').minus({ seconds: 5 });
-    const tokenCreds = new Credentials({
-      accessKeyId: creds.AccessKeyId,
-      secretAccessKey: creds.SecretAccessKey,
+    // TODO: deal with undefined better
+    const tokenCreds: Credentials = {
+      accessKeyId: creds.AccessKeyId || 'Missing AccessKeyId',
+      secretAccessKey: creds.SecretAccessKey || 'Missing SecretAccessKey',
       sessionToken: creds.SessionToken,
-    });
+    };
 
     logger.debug(`Assumed role ${remoteRole} will expire at ${expireAt} plus 5 seconds, caching...`);
 
