@@ -7,7 +7,7 @@ import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { chunkArray, paginateAwsCall } from '../lib/common';
 import { ec2Tagger } from './tags';
-import { getAwsConfig } from '../lib/awsConfig';
+import { getAwsConfigViaRole } from '../lib/awsConfig';
 
 class InstrumentedEc2 extends ToolingInterface {
   private instanceARN: string;
@@ -74,8 +74,7 @@ class Ec2Driver extends DriverInterface {
 
   async start(resources: InstrumentedEc2[]) {
     const logger = this.logger;
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const awsConfig = getAwsConfig(creds, this.accountConfig.region);
+    const awsConfig = getAwsConfigViaRole(this.accountConfig.assumeRoleArn, this.accountConfig.region);
     const autoscaling = new AutoScaling(awsConfig);
     const ec2 = new EC2(awsConfig);
 
@@ -127,15 +126,9 @@ class Ec2Driver extends DriverInterface {
 
   async stop(resources: InstrumentedEc2[]) {
     const logger = this.logger;
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const autoscaling = new AutoScaling({
-      credentials: creds,
-      region: this.accountConfig.region,
-    });
-    const ec2 = new EC2({
-      credentials: creds,
-      region: this.accountConfig.region,
-    });
+    const awsConfig = getAwsConfigViaRole(this.accountConfig.assumeRoleArn, this.accountConfig.region);
+    const autoscaling = new AutoScaling(awsConfig);
+    const ec2 = new EC2(awsConfig);
 
     const resourceChunks = chunkArray(resources, 200);
     const asgs = resources
@@ -184,11 +177,8 @@ class Ec2Driver extends DriverInterface {
   }
 
   async setTag(resources: InstrumentedEc2[], action: RevolverActionWithTags) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = new EC2({
-      credentials: creds,
-      region: this.accountConfig.region,
-    });
+    const awsConfig = getAwsConfigViaRole(this.accountConfig.assumeRoleArn, this.accountConfig.region);
+    const ec2 = new EC2(awsConfig);
 
     return ec2Tagger.setTag(ec2, this.logger, resources, action);
   }
@@ -198,11 +188,8 @@ class Ec2Driver extends DriverInterface {
   }
 
   async unsetTag(resources: InstrumentedEc2[], action: RevolverActionWithTags) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = new EC2({
-      credentials: creds,
-      region: this.accountConfig.region,
-    });
+    const awsConfig = getAwsConfigViaRole(this.accountConfig.assumeRoleArn, this.accountConfig.region);
+    const ec2 = new EC2(awsConfig);
 
     return ec2Tagger.unsetTag(ec2, this.logger, resources, action);
   }
@@ -212,16 +199,9 @@ class Ec2Driver extends DriverInterface {
     const inoperableStates = ['terminated', 'shutting-down'];
     logger.debug('EC2 module collecting account: %j', this.accountConfig.name);
 
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-
-    const ec2 = new EC2({
-      credentials: creds,
-      region: this.accountConfig.region,
-    });
-    const autoscaling = new AutoScaling({
-      credentials: creds,
-      region: this.accountConfig.region,
-    });
+    const awsConfig = getAwsConfigViaRole(this.accountConfig.assumeRoleArn, this.accountConfig.region);
+    const autoscaling = new AutoScaling(awsConfig);
+    const ec2 = new EC2(awsConfig);
 
     const allEc2Iinstances = (await paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(
       (xr) => xr.Instances,
