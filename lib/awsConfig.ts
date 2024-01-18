@@ -39,4 +39,10 @@ async function getAwsConfigViaRole(remoteRole: string, region: string) {
   return getAwsConfig(creds, region);
 }
 
-export { getAwsConfig, getAwsConfigViaRole };
+async function getAwsClient(clientType: any, remoteRole: string, region: string) {
+  const creds = await assume.connectTo(remoteRole, region);
+  const config = getAwsConfig(creds, region);
+  return new clientType(config);
+}
+
+export { getAwsConfig, getAwsConfigViaRole, getAwsClient };
