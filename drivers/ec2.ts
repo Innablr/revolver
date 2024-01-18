@@ -199,7 +199,7 @@ class Ec2Driver extends DriverInterface {
     const inoperableStates = ['terminated', 'shutting-down'];
     logger.debug('EC2 module collecting account: %j', this.accountConfig.name);
 
-    const awsConfig = getAwsConfigViaRole(this.accountConfig.assumeRoleArn, this.accountConfig.region);
+    const awsConfig = await getAwsConfigViaRole(this.accountConfig.assumeRoleArn, this.accountConfig.region);
     const autoscaling = new AutoScaling(awsConfig);
     const ec2 = new EC2(awsConfig);
 
