@@ -2,7 +2,9 @@ import { logger } from './logger';
 import { STS } from '@aws-sdk/client-sts';
 import dateTime from './dateTime';
 import { DateTime } from 'luxon';
-import { AwsCredentialIdentity as Credentials } from '@aws-sdk/types';
+import { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
+import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
+import { getAwsConfig } from './awsConfig';
 
 export interface Creds {
   expiration: DateTime;
@@ -25,30 +27,18 @@ class RemoteCredentials {
     return accountId;
   }
 
-  async connectLocal(): Promise<Credentials> {
-    const creds = await new Promise((resolve, reject) => {
-      logger.debug('Skipping assume role since role name is "none". Using locally configured credentials');
-      // TODO: fix local credentials
-      // awsConfig.getCredentials((err, creds) => {
-      //   if (err !== undefined) {
-      //     reject(err);
-      //   } else {
-      //     resolve(creds);
-      //   }
-      // });
-      reject('bad things');
-    });
-
-    return creds as Credentials;
+  async connectLocal(): Promise<Credentials | Provider<Credentials>> {
+    return fromNodeProviderChain();
   }
 
-  async connectTo(remoteRole: string): Promise<Credentials> {
-    const sts = new STS();
+  async connectTo(remoteRole: string, region?: string): Promise<Credentials | Provider<Credentials>> {
+    const awsConfig = await getAwsConfig(undefined, region || 'ap-southeast-2'); // TODO: remove default
+    const sts = new STS(awsConfig);
 
     logger.debug(`Requested connection via ${remoteRole}`);
 
     if (remoteRole === undefined || remoteRole.endsWith('/none')) {
-      return this.connectLocal();
+      return await this.connectLocal();
     }
 
     if (remoteRole in this.creds) {

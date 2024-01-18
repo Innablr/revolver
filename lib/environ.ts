@@ -6,6 +6,7 @@ class Environ {
   configKey: string;
   baseBackoff: number;
   maxRetries: number;
+  httpsProxy: string | undefined;
 }
 
 const environ = new Environ();
@@ -17,5 +18,6 @@ environ.configBucket = process.env['S3_BUCKET'];
 environ.configKey = process.env['S3_KEY'] || 'config/revolver.yaml';
 environ.baseBackoff = parseInt(process.env['SDK_BASE_BACKOFF'] || '300', 10);
 environ.maxRetries = parseInt(process.env['SDK_MAX_RETRIES'] || '30', 10);
+environ.httpsProxy = process.env['HTTPS_PROXY'];
 
 export default environ;
