@@ -6,7 +6,7 @@ import { logger } from './logger';
 import assume from '../lib/assume';
 
 // In version 3 , there is no longer a global configuration managed by the SDK
-function getAwsConfig(region: string, credentials?: Credentials | Provider<Credentials>) {
+function getAwsConfig(region?: string, credentials?: Credentials | Provider<Credentials>) {
   // returns:
   // - AwsAuthInputConfig (credentials)
   // - ClientDefaults (region, maxAttempts, retryMode, )

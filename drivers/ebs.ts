@@ -1,11 +1,11 @@
 import { CreateVolumeCommandOutput, EC2, Tag } from '@aws-sdk/client-ec2';
-import assume from '../lib/assume';
 import { DateTime } from 'luxon';
 import { paginateAwsCall } from '../lib/common';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { ec2Tagger } from './tags';
+import { getAwsClientForAccount } from '../lib/awsConfig';
 
 class InstrumentedEBS extends ToolingInterface {
   private volumeARN: string;
@@ -63,12 +63,7 @@ class EBSDriver extends DriverInterface {
   }
 
   async setTag(resources: InstrumentedEBS[], action: RevolverActionWithTags) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = new EC2({
-      credentials: creds,
-      region: this.accountConfig.region
-    });
-
+    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
     return ec2Tagger.setTag(ec2, this.logger, resources, action);
   }
 
@@ -77,12 +72,7 @@ class EBSDriver extends DriverInterface {
   }
 
   async unsetTag(resources: InstrumentedEBS[], action: RevolverActionWithTags) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = new EC2({
-      credentials: creds,
-      region: this.accountConfig.region
-    });
-
+    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
     return ec2Tagger.unsetTag(ec2, this.logger, resources, action);
   }
 
@@ -103,11 +93,7 @@ class EBSDriver extends DriverInterface {
     const logger = this.logger;
     logger.debug('EBS module collecting account: %j', this.accountConfig.name);
 
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = await new EC2({
-      credentials: creds,
-      region: this.accountConfig.region
-    });
+    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
 
     const ebsVolumes = await paginateAwsCall(ec2.describeVolumes.bind(ec2), 'Volumes');
     const ec2instances = (await paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(

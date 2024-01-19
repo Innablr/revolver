@@ -1,11 +1,11 @@
 import { DateTime } from 'luxon';
 import { EC2, Tag } from '@aws-sdk/client-ec2';
-import assume from '../lib/assume';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverActionWithTags } from '../actions/actions';
 import { paginateAwsCall } from '../lib/common';
 import { ec2Tagger } from './tags';
+import { getAwsClientForAccount } from '../lib/awsConfig';
 
 class InstrumentedSnapshot extends ToolingInterface {
   get resourceId() {
@@ -54,12 +54,7 @@ class SnapshotDriver extends DriverInterface {
   }
 
   async setTag(resources: InstrumentedSnapshot[], action: RevolverActionWithTags) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = new EC2({
-      credentials: creds,
-      region: this.accountConfig.region,
-    });
-
+    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
     return ec2Tagger.setTag(ec2, this.logger, resources, action);
   }
 
@@ -68,12 +63,7 @@ class SnapshotDriver extends DriverInterface {
   }
 
   async unsetTag(resources: InstrumentedSnapshot[], action: RevolverActionWithTags) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = new EC2({
-      credentials: creds,
-      region: this.accountConfig.region,
-    });
-
+    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
     return ec2Tagger.unsetTag(ec2, this.logger, resources, action);
   }
 
@@ -85,12 +75,7 @@ class SnapshotDriver extends DriverInterface {
     const logger = this.logger;
     logger.debug('Snapshot module collecting account: %j', this.accountConfig.name);
 
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const ec2 = await new EC2({
-      credentials: creds,
-      region: this.accountConfig.region,
-    });
-
+    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
     const snapshots = await paginateAwsCall(ec2.describeSnapshots.bind(ec2), 'Snapshots', {
       OwnerIds: [this.accountId],
     });

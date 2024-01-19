@@ -1,9 +1,9 @@
 import { DateTime } from 'luxon';
 import { Cluster, Redshift, Tag } from '@aws-sdk/client-redshift';
-import assume from '../lib/assume';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
+import { getAwsClientForAccount } from '../lib/awsConfig';
 
 class InstrumentedRedshiftClusterSnapshot extends ToolingInterface {
   public tags: Tag[] = [];
@@ -44,12 +44,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
   startOneSnapshot(snapshot: InstrumentedRedshiftClusterSnapshot) {
     let redshift: Redshift;
     const logger = this.logger;
-    return assume
-      .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new Redshift({
-      credentials: creds,
-      region: this.accountConfig.region,
-    }))
+    return getAwsClientForAccount(Redshift, this.accountConfig)
       .then((r) => {
         redshift = r;
       })
@@ -125,12 +120,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
 
   setTag(resources: InstrumentedRedshiftClusterSnapshot[], action: RevolverActionWithTags) {
     const logger = this.logger;
-    return assume
-      .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new Redshift({
-      credentials: creds,
-      region: this.accountConfig.region,
-    }))
+    return getAwsClientForAccount(Redshift, this.accountConfig)
       .then(function (redshift) {
         return Promise.all(
           resources.map(function (xr) {
@@ -164,12 +154,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
 
   unsetTag(resources: InstrumentedRedshiftClusterSnapshot[], action: RevolverActionWithTags) {
     const logger = this.logger;
-    return assume
-      .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new Redshift({
-      credentials: creds,
-      region: this.accountConfig.region,
-    }))
+    return getAwsClientForAccount(Redshift, this.accountConfig)
       .then(function (redshift) {
         return Promise.all(
           resources.map(function (xs) {
@@ -205,11 +190,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
     const logger = this.logger;
     logger.debug('Redshift Cluster Snapshot module collecting account: %j', this.accountConfig.name);
 
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const redshift = new Redshift({
-      credentials: creds,
-      region: this.accountConfig.region,
-    });
+    const redshift = await getAwsClientForAccount(Redshift, this.accountConfig);
 
     const redshiftClusterSnapshots = await redshift
       .describeClusterSnapshots({})

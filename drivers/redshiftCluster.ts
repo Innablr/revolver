@@ -5,6 +5,7 @@ import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import dateTime from '../lib/dateTime';
+import { getAwsClientForAccount } from '../lib/awsConfig';
 
 class InstrumentedRedshiftCluster extends ToolingInterface {
   public tags: Tag[] = [];
@@ -90,12 +91,7 @@ class RedshiftClusterDriver extends DriverInterface {
       { Key: 'revolver/cluster_port', Value: cluster.resource.Endpoint.Port.toString() },
     ]);
 
-    return assume
-      .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new Redshift({
-      credentials: creds,
-      region: this.accountConfig.region,
-    }))
+    return getAwsClientForAccount(Redshift, this.accountConfig)
       .then((r) => {
         redshift = r;
       })
@@ -144,12 +140,7 @@ class RedshiftClusterDriver extends DriverInterface {
 
   setTag(resources: InstrumentedRedshiftCluster[], action: RevolverActionWithTags) {
     const logger = this.logger;
-    return assume
-      .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new Redshift({
-      credentials: creds,
-      region: this.accountConfig.region,
-    }))
+    return getAwsClientForAccount(Redshift, this.accountConfig)
       .then(function (redshift) {
         return Promise.all(
           resources.map(function (xr) {
@@ -183,12 +174,7 @@ class RedshiftClusterDriver extends DriverInterface {
 
   unsetTag(resources: InstrumentedRedshiftCluster[], action: RevolverActionWithTags) {
     const logger = this.logger;
-    return assume
-      .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new Redshift({
-      credentials: creds,
-      region: this.accountConfig.region,
-    }))
+    return getAwsClientForAccount(Redshift, this.accountConfig)
       .then(function (redshift) {
         return Promise.all(
           resources.map(function (xr) {
@@ -224,15 +210,7 @@ class RedshiftClusterDriver extends DriverInterface {
     const logger = this.logger;
     logger.debug('Redshift Cluster module collecting account: %j', this.accountConfig.name);
 
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const redshift = await new Redshift({
-      credentials: creds,
-      region: this.accountConfig.region,
-
-      // The key apiVersion is no longer supported in v3, and can be removed.
-      // @deprecated The client uses the "latest" apiVersion.
-      apiVersion: '2012-12-01',
-    });
+    const redshift = await getAwsClientForAccount(Redshift, this.accountConfig);
 
     const redshiftClusters =
       (await redshift

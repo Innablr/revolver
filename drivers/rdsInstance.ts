@@ -1,10 +1,10 @@
 import { DateTime } from 'luxon';
 import { RDS, Tag } from '@aws-sdk/client-rds';
-import assume from '../lib/assume';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { rdsTagger } from './tags';
+import { getAwsClientForAccount } from '../lib/awsConfig';
 
 class InstrumentedRdsInstance extends ToolingInterface {
   public tags: Tag[] = [];
@@ -52,12 +52,7 @@ class InstrumentedRdsInstance extends ToolingInterface {
 class RdsInstanceDriver extends DriverInterface {
   start(resources: InstrumentedRdsInstance[]) {
     const logger = this.logger;
-    return assume
-      .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new RDS({
-      credentials: creds,
-      region: this.accountConfig.region
-    }))
+    return getAwsClientForAccount(RDS, this.accountConfig)
       .then(function (rds) {
         return Promise.all(
           resources.map(function (xr) {
@@ -100,12 +95,7 @@ class RdsInstanceDriver extends DriverInterface {
 
   stop(resources: InstrumentedRdsInstance[]) {
     const logger = this.logger;
-    return assume
-      .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new RDS({
-      credentials: creds,
-      region: this.accountConfig.region
-    }))
+    return getAwsClientForAccount(RDS, this.accountConfig)
       .then(function (rds) {
         return Promise.all(
           resources.map(function (xr) {
@@ -160,12 +150,7 @@ class RdsInstanceDriver extends DriverInterface {
   }
 
   async setTag(resources: InstrumentedRdsInstance[], action: RevolverActionWithTags) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({
-      credentials: creds,
-      region: this.accountConfig.region
-    });
-
+    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
     return rdsTagger.setTag(rds, this.logger, resources, action);
   }
 
@@ -174,12 +159,7 @@ class RdsInstanceDriver extends DriverInterface {
   }
 
   async unsetTag(resources: InstrumentedRdsInstance[], action: RevolverActionWithTags) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({
-      credentials: creds,
-      region: this.accountConfig.region
-    });
-
+    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
     return rdsTagger.unsetTag(rds, this.logger, resources, action);
   }
 
@@ -190,23 +170,13 @@ class RdsInstanceDriver extends DriverInterface {
   collect() {
     const logger = this.logger;
     logger.debug('RDS module collecting account: %j', this.accountConfig.name);
-    return assume
-      .connectTo(this.accountConfig.assumeRoleArn)
-      .then((creds) => new RDS({
-      credentials: creds,
-      region: this.accountConfig.region
-    }))
+    return getAwsClientForAccount(RDS, this.accountConfig)
       .then((rds) => rds.describeDBInstances({}))
       .then((r) => r.DBInstances!.map((xr) => new InstrumentedRdsInstance(xr)))
       .then((r) =>
         Promise.all([
           Promise.resolve(r),
-          assume
-            .connectTo(this.accountConfig.assumeRoleArn)
-            .then((creds) => new RDS({
-            credentials: creds,
-            region: this.accountConfig.region
-          })),
+          getAwsClientForAccount(RDS, this.accountConfig),
         ]),
       )
       .then(([r, rds]) =>

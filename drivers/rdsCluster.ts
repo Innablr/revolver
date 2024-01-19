@@ -1,10 +1,10 @@
 import { DateTime } from 'luxon';
 import { RDS, Tag } from '@aws-sdk/client-rds';
-import assume from '../lib/assume';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { rdsTagger } from './tags';
+import { getAwsClientForAccount } from '../lib/awsConfig';
 
 class InstrumentedRdsCluster extends ToolingInterface {
   get resourceId() {
@@ -52,12 +52,7 @@ class InstrumentedRdsCluster extends ToolingInterface {
 
 class RdsClusterDriver extends DriverInterface {
   async start(resources: InstrumentedRdsCluster[]) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({
-      credentials: creds,
-      region: this.accountConfig.region
-    });
-
+    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
     return Promise.all(
       resources.map((xr) => {
         this.logger.info('RDS cluster %s will start', xr.resourceId);
@@ -79,12 +74,7 @@ class RdsClusterDriver extends DriverInterface {
   }
 
   async stop(resources: InstrumentedRdsCluster[]) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({
-      credentials: creds,
-      region: this.accountConfig.region
-    });
-
+    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
     return Promise.all(
       resources.map((xr) => {
         this.logger.info('RDS cluster %s will stop', xr.resourceId);
@@ -111,12 +101,7 @@ class RdsClusterDriver extends DriverInterface {
   }
 
   async setTag(resources: InstrumentedRdsCluster[], action: RevolverActionWithTags) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({
-      credentials: creds,
-      region: this.accountConfig.region
-    });
-
+    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
     return rdsTagger.setTag(rds, this.logger, resources, action);
   }
 
@@ -125,12 +110,7 @@ class RdsClusterDriver extends DriverInterface {
   }
 
   async unsetTag(resources: InstrumentedRdsCluster[], action: RevolverActionWithTags) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({
-      credentials: creds,
-      region: this.accountConfig.region
-    });
-
+    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
     return rdsTagger.unsetTag(rds, this.logger, resources, action);
   }
 
@@ -141,11 +121,7 @@ class RdsClusterDriver extends DriverInterface {
   async collect() {
     const logger = this.logger;
     logger.debug('RDS Cluster module collecting account: %j', this.accountConfig.name);
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({
-      credentials: creds,
-      region: this.accountConfig.region
-    });
+    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
     const clusters = await rds.describeDBClusters({});
     const instances = await rds.describeDBInstances({});
 
