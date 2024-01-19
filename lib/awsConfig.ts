@@ -46,4 +46,4 @@ async function getAwsClientForAccount<T>(ctor: Ctor<T>, accountConfig: any): Pro
   return getAwsClient(ctor, accountConfig.assumeRoleArn, accountConfig.region);
 }
 
-export { getAwsConfig, getAwsClient, getAwsClientForAccount };
+export { getAwsConfig, getAwsClientForAccount };
