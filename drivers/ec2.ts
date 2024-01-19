@@ -188,8 +188,8 @@ class Ec2Driver extends DriverInterface {
     const inoperableStates = ['terminated', 'shutting-down'];
     logger.debug('EC2 module collecting account: %j', this.accountConfig.name);
 
-    const ec2 = await getAwsClient(EC2, this.accountConfig.assumeRoleArn, this.accountConfig.region);
-    const autoscaling = await getAwsClient(AutoScaling, this.accountConfig.assumeRoleArn, this.accountConfig.region);
+    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
+    const autoscaling = await getAwsClientForAccount(AutoScaling, this.accountConfig);
 
     const allEc2Iinstances = (await paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(
       (xr) => xr.Instances,
