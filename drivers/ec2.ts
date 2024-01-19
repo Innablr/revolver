@@ -6,7 +6,7 @@ import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { chunkArray, paginateAwsCall } from '../lib/common';
 import { ec2Tagger } from './tags';
-import { getAwsClient, getAwsClientForAccount } from '../lib/awsConfig';
+import { getAwsClientForAccount } from '../lib/awsConfig';
 
 class InstrumentedEc2 extends ToolingInterface {
   private instanceARN: string;
