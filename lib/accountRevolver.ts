@@ -18,7 +18,7 @@ export class AccountRevolver {
     'redshiftClusterSnapshot',
     'local'
   ];
-  readonly supportedPlugins = ['powercycle', 'validateTags', 'restoreRdsSg'];
+  readonly supportedPlugins = ['powercycle', 'powercycleCentral', 'validateTags', 'restoreRdsSg'];
 
   readonly config;
   readonly logger;

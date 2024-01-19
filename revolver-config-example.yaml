@@ -24,6 +24,17 @@ defaults:
     - name: rdsCluster
 
   plugins:
+    powercycleCentral:
+      active: true
+      configs:
+        - parser: strict
+          availabilityTag: Schedule
+          availabilityTagPriority: 10
+          matchers:
+            - name: default untagged schedule
+              filter: i-04d75fa75dbf52c39
+              schedule: 24x7
+              priority: 1
     powercycle:
       active: true
       configs:
