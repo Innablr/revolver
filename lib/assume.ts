@@ -1,8 +1,10 @@
 import { logger } from './logger';
-import { STS, Credentials } from 'aws-sdk';
+import { STS, STSClientConfig } from '@aws-sdk/client-sts';
 import dateTime from './dateTime';
 import { DateTime } from 'luxon';
-import { config as awsConfig } from 'aws-sdk';
+import { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
+import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
+import { getAwsConfig } from './awsConfig';
 
 export interface Creds {
   expiration: DateTime;
@@ -25,28 +27,10 @@ class RemoteCredentials {
     return accountId;
   }
 
-  async connectLocal(): Promise<Credentials> {
-    const creds = await new Promise((resolve, reject) => {
-      logger.debug('Skipping assume role since role name is "none". Using locally configured credentials');
-      awsConfig.getCredentials((err, creds) => {
-        if (err !== undefined) {
-          reject(err);
-        } else {
-          resolve(creds);
-        }
-      });
-    });
-
-    return creds as Credentials;
-  }
-
-  async connectTo(remoteRole: string): Promise<Credentials> {
-    const sts = new STS();
-
+  async connectTo(remoteRole: string, region?: string): Promise<Credentials | Provider<Credentials>> {
     logger.debug(`Requested connection via ${remoteRole}`);
-
     if (remoteRole === undefined || remoteRole.endsWith('/none')) {
-      return this.connectLocal();
+      return fromNodeProviderChain();
     }
 
     if (remoteRole in this.creds) {
@@ -60,24 +44,28 @@ class RemoteCredentials {
     }
 
     logger.debug(`Assuming role ${remoteRole}...`);
+    const awsConfig = getAwsConfig(region || 'ap-southeast-2') as STSClientConfig; // TODO: remove default
+    const sts = new STS(awsConfig);
     const creds = await sts
       .assumeRole({
         RoleArn: remoteRole,
         RoleSessionName: `Revolver_${dateTime.getTime().toFormat('yyyyLLddHHmmss')}`,
       })
-      .promise()
       .then((r) => r.Credentials);
 
     if (!creds) {
       throw new Error(`Unable to assume role ${remoteRole}, got empty creds`);
     }
-
+    if (creds.Expiration === undefined) {
+      throw new Error(`Credentials have no expiry time`);
+    }
     const expireAt = DateTime.fromJSDate(creds.Expiration).setZone('UTC').minus({ seconds: 5 });
-    const tokenCreds = new Credentials({
-      accessKeyId: creds.AccessKeyId,
-      secretAccessKey: creds.SecretAccessKey,
+    // TODO: deal with undefined better
+    const tokenCreds: Credentials = {
+      accessKeyId: creds.AccessKeyId || 'Missing AccessKeyId',
+      secretAccessKey: creds.SecretAccessKey || 'Missing SecretAccessKey',
       sessionToken: creds.SessionToken,
-    });
+    };
 
     logger.debug(`Assumed role ${remoteRole} will expire at ${expireAt} plus 5 seconds, caching...`);
 

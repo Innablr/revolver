@@ -2,9 +2,11 @@ import { logger } from './logger';
 import { promises as fs } from 'fs';
 import path = require('node:path');
 import yaml from 'js-yaml';
-import { Organizations, S3 } from 'aws-sdk';
+import { Organizations, OrganizationsClientConfig } from '@aws-sdk/client-organizations';
+import { S3, S3ClientConfig } from '@aws-sdk/client-s3';
 import { paginateAwsCall } from './common';
 import merge from 'ts-deepmerge';
+import { getAwsConfig } from './awsConfig';
 
 export class RevolverConfig {
   validateConfig(data: string) {
@@ -35,19 +37,21 @@ export class RevolverConfig {
   }
 
   async readConfigFromS3(configBucket: string, configKey: string): Promise<string> {
-    const s3 = new S3();
+    const config = getAwsConfig() as S3ClientConfig;
+    const s3 = new S3(config);
     logger.debug(`Fetching config from bucket [${configBucket}] key [${configKey}]`);
 
-    const configObject = await s3.getObject({ Bucket: configBucket, Key: configKey }).promise();
+    const configObject = await s3.getObject({ Bucket: configBucket, Key: configKey });
     logger.debug(`Found S3 object MIME ${configObject.ContentType}`);
-    return this.validateConfig(configObject.Body!.toString('utf8'));
+    return this.validateConfig(await configObject.Body!.transformToString());
   }
 
   async getOrganisationsAccounts(creds: any[]) {
     const orgsRegion = 'us-east-1';
     const allAccounts = await Promise.all(
       creds.map(async (cr: any) => {
-        const client = new Organizations({ credentials: cr, region: orgsRegion });
+        const config = getAwsConfig(orgsRegion, cr) as OrganizationsClientConfig;
+        const client = new Organizations(config); // TODO: check this works
         const accounts = await paginateAwsCall(client.listAccounts.bind(client), 'Accounts');
         accounts.forEach((account) => {
           account.accountId = account.Id;

@@ -1,10 +1,10 @@
 async function paginateAwsCall(fn: (...args: any[]) => any, what: string, params?: any) {
   let entityList: any[] = [];
   const parameters = params || {};
-  let r = await fn(parameters).promise();
+  let r = await fn(parameters);
   entityList = entityList.concat(entityList, r[what]);
   while (r.NextToken !== undefined) {
-    r = await fn(Object.assign({}, parameters, { NextToken: r.NextToken })).promise();
+    r = await fn(Object.assign({}, parameters, { NextToken: r.NextToken }));
     entityList = entityList.concat(r[what]);
   }
   return entityList;

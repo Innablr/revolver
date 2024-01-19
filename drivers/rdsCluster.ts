@@ -1,10 +1,10 @@
 import { DateTime } from 'luxon';
-import { RDS } from 'aws-sdk';
-import assume from '../lib/assume';
+import { RDS, Tag } from '@aws-sdk/client-rds';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { rdsTagger } from './tags';
+import { getAwsClientForAccount } from '../lib/awsConfig';
 
 class InstrumentedRdsCluster extends ToolingInterface {
   get resourceId() {
@@ -45,26 +45,21 @@ class InstrumentedRdsCluster extends ToolingInterface {
   }
 
   tag(key: string) {
-    const tag = this.resource.TagList.find((xt: RDS.Tag) => xt.Key === key);
+    const tag = this.resource.TagList.find((xt: Tag) => xt.Key === key);
     return tag?.Value;
   }
 }
 
 class RdsClusterDriver extends DriverInterface {
   async start(resources: InstrumentedRdsCluster[]) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({ credentials: creds, region: this.accountConfig.region });
-
+    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
     return Promise.all(
       resources.map((xr) => {
         this.logger.info('RDS cluster %s will start', xr.resourceId);
-        return rds
-          .startDBCluster({ DBClusterIdentifier: xr.resourceId })
-          .promise()
-          .catch((err) => {
-            this.logger.error('Error starting RDS instance %s, stack trace will follow:', xr.resourceId);
-            this.logger.error(err);
-          });
+        return rds.startDBCluster({ DBClusterIdentifier: xr.resourceId }).catch((err) => {
+          this.logger.error('Error starting RDS instance %s, stack trace will follow:', xr.resourceId);
+          this.logger.error(err);
+        });
       }),
     );
   }
@@ -77,19 +72,14 @@ class RdsClusterDriver extends DriverInterface {
   }
 
   async stop(resources: InstrumentedRdsCluster[]) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({ credentials: creds, region: this.accountConfig.region });
-
+    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
     return Promise.all(
       resources.map((xr) => {
         this.logger.info('RDS cluster %s will stop', xr.resourceId);
-        return rds
-          .stopDBCluster({ DBClusterIdentifier: xr.resourceId })
-          .promise()
-          .catch((err) => {
-            this.logger.error('Error stopping RDS instance %s, stack trace will follow:', xr.resourceId);
-            this.logger.error(err);
-          });
+        return rds.stopDBCluster({ DBClusterIdentifier: xr.resourceId }).catch((err) => {
+          this.logger.error('Error stopping RDS instance %s, stack trace will follow:', xr.resourceId);
+          this.logger.error(err);
+        });
       }),
     );
   }
@@ -107,9 +97,7 @@ class RdsClusterDriver extends DriverInterface {
   }
 
   async setTag(resources: InstrumentedRdsCluster[], action: RevolverActionWithTags) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({ credentials: creds, region: this.accountConfig.region });
-
+    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
     return rdsTagger.setTag(rds, this.logger, resources, action);
   }
 
@@ -118,9 +106,7 @@ class RdsClusterDriver extends DriverInterface {
   }
 
   async unsetTag(resources: InstrumentedRdsCluster[], action: RevolverActionWithTags) {
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({ credentials: creds, region: this.accountConfig.region });
-
+    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
     return rdsTagger.unsetTag(rds, this.logger, resources, action);
   }
 
@@ -131,10 +117,9 @@ class RdsClusterDriver extends DriverInterface {
   async collect() {
     const logger = this.logger;
     logger.debug('RDS Cluster module collecting account: %j', this.accountConfig.name);
-    const creds = await assume.connectTo(this.accountConfig.assumeRoleArn);
-    const rds = new RDS({ credentials: creds, region: this.accountConfig.region });
-    const clusters = await rds.describeDBClusters({}).promise();
-    const instances = await rds.describeDBInstances({}).promise();
+    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
+    const clusters = await rds.describeDBClusters({});
+    const instances = await rds.describeDBInstances({});
 
     const instrumentedClusters = clusters
       .DBClusters!.map((xc) => new InstrumentedRdsCluster(xc))
