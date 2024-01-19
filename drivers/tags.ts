@@ -75,11 +75,10 @@ class RDSTagger implements Tagger {
       resources.map(async function (xr) {
         logger.info('RDS instance %s will be unset tags %j', xr.resourceId, action.tags);
         try {
-          return await rds
-            .removeTagsFromResource({
-              ResourceName: xr.resourceArn,
-              TagKeys: action.tags.map((xt: TagInterface) => xt.Key),
-            });
+          return await rds.removeTagsFromResource({
+            ResourceName: xr.resourceArn,
+            TagKeys: action.tags.map((xt: TagInterface) => xt.Key),
+          });
         } catch (e) {
           logger.error('Error unsettings tags for %s %s, stack trace will follow:', xr.resourceType, xr.resourceId);
           logger.error(e);

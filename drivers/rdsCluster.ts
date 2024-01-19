@@ -56,12 +56,10 @@ class RdsClusterDriver extends DriverInterface {
     return Promise.all(
       resources.map((xr) => {
         this.logger.info('RDS cluster %s will start', xr.resourceId);
-        return rds
-          .startDBCluster({ DBClusterIdentifier: xr.resourceId })
-          .catch((err) => {
-            this.logger.error('Error starting RDS instance %s, stack trace will follow:', xr.resourceId);
-            this.logger.error(err);
-          });
+        return rds.startDBCluster({ DBClusterIdentifier: xr.resourceId }).catch((err) => {
+          this.logger.error('Error starting RDS instance %s, stack trace will follow:', xr.resourceId);
+          this.logger.error(err);
+        });
       }),
     );
   }
@@ -78,12 +76,10 @@ class RdsClusterDriver extends DriverInterface {
     return Promise.all(
       resources.map((xr) => {
         this.logger.info('RDS cluster %s will stop', xr.resourceId);
-        return rds
-          .stopDBCluster({ DBClusterIdentifier: xr.resourceId })
-          .catch((err) => {
-            this.logger.error('Error stopping RDS instance %s, stack trace will follow:', xr.resourceId);
-            this.logger.error(err);
-          });
+        return rds.stopDBCluster({ DBClusterIdentifier: xr.resourceId }).catch((err) => {
+          this.logger.error('Error stopping RDS instance %s, stack trace will follow:', xr.resourceId);
+          this.logger.error(err);
+        });
       }),
     );
   }

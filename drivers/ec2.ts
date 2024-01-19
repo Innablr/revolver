@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon';
 import { AutoScaling } from '@aws-sdk/client-auto-scaling';
 import { CreateVolumeCommandOutput, EC2, Instance, Tag } from '@aws-sdk/client-ec2';
-import assume from '../lib/assume';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
@@ -89,10 +88,9 @@ class Ec2Driver extends DriverInterface {
           'EC2 instances %j will start',
           chunk.map((xr) => xr.resourceId),
         );
-        return ec2
-          .startInstances({
-            InstanceIds: chunk.map((xr) => xr.resourceId),
-          });
+        return ec2.startInstances({
+          InstanceIds: chunk.map((xr) => xr.resourceId),
+        });
       }),
     );
 
@@ -101,11 +99,9 @@ class Ec2Driver extends DriverInterface {
       await Promise.all(
         asgs.map(function (xa: string) {
           logger.info('Resuming ASG %s', xa);
-          return autoscaling
-            .resumeProcesses({ AutoScalingGroupName: xa })
-            .catch((e) => {
-              logger.error('Autoscaling group %s failed to resume: %s', xa, e);
-            });
+          return autoscaling.resumeProcesses({ AutoScalingGroupName: xa }).catch((e) => {
+            logger.error('Autoscaling group %s failed to resume: %s', xa, e);
+          });
         }),
       );
     }
@@ -137,11 +133,9 @@ class Ec2Driver extends DriverInterface {
     await Promise.all(
       asgs.map(function (xa: string) {
         logger.info('Pausing ASG %s', xa);
-        return autoscaling
-          .suspendProcesses({ AutoScalingGroupName: xa })
-          .catch((e) => {
-            logger.error('Autoscaling group %s failed to resume: %s', xa, e);
-          });
+        return autoscaling.suspendProcesses({ AutoScalingGroupName: xa }).catch((e) => {
+          logger.error('Autoscaling group %s failed to resume: %s', xa, e);
+        });
       }),
     );
 
@@ -151,10 +145,9 @@ class Ec2Driver extends DriverInterface {
           'EC2 instances %j will stop',
           chunk.map((xr) => xr.resourceId),
         );
-        return ec2
-          .stopInstances({
-            InstanceIds: chunk.map((xr) => xr.resourceId),
-          });
+        return ec2.stopInstances({
+          InstanceIds: chunk.map((xr) => xr.resourceId),
+        });
       }),
     );
 

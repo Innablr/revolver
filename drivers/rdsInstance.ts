@@ -95,24 +95,21 @@ class RdsInstanceDriver extends DriverInterface {
 
   stop(resources: InstrumentedRdsInstance[]) {
     const logger = this.logger;
-    return getAwsClientForAccount(RDS, this.accountConfig)
-      .then(function (rds) {
-        return Promise.all(
-          resources.map(function (xr) {
-            if (xr.resource.DBInstanceStatus !== 'available') {
-              logger.info("RDS instance %s can't be stopped, status [%s]", xr.resourceId, xr.resource.DBInstanceStatus);
-              return Promise.resolve();
-            }
-            logger.info('RDS instance %s will stop', xr.resourceId);
-            return rds
-              .stopDBInstance({ DBInstanceIdentifier: xr.resourceId })
-              .catch(function (err) {
-                logger.error('Error stopping RDS instance %s, stack trace will follow:', xr.resourceId);
-                logger.error(err);
-              });
-          }),
-        );
-      });
+    return getAwsClientForAccount(RDS, this.accountConfig).then(function (rds) {
+      return Promise.all(
+        resources.map(function (xr) {
+          if (xr.resource.DBInstanceStatus !== 'available') {
+            logger.info("RDS instance %s can't be stopped, status [%s]", xr.resourceId, xr.resource.DBInstanceStatus);
+            return Promise.resolve();
+          }
+          logger.info('RDS instance %s will stop', xr.resourceId);
+          return rds.stopDBInstance({ DBInstanceIdentifier: xr.resourceId }).catch(function (err) {
+            logger.error('Error stopping RDS instance %s, stack trace will follow:', xr.resourceId);
+            logger.error(err);
+          });
+        }),
+      );
+    });
   }
 
   maskstop(resource: InstrumentedRdsInstance) {
@@ -173,12 +170,7 @@ class RdsInstanceDriver extends DriverInterface {
     return getAwsClientForAccount(RDS, this.accountConfig)
       .then((rds) => rds.describeDBInstances({}))
       .then((r) => r.DBInstances!.map((xr) => new InstrumentedRdsInstance(xr)))
-      .then((r) =>
-        Promise.all([
-          Promise.resolve(r),
-          getAwsClientForAccount(RDS, this.accountConfig),
-        ]),
-      )
+      .then((r) => Promise.all([Promise.resolve(r), getAwsClientForAccount(RDS, this.accountConfig)]))
       .then(([r, rds]) =>
         Promise.all(
           r.map(function (xr) {
