@@ -1,5 +1,5 @@
 import { logger } from './logger';
-import { STS } from '@aws-sdk/client-sts';
+import { STS, STSClientConfig } from '@aws-sdk/client-sts';
 import dateTime from './dateTime';
 import { DateTime } from 'luxon';
 import { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
@@ -27,18 +27,10 @@ class RemoteCredentials {
     return accountId;
   }
 
-  async connectLocal(): Promise<Credentials | Provider<Credentials>> {
-    return fromNodeProviderChain();
-  }
-
   async connectTo(remoteRole: string, region?: string): Promise<Credentials | Provider<Credentials>> {
-    const awsConfig = await getAwsConfig(undefined, region || 'ap-southeast-2'); // TODO: remove default
-    const sts = new STS(awsConfig);
-
     logger.debug(`Requested connection via ${remoteRole}`);
-
     if (remoteRole === undefined || remoteRole.endsWith('/none')) {
-      return await this.connectLocal();
+      return fromNodeProviderChain();
     }
 
     if (remoteRole in this.creds) {
@@ -52,6 +44,8 @@ class RemoteCredentials {
     }
 
     logger.debug(`Assuming role ${remoteRole}...`);
+    const awsConfig = getAwsConfig(region || 'ap-southeast-2') as STSClientConfig; // TODO: remove default
+    const sts = new STS(awsConfig);
     const creds = await sts
       .assumeRole({
         RoleArn: remoteRole,

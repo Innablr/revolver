@@ -1,13 +1,12 @@
 import environ from './environ';
-// import { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
-import { NodeHttpHandler } from '@smithy/node-http-handler';
+import { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
+import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { logger } from './logger';
 import assume from '../lib/assume';
 
 // In version 3 , there is no longer a global configuration managed by the SDK
-function getAwsConfig(credentials: any, region: string) {
-  // credentials is  Credentials | Provider<Credentials> or undefined?
+function getAwsConfig(region: string, credentials?: Credentials | Provider<Credentials>) {
   // returns:
   // - AwsAuthInputConfig (credentials)
   // - ClientDefaults (region, maxAttempts, retryMode, )
@@ -25,24 +24,26 @@ function getAwsConfig(credentials: any, region: string) {
     credentials: credentials,
     region: region,
     retryDelayOptions: {
-      base: environ.baseBackoff, // TODO: RetryStrategy see https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-smithy-util-retry/
+      base: environ.baseBackoff,
     },
     maxAttempts: environ.maxRetries,
     requestHandler: requestHandler,
-    // logger: logger,
+    // logger: logger, // enable AWS query logging
   };
 }
 
-// Helper function to get local/remote credentials, then get the configuration for creating an API client
-async function getAwsConfigViaRole(remoteRole: string, region: string) {
+type Ctor<U> = new (stuff: object) => U;
+
+// Helper function to get a specific AWS client for the given role/region
+async function getAwsClient<T>(ctor: Ctor<T>, remoteRole: string, region: string): Promise<T> {
   const creds = await assume.connectTo(remoteRole, region);
-  return getAwsConfig(creds, region);
+  const config = getAwsConfig(region, creds);
+  return new ctor(config);
 }
 
-async function getAwsClient(clientType: any, remoteRole: string, region: string) {
-  const creds = await assume.connectTo(remoteRole, region);
-  const config = getAwsConfig(creds, region);
-  return new clientType(config);
+// Helper function to get a specific AWS client for the given account
+async function getAwsClientForAccount<T>(ctor: Ctor<T>, accountConfig: any): Promise<T> {
+  return getAwsClient(ctor, accountConfig.assumeRoleArn, accountConfig.region);
 }
 
-export { getAwsConfig, getAwsConfigViaRole, getAwsClient };
+export { getAwsConfig, getAwsClient, getAwsClientForAccount };

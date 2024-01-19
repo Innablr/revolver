@@ -7,7 +7,7 @@ import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { chunkArray, paginateAwsCall } from '../lib/common';
 import { ec2Tagger } from './tags';
-import { getAwsConfigViaRole } from '../lib/awsConfig';
+import { getAwsClient, getAwsClientForAccount } from '../lib/awsConfig';
 
 class InstrumentedEc2 extends ToolingInterface {
   private instanceARN: string;
@@ -74,9 +74,8 @@ class Ec2Driver extends DriverInterface {
 
   async start(resources: InstrumentedEc2[]) {
     const logger = this.logger;
-    const awsConfig = getAwsConfigViaRole(this.accountConfig.assumeRoleArn, this.accountConfig.region);
-    const autoscaling = new AutoScaling(awsConfig);
-    const ec2 = new EC2(awsConfig);
+    const autoscaling = await getAwsClientForAccount(AutoScaling, this.accountConfig);
+    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
 
     const resourceChunks = chunkArray(resources, 200);
     const asgs = resources
@@ -126,9 +125,8 @@ class Ec2Driver extends DriverInterface {
 
   async stop(resources: InstrumentedEc2[]) {
     const logger = this.logger;
-    const awsConfig = getAwsConfigViaRole(this.accountConfig.assumeRoleArn, this.accountConfig.region);
-    const autoscaling = new AutoScaling(awsConfig);
-    const ec2 = new EC2(awsConfig);
+    const autoscaling = await getAwsClientForAccount(AutoScaling, this.accountConfig);
+    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
 
     const resourceChunks = chunkArray(resources, 200);
     const asgs = resources
@@ -177,8 +175,7 @@ class Ec2Driver extends DriverInterface {
   }
 
   async setTag(resources: InstrumentedEc2[], action: RevolverActionWithTags) {
-    const awsConfig = getAwsConfigViaRole(this.accountConfig.assumeRoleArn, this.accountConfig.region);
-    const ec2 = new EC2(awsConfig);
+    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
 
     return ec2Tagger.setTag(ec2, this.logger, resources, action);
   }
@@ -188,8 +185,7 @@ class Ec2Driver extends DriverInterface {
   }
 
   async unsetTag(resources: InstrumentedEc2[], action: RevolverActionWithTags) {
-    const awsConfig = getAwsConfigViaRole(this.accountConfig.assumeRoleArn, this.accountConfig.region);
-    const ec2 = new EC2(awsConfig);
+    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
 
     return ec2Tagger.unsetTag(ec2, this.logger, resources, action);
   }
@@ -199,9 +195,8 @@ class Ec2Driver extends DriverInterface {
     const inoperableStates = ['terminated', 'shutting-down'];
     logger.debug('EC2 module collecting account: %j', this.accountConfig.name);
 
-    const awsConfig = await getAwsConfigViaRole(this.accountConfig.assumeRoleArn, this.accountConfig.region);
-    const autoscaling = new AutoScaling(awsConfig);
-    const ec2 = new EC2(awsConfig);
+    const ec2 = await getAwsClient(EC2, this.accountConfig.assumeRoleArn, this.accountConfig.region);
+    const autoscaling = await getAwsClient(AutoScaling, this.accountConfig.assumeRoleArn, this.accountConfig.region);
 
     const allEc2Iinstances = (await paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(
       (xr) => xr.Instances,
