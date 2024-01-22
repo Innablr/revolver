@@ -6,21 +6,6 @@ import { logger } from './lib/logger';
 import { RevolverConfig } from './lib/config';
 import dateTime from './lib/dateTime';
 import assume from './lib/assume';
-import { config as awsConfig } from 'aws-sdk';
-import { ProxyAgent } from 'proxy-agent';
-
-function configureAWS(maxRetries: number, baseBackoff: number) {
-  awsConfig.update({
-    httpOptions: {
-      agent: new ProxyAgent(),
-    },
-    retryDelayOptions: {
-      base: baseBackoff,
-    },
-    maxRetries,
-  });
-  logger.info(`Set AWS SDK retry options to ${baseBackoff}ms base backoff, max retries ${maxRetries}`);
-}
 
 export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Scheduled Event', ScheduledEvent>) => {
   const configMethods = new RevolverConfig();
@@ -28,9 +13,6 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
 
   dateTime.freezeTime(event.time);
   logger.info(`Got time ${dateTime.getTime()}`);
-
-  // Set retry parameters
-  configureAWS(environ.maxRetries, environ.baseBackoff);
 
   const config = await (
     environ.configPath
@@ -44,10 +26,12 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   const organisationCreds = await Promise.all(
     config.organizations.flatMap((xa: any) => {
       logger.info('Getting list of accounts from %s organization..', xa.settings.name);
-      return assume.connectTo(`arn:aws:iam::${xa.Id}:role/${xa.settings.organizationRoleName}`).then((cred: any) => {
-        cred.settings = xa.settings;
-        return cred;
-      });
+      return assume
+        .connectTo(`arn:aws:iam::${xa.accountId}:role/${xa.settings.organizationRoleName}`)
+        .then((cred: any) => {
+          cred.settings = xa.settings;
+          return cred;
+        });
     }),
   );
   const orgsAccountsList = await configMethods.getOrganisationsAccounts(organisationCreds);

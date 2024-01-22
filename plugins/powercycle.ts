@@ -13,8 +13,8 @@ export default class PowerCyclePlugin extends RevolverPlugin {
 
   constructor(accountConfig: any, pluginName: string, pluginConfig: any) {
     super(accountConfig, pluginName, pluginConfig);
-    this.scheduleTagName = this.pluginConfig.availability_tag || 'Schedule';
-    this.timezoneTagName = this.accountConfig.timezone_tag || 'Timezone';
+    this.scheduleTagName = this.pluginConfig.availabilityTag || 'Schedule';
+    this.timezoneTagName = this.accountConfig.timezoneTag || 'Timezone';
     this.warningTagName = `Warning${this.scheduleTagName}`;
     this.reasonTagName = `Reason${this.scheduleTagName}`;
   }

@@ -2,62 +2,31 @@ import { logger } from './logger';
 import { promises as fs } from 'fs';
 import path = require('node:path');
 import yaml from 'js-yaml';
-import { Organizations, S3 } from 'aws-sdk';
-import { paginateAwsCall, uniqueBy } from './common';
-import { deepmerge } from 'deepmerge-ts';
-
-class Settings {
-  private settings: { [key: string]: any };
-
-  constructor() {
-    this.settings = {};
-  }
-
-  store(settings: { [key: string]: any }) {
-    this.settings = settings;
-  }
-
-  get(key: string) {
-    return this.settings[key];
-  }
-}
-
-export const settings = new Settings();
+import { Organizations, OrganizationsClientConfig } from '@aws-sdk/client-organizations';
+import { S3, S3ClientConfig } from '@aws-sdk/client-s3';
+import { paginateAwsCall } from './common';
+import merge from 'ts-deepmerge';
+import { getAwsConfig } from './awsConfig';
 
 export class RevolverConfig {
   validateConfig(data: string) {
     const config: any = yaml.load(data);
-    logger.debug('Read Revolver config: %j', config);
-    if (!Array.isArray(config.accounts.include_list)) {
-      throw new Error("Invalid configuration. 'include_list' key is either missing or not an array");
+    if (!Array.isArray(config.accounts.includeList)) {
+      throw new Error('Invalid configuration: "includeList" key is either missing or not an array');
     }
-    if (!Array.isArray(config.accounts.exclude_list)) {
-      throw new Error("Invalid configuration. 'exclude_list' key is either missing or not an array");
+    if (!Array.isArray(config.accounts.excludeList)) {
+      throw new Error('Invalid configuration: "excludeList" key is either missing or not an array');
     }
-    settings.store(config.settings);
     // merge default settings and extract some info
-    config.organizations = config.organizations.map((r: any) => deepmerge({}, config.defaults, r));
-    config.accounts.include_list = config.accounts.include_list.map((r: any) => deepmerge(config.defaults, r));
-    config.accounts.exclude_list = config.accounts.exclude_list.map((r: any) => deepmerge(config.defaults, r));
-
-    config.defaults.settings.organizationRoleName = config.defaults.settings.organization_role_name;
-    config.defaults.settings.revolverRoleName = config.defaults.settings.revolver_role_name;
-
-    config.organizations.map((org: any) => {
-      org.Id = org.account_id;
-      org.settings.organizationRoleName = org.settings.organization_role_name;
-      org.settings.revolverRoleName = org.settings.revolver_role_name;
-    });
-    config.accounts.include_list.map((acc: any) => {
-      acc.Id = acc.account_id;
-      acc.settings.revolverRoleName = acc.settings.revolver_role_name;
-    });
-    config.accounts.exclude_list.map((acc: any) => {
-      acc.Id = acc.account_id;
-      acc.settings.revolverRoleName = acc.settings.revolver_role_name;
+    config.organizations.forEach((org: any) => {
+      org.settings = Object.assign({}, config.defaults.settings, org.settings);
     });
 
-    logger.debug('Final Revolver config: %j', config);
+    config.accounts.includeList.forEach((account: any) => {
+      account.settings = Object.assign({}, config.defaults.settings, account.settings);
+    });
+
+    logger.debug('Read Revolver config: %j', config);
     return config;
   }
 
@@ -68,26 +37,31 @@ export class RevolverConfig {
   }
 
   async readConfigFromS3(configBucket: string, configKey: string): Promise<string> {
-    const s3 = new S3();
+    const config = getAwsConfig();
+    const s3 = new S3(config);
     logger.debug(`Fetching config from bucket [${configBucket}] key [${configKey}]`);
 
-    const configObject = await s3.getObject({ Bucket: configBucket, Key: configKey }).promise();
+    const configObject = await s3.getObject({ Bucket: configBucket, Key: configKey });
     logger.debug(`Found S3 object MIME ${configObject.ContentType}`);
-    return this.validateConfig(configObject.Body!.toString('utf8'));
+    return this.validateConfig(await configObject.Body!.transformToString());
   }
 
   async getOrganisationsAccounts(creds: any[]) {
     const orgsRegion = 'us-east-1';
     const allAccounts = await Promise.all(
       creds.map(async (cr: any) => {
-        const client = new Organizations({ credentials: cr, region: orgsRegion });
+        const config = getAwsConfig(orgsRegion, cr);
+        const client = new Organizations(config); // TODO: check this works
         const accounts = await paginateAwsCall(client.listAccounts.bind(client), 'Accounts');
         accounts.forEach((account) => {
+          account.accountId = account.Id;
+          delete account.Id;
           account.settings = {
             name: account.Name,
             region: cr.settings.region,
             timezone: cr.settings.timezone,
-            revolverRoleName: cr.settings.revolver_role_name,
+            timezoneTag: cr.settings.timezoneTag,
+            revolverRoleName: cr.settings.revolverRoleName,
           };
         });
         return accounts;
@@ -99,22 +73,28 @@ export class RevolverConfig {
   }
 
   filterAccountsList(orgsAccountsList: any[], config: any) {
-    logger.info('%d Accounts found on the Organizations listed', orgsAccountsList.length);
-    logger.info('Getting accounts from include/exclude lists..');
-    logger.info('%d accounts found on include_list', config.accounts.include_list.length);
-    logger.info('%d accounts found on exclude_list', config.accounts.exclude_list.length);
-    const filteredAccountsList = config.accounts.include_list
-      // concat include_list
-      .concat(orgsAccountsList)
-      // delete exclude_list
-      .filter((xa: any) => !config.accounts.exclude_list.find((xi: any) => xi.Id === xa.Id))
-      // build assumeRoleArn string, extract account_id and revolver_role_name
-      .map((account: any) => {
-        account.settings.assumeRoleArn = `arn:aws:iam::${account.Id}:role/${account.settings.revolverRoleName}`;
-        return account;
-      });
+    logger.info(`${orgsAccountsList.length} Accounts found on the Organizations listed`);
+    logger.info(`${config.accounts.includeList.length} accounts found on include_list`);
+    logger.info(`${config.accounts.excludeList.length} accounts found on exclude_list`);
+    // exclude specified in includeList accounts from the org list
+    const orgWithoutIncludeList = orgsAccountsList.filter(
+      (xa: any) =>
+        !config.accounts.includeList.find(
+          (xi: any) => xi.accountId === xa.accountId && xi.settings.region === xa.settings.region,
+        ),
+    );
+    const accountList = orgWithoutIncludeList.concat(config.accounts.includeList);
+    // exclude accounts specified in excludeList
+    const filteredAccountsList = accountList.filter(
+      (xa: any) => !config.accounts.excludeList.find((xi: any) => xi.accountId === xa.accountId),
+    );
+    // build assumeRoleArn string, extract account_id and revolver_role_name
+    const updatedAccountsList = filteredAccountsList.map((xa: any) => {
+      const account: any = merge.withOptions({ mergeArrays: false }, xa, config.defaults);
+      account.settings.assumeRoleArn = `arn:aws:iam::${account.accountId}:role/${account.settings.revolverRoleName}`;
+      return account;
+    });
 
-    // remove duplicated accounts
-    return uniqueBy(filteredAccountsList, (account: any) => JSON.stringify([account.Id, account.settings.region]));
+    return updatedAccountsList;
   }
 }
