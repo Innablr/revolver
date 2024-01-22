@@ -37,7 +37,7 @@ export class RevolverConfig {
   }
 
   async readConfigFromS3(configBucket: string, configKey: string): Promise<string> {
-    const config = getAwsConfig() as S3ClientConfig;
+    const config = getAwsConfig();
     const s3 = new S3(config);
     logger.debug(`Fetching config from bucket [${configBucket}] key [${configKey}]`);
 
@@ -50,7 +50,7 @@ export class RevolverConfig {
     const orgsRegion = 'us-east-1';
     const allAccounts = await Promise.all(
       creds.map(async (cr: any) => {
-        const config = getAwsConfig(orgsRegion, cr) as OrganizationsClientConfig;
+        const config = getAwsConfig(orgsRegion, cr);
         const client = new Organizations(config); // TODO: check this works
         const accounts = await paginateAwsCall(client.listAccounts.bind(client), 'Accounts');
         accounts.forEach((account) => {

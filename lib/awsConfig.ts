@@ -1,6 +1,6 @@
 import environ from './environ';
 import { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
-import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { logger } from './logger';
 import assume from '../lib/assume';

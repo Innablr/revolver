@@ -44,7 +44,7 @@ class RemoteCredentials {
     }
 
     logger.debug(`Assuming role ${remoteRole}...`);
-    const awsConfig = getAwsConfig(region || 'ap-southeast-2') as STSClientConfig; // TODO: remove default
+    const awsConfig = getAwsConfig(region || 'ap-southeast-2');
     const sts = new STS(awsConfig);
     const creds = await sts
       .assumeRole({
