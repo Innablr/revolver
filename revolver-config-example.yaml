@@ -33,23 +33,20 @@ defaults:
     validateTags:
       active: true
       configs:
-        -
-          tag: Name
+        - tag: Name
           tagMissing:
             - copyFromParent
           onlyResourceTypes:
             - ebs
             - snapshot
           tagNotMatch: []
-        -
-          tag: Name
+        - tag: Name
           tagMissing:
             - warn
           onlyResourceTypes:
             - ec2
           tagNotMatch: []
-        -
-          tag: Schedule
+        - tag: Schedule
           tagMissing:
             - setDefault: 24x7
           onlyResourceTypes:
@@ -70,10 +67,10 @@ organizations:
 
 accounts:
   includeList:
-    - accountId: "222222222222"
+    - accountId: '222222222222'
       settings:
         name: whatdev
   excludeList:
-    - accountId: "333333333333"
+    - accountId: '333333333333'
       settings:
         name: whatprod

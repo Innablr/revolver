@@ -52,12 +52,12 @@ Revolver reads some of the low-level configuration from environment variables an
 
 #### Environment variables
 
-|Variable|Description|Default|
-|-|-|-|
-|S3_BUCKET|S3 bucket where the config file is stored|-|
-|S3_KEY|S3 key of the config file|-|
-|DEBUG_LEVEL|Log level|info|
-|LOG_FORMAT|Log format|pretty|
+| Variable    | Description                               | Default |
+|-------------|-------------------------------------------|---------|
+| S3_BUCKET   | S3 bucket where the config file is stored | -       |
+| S3_KEY      | S3 key of the config file                 | -       |
+| DEBUG_LEVEL | Log level                                 | info    |
+| LOG_FORMAT  | Log format                                | pretty  |
 
 In addition to that you can use:
 
@@ -70,15 +70,15 @@ Main Revolver configuration is done in YAML. First line in the config file must 
 
 1. Section `defaults` defines default behavior for all accounts. Settings in this section can be overriden in the accounts section
 
-    | Option name | Description | Default |
-    |-|-|-|
-    | region | Specifies the default AWS region | - |
-    | timezone | Specifies the default time zone | - |
-    | timezoneTag | Revolver will read this tag on individual resources to override account-wide timezone | Timezone |
-    | organization_role_name | Role to be assumed on the main account from organizations to get the accounts list from it | - |
-    | revolver_role_name | Revolver role name to be assumed on each client account | - |
-    | drivers | List of enabled drivers and their options (see Drivers) | - |
-    | plugins | List of enabled plugins with their options (see Plugins) | - |
+    | Option name            | Description                                                                                | Default  |
+    |------------------------|--------------------------------------------------------------------------------------------|----------|
+    | region                 | Specifies the default AWS region                                                           | -        |
+    | timezone               | Specifies the default time zone                                                            | -        |
+    | timezoneTag            | Revolver will read this tag on individual resources to override account-wide timezone      | Timezone |
+    | organization_role_name | Role to be assumed on the main account from organizations to get the accounts list from it | -        |
+    | revolver_role_name     | Revolver role name to be assumed on each client account                                    | -        |
+    | drivers                | List of enabled drivers and their options (see Drivers)                                    | -        |
+    | plugins                | List of enabled plugins with their options (see Plugins)                                   | -        |
 
     Example `defaults` section:
 
@@ -175,20 +175,20 @@ Drivers define how to operate a particular type of AWS resource, how to stop or 
 
 All drivers support the following options:
 
-|Option|Description|Allowed values|Default|
-|-|-|-|-|
-|active|Whether the driver is active|`true` or `false`|`true`|
-|pretend|Prevents the driver from actually performing the actions. Good for debugging|`true` or `false`|`true`|
+| Option  | Description                                                                  | Allowed values    | Default |
+|---------|------------------------------------------------------------------------------|-------------------|---------|
+| active  | Whether the driver is active                                                 | `true` or `false` | `true`  |
+| pretend | Prevents the driver from actually performing the actions. Good for debugging | `true` or `false` | `true`  |
 
 Supported drivers:
 
-|Driver|Description|
-|-|-|
-|ec2|AWS EC2 instances and autoscaling groups|
-|ebs|EBS volumes|
-|snapshot|EBS snapshots|
-|rdsInstance|RDS instances|
-|rdsCluster|RDS Aurora clusters|
+| Driver      | Description                              |
+|-------------|------------------------------------------|
+| ec2         | AWS EC2 instances and autoscaling groups |
+| ebs         | EBS volumes                              |
+| snapshot    | EBS snapshots                            |
+| rdsInstance | RDS instances                            |
+| rdsCluster  | RDS Aurora clusters                      |
 
 #### Plugins
 
@@ -202,10 +202,10 @@ For every AWS resource plugins will be executed in the order they are listed in 
 
 Starts AWS resources in the worktime and stops them after hours based on their tagging. Supports pluggable tagging formats.
 
-|Option|Description|Allowed values|Default|
-|-|-|-|-|
-|tagging|Defines tagging format. See below|`strict`|`strict`|
-|availabilityTag|Name of the tag that contains the schedule|AWS tag name|Schedule|
+| Option          | Description                                | Allowed values | Default  |
+|-----------------|--------------------------------------------|----------------|----------|
+| tagging         | Defines tagging format. See below          | `strict`       | `strict` |
+| availabilityTag | Name of the tag that contains the schedule | AWS tag name   | Schedule |
 
 When an operation is performed on a resource a tag with a name `ReasonSchedule` (Schedule is replaced with the actual name of the schedule tag) will be set explaining the reason.
 
@@ -246,14 +246,14 @@ For RDS `|` and `;` must be replaces with `_` and '/' respectively as RDS does n
 
 This plugin will validate that a certain tag exist on AWS resources and optionally match the provided regular expression. If the tag is missing or does not match, the resource can be optionally shut down or set a warning tag or set the tag with a specified default value, or any combination of these actions.
 
-|Option|Description|Allowed values|Default|
-|-|-|-|-|
-|tag|Name of the tag to validate|AWS tag name| - |
-|match|JS-compatible regular expression to match the value against (optional)|JS regex| - |
-|tagMissing|List of actions to perform on the resource if the tag is missing|`warn`,`stop`,`copyFromParent`,`setDefault`| - |
-|tagNotMatch|List of actions to perform on the resource if the tag does not match the regex in `match`|`warn`,`stop`,`copyFromParent`,`setDefault`| - |
-|onlyResourceTypes|List of resource types to apply the plugin to. If not specified, the plugin will be applied to all resource types|`ec2`,`ebs`,`snapshot`,`rdsInstance`,`rdsCluster`| - |
-|excludeResourceTypes|List of resource types to exclude from the plugin. If not specified, the plugin will be applied to all resource types|`ec2`,`ebs`,`snapshot`,`rdsInstance`,`rdsCluster`| - |
+| Option               | Description                                                                                                           | Allowed values                                    | Default |
+|----------------------|-----------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|---------|
+| tag                  | Name of the tag to validate                                                                                           | AWS tag name                                      | -       |
+| match                | JS-compatible regular expression to match the value against (optional)                                                | JS regex                                          | -       |
+| tagMissing           | List of actions to perform on the resource if the tag is missing                                                      | `warn`,`stop`,`copyFromParent`,`setDefault`       | -       |
+| tagNotMatch          | List of actions to perform on the resource if the tag does not match the regex in `match`                             | `warn`,`stop`,`copyFromParent`,`setDefault`       | -       |
+| onlyResourceTypes    | List of resource types to apply the plugin to. If not specified, the plugin will be applied to all resource types     | `ec2`,`ebs`,`snapshot`,`rdsInstance`,`rdsCluster` | -       |
+| excludeResourceTypes | List of resource types to exclude from the plugin. If not specified, the plugin will be applied to all resource types | `ec2`,`ebs`,`snapshot`,`rdsInstance`,`rdsCluster` | -       |
 
 ```yaml
   plugins:

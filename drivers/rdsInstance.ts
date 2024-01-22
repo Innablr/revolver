@@ -52,20 +52,17 @@ class InstrumentedRdsInstance extends ToolingInterface {
 class RdsInstanceDriver extends DriverInterface {
   start(resources: InstrumentedRdsInstance[]) {
     const logger = this.logger;
-    return getAwsClientForAccount(RDS, this.accountConfig)
-      .then(function (rds) {
-        return Promise.all(
-          resources.map(function (xr) {
-            logger.info('RDS instance %s will start', xr.resourceId);
-            return rds
-              .startDBInstance({ DBInstanceIdentifier: xr.resourceId })
-              .catch(function (err) {
-                logger.error('Error starting RDS instance %s, stack trace will follow:', xr.resourceId);
-                logger.error(err);
-              });
-          }),
-        );
-      });
+    return getAwsClientForAccount(RDS, this.accountConfig).then(function (rds) {
+      return Promise.all(
+        resources.map(function (xr) {
+          logger.info('RDS instance %s will start', xr.resourceId);
+          return rds.startDBInstance({ DBInstanceIdentifier: xr.resourceId }).catch(function (err) {
+            logger.error('Error starting RDS instance %s, stack trace will follow:', xr.resourceId);
+            logger.error(err);
+          });
+        }),
+      );
+    });
   }
 
   maskstart(resource: InstrumentedRdsInstance) {
