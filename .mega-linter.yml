@@ -31,4 +31,4 @@ FILEIO_REPORTER: false
 
 TYPESCRIPT_ES_CONFIG_FILE: .eslintrc.cjs
 TYPESCRIPT_ES_PRE_COMMANDS:
-  - command: npm install eslint-import-resolver-typescript
+  - command: npm install
