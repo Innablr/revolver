@@ -21,7 +21,7 @@ ENABLE_LINTERS:
   - YAML_PRETTIER
   - YAML_YAMLLINT
 
-FILTER_REGEX_EXCLUDE: (megalinter-reports|.github)
+FILTER_REGEX_EXCLUDE: '(\.github/workflows)'
 
 SHOW_ELAPSED_TIME: true
 
