@@ -32,7 +32,11 @@ FILEIO_REPORTER: false
 TYPESCRIPT_ES_CONFIG_FILE: .eslintrc.cjs
 TYPESCRIPT_ES_CLI_LINT_MODE: project
 TYPESCRIPT_ES_PRE_COMMANDS:
-  - command: "npm install"
+  - command: "pwd"
+    cwd: workspace
+  - command: "ls -l"
+    cwd: workspace
+  - command: "npm install --include dev"
     cwd: workspace
   - command: "npm list --depth=0"
     cwd: workspace
