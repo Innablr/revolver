@@ -2,19 +2,20 @@ import { RevolverPlugin } from './pluginInterface';
 import dateTime from '../lib/dateTime';
 import { NoopAction, StartAction, StopAction } from '../actions/actions';
 import getParser from './parsers';
-import filterResource from './filters';
+import { Filter, initializeFilter } from './filters';
 
 interface Matcher {
   name: string;
-  filter: string;
+  // todo neaten this. this field is used for both the yaml filter config and the filter objects
+  filter: Filter | any;
   schedule: string;
   priority: number;
 }
 
 export default class PowerCycleCentralPlugin extends RevolverPlugin {
   private parser: any;
-  private scheduleTagName: string;
-  private timezoneTagName: string;
+  private readonly scheduleTagName: string;
+  private readonly timezoneTagName: string;
 
   private matchers: Matcher[];
 
@@ -32,8 +33,20 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
 
   async initialise(): Promise<PowerCycleCentralPlugin> {
     this.parser = await getParser(this.pluginConfig.parser || 'strict');
-
     const localTimeNow = dateTime.getTime('utc');
+
+    this.matchers = await Promise.all(
+      this.matchers.map(async (matcher) => {
+        const filter = await initializeFilter(matcher.filter);
+        const readyFilter = await filter.ready();
+        return {
+          name: matcher.name,
+          filter: readyFilter,
+          schedule: matcher.schedule,
+          priority: matcher.priority,
+        };
+      }),
+    );
 
     const invalidSchedules = this.matchers
       .filter((m: Matcher) => {
@@ -65,7 +78,7 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
     // TODO nicer logging defaults to not be too verbose
 
     const highestMatch = this.matchers.find((matcher: Matcher) => {
-      return filterResource(resource, matcher.filter);
+      return matcher.filter.matches(resource);
     });
 
     if (!highestMatch) {
