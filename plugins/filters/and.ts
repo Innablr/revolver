@@ -1,7 +1,7 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { Filter, initializeFilter } from './index';
+import { Filter, FilterCtor, initializeFilter } from './index';
 
-export default class FilterAnd implements Filter {
+export default class FilterAnd implements Filter, FilterCtor {
   private elements: Filter[];
 
   private readonly isReady: Promise<Filter>;

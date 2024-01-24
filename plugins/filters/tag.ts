@@ -1,7 +1,7 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { Filter } from './index';
+import { Filter, FilterCtor } from './index';
 
-export default class FilterTag implements Filter {
+export default class FilterTag implements Filter, FilterCtor {
   private tagName: string;
   private tagValue: string;
   private readonly isReady: Promise<Filter>;
