@@ -32,7 +32,10 @@ defaults:
           availabilityTagPriority: 10
           matchers:
             - name: default untagged schedule
-              filter: i-04d75fa75dbf52c39
+              filter:
+                and:
+                  - id: i-0123456789abcdef1
+                  - type: ec2
               schedule: 24x7
               priority: 1
     powercycle:
