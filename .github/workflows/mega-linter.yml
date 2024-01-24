@@ -59,6 +59,15 @@ jobs:
           # improve performance
           fetch-depth: 0
 
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+      # Install the npm dependencies
+      - name: Install packages for Node
+        run: npm install
+
       # MegaLinter
       - name: MegaLinter
 
