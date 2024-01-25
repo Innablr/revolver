@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { Cluster, Redshift, Tag } from '@aws-sdk/client-redshift';
+import { Cluster, CreateTagsCommand, DeleteClusterSnapshotCommand, DeleteTagsCommand, DescribeClusterSnapshotsCommand, DescribeClustersCommand, DescribeTagsCommand, RedshiftClient, RestoreFromClusterSnapshotCommand, Tag } from '@aws-sdk/client-redshift';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
@@ -42,22 +42,22 @@ class InstrumentedRedshiftClusterSnapshot extends ToolingInterface {
 
 class RedshiftClusterSnapshotDriver extends DriverInterface {
   startOneSnapshot(snapshot: InstrumentedRedshiftClusterSnapshot) {
-    let redshift: Redshift;
+    let redshift: RedshiftClient;
     const logger = this.logger;
-    return getAwsClientForAccount(Redshift, this.accountConfig)
+    return getAwsClientForAccount(RedshiftClient, this.accountConfig)
       .then((r) => {
         redshift = r;
       })
       .then(async function () {
         logger.info('Checking if Redshift Cluster %s have been restored before..', snapshot.resource.ClusterIdentifier);
         const clusterRestored: Array<Cluster> = await redshift
-          .describeClusters({ ClusterIdentifier: snapshot.resource.ClusterIdentifier })
+          .send(new DescribeClustersCommand({ ClusterIdentifier: snapshot.resource.ClusterIdentifier }))
           .then((r) => r.Clusters!);
 
         if (clusterRestored) {
           if (clusterRestored[0].ClusterStatus === 'available') {
             logger.info('Redshift Cluster %s is already running, erasing Redshift snapshot %s ..', snapshot.resourceId);
-            return redshift.deleteClusterSnapshot({ SnapshotIdentifier: snapshot.resourceId });
+            return redshift.send(new DeleteClusterSnapshotCommand({ SnapshotIdentifier: snapshot.resourceId }));
           }
         }
 
@@ -78,7 +78,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
         if (sgTag !== undefined) {
           opts.VpcSecurityGroupIds = sgTag.split('/');
         }
-        return redshift.restoreFromClusterSnapshot(opts);
+        return redshift.send(new RestoreFromClusterSnapshotCommand(opts));
       })
       .catch(function (err) {
         logger.error('Error restoring Redshift snapshot %s, stack trace will follow:', snapshot.resourceId);
@@ -120,7 +120,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
 
   setTag(resources: InstrumentedRedshiftClusterSnapshot[], action: RevolverActionWithTags) {
     const logger = this.logger;
-    return getAwsClientForAccount(Redshift, this.accountConfig).then(function (redshift) {
+    return getAwsClientForAccount(RedshiftClient, this.accountConfig).then(function (redshift) {
       return Promise.all(
         resources.map(function (xr) {
           const safeValues = action.tags.map((xt) => ({
@@ -129,10 +129,10 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
           }));
           logger.info('Redshift cluster %s will be set tags %j', xr.resourceId, safeValues);
           return redshift
-            .createTags({
+            .send(new CreateTagsCommand({
               ResourceName: xr.resourceArn,
               Tags: safeValues,
-            })
+            }))
             .catch(function (err) {
               logger.error('Error settings tags for Redshift cluster %s, stack trace will follow:', xr.resourceId);
               logger.error(err);
@@ -153,7 +153,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
 
   unsetTag(resources: InstrumentedRedshiftClusterSnapshot[], action: RevolverActionWithTags) {
     const logger = this.logger;
-    return getAwsClientForAccount(Redshift, this.accountConfig).then(function (redshift) {
+    return getAwsClientForAccount(RedshiftClient, this.accountConfig).then(function (redshift) {
       return Promise.all(
         resources.map(function (xs) {
           logger.info(
@@ -162,10 +162,10 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
             action.tags.map((xt) => xt.Key),
           );
           return redshift
-            .deleteTags({
+            .send(new DeleteTagsCommand({
               ResourceName: xs.resourceArn,
               TagKeys: action.tags.map((xt) => xt.Key),
-            })
+            }))
             .catch(function (err) {
               logger.error('Error unsettings tags for Redshift snapshot %s, stack trace will follow:', xs.resourceId);
               logger.error(err);
@@ -188,10 +188,10 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
     const logger = this.logger;
     logger.debug('Redshift Cluster Snapshot module collecting account: %j', this.accountConfig.name);
 
-    const redshift = await getAwsClientForAccount(Redshift, this.accountConfig);
+    const redshift = await getAwsClientForAccount(RedshiftClient, this.accountConfig);
 
     const redshiftClusterSnapshots = await redshift
-      .describeClusterSnapshots({})
+      .send(new DescribeClusterSnapshotsCommand({}))
       .then((c) =>
         c.Snapshots!.filter((ss) => {
           if (!/^revolver-cluster-/.test(ss.SnapshotIdentifier || '')) {
@@ -214,7 +214,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
         Promise.all(
           r.map(function (xs) {
             return redshift
-              .describeTags({ ResourceName: xs.resourceArn })
+              .send(new DescribeTagsCommand({ ResourceName: xs.resourceArn }))
               .then((t) => {
                 xs.tags = t.TaggedResources!.map((xt) => xt.Tag).filter((xt) => xt) as Tag[];
               })
