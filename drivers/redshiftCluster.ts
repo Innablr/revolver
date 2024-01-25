@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { Cluster, Redshift, Tag } from '@aws-sdk/client-redshift';
+import { Cluster, CreateTagsCommand, DeleteClusterCommand, DeleteTagsCommand, DescribeClustersCommand, RedshiftClient, Tag } from '@aws-sdk/client-redshift';
 import assume from '../lib/assume';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
@@ -69,7 +69,7 @@ class RedshiftClusterDriver extends DriverInterface {
   }
 
   stopOneCluster(cluster: InstrumentedRedshiftCluster) {
-    let redshift: Redshift;
+    let redshift: RedshiftClient;
     const logger = this.logger;
     const tzTagName = this.accountConfig.timezoneTag || 'Timezone';
     const tz = cluster.tag(tzTagName) || this.accountConfig.timezone || 'utc';
@@ -91,24 +91,24 @@ class RedshiftClusterDriver extends DriverInterface {
       { Key: 'revolver/cluster_port', Value: cluster.resource.Endpoint.Port.toString() },
     ]);
 
-    return getAwsClientForAccount(Redshift, this.accountConfig)
+    return getAwsClientForAccount(RedshiftClient, this.accountConfig)
       .then((r) => {
         redshift = r;
       })
       .then(function () {
         logger.info('Redshift cluster %s will now be deleted with snapshot %s', cluster.resourceId, snapshotId);
-        return redshift.deleteCluster({
+        return redshift.send(new DeleteClusterCommand({
           ClusterIdentifier: cluster.resourceId,
           FinalClusterSnapshotIdentifier: snapshotId,
           SkipFinalClusterSnapshot: false,
-        });
+        }));
       })
       .then(function () {
         logger.debug('Saving cluster %s tags in snapshot %s', cluster.resourceId, snapshotId);
-        return redshift.createTags({
+        return redshift.send(new CreateTagsCommand({
           ResourceName: snapshotArn,
           Tags: preserveTags,
-        });
+        }));
       })
       .catch(function (err) {
         logger.error('Error stopping Redshift cluster %s, stack trace will follow:', cluster.resourceId);
@@ -138,7 +138,7 @@ class RedshiftClusterDriver extends DriverInterface {
 
   setTag(resources: InstrumentedRedshiftCluster[], action: RevolverActionWithTags) {
     const logger = this.logger;
-    return getAwsClientForAccount(Redshift, this.accountConfig).then(function (redshift) {
+    return getAwsClientForAccount(RedshiftClient, this.accountConfig).then(function (redshift) {
       return Promise.all(
         resources.map(function (xr) {
           const safeValues = action.tags.map((xt) => ({
@@ -147,10 +147,10 @@ class RedshiftClusterDriver extends DriverInterface {
           }));
           logger.info('Redshift cluster %s will be set tags %j', xr.resourceId, safeValues);
           return redshift
-            .createTags({
+            .send(new CreateTagsCommand({
               ResourceName: xr.resourceArn,
               Tags: safeValues,
-            })
+            }))
             .catch(function (err) {
               logger.error('Error settings tags for Redshift cluster %s, stack trace will follow:', xr.resourceId);
               logger.error(err);
@@ -171,7 +171,7 @@ class RedshiftClusterDriver extends DriverInterface {
 
   unsetTag(resources: InstrumentedRedshiftCluster[], action: RevolverActionWithTags) {
     const logger = this.logger;
-    return getAwsClientForAccount(Redshift, this.accountConfig).then(function (redshift) {
+    return getAwsClientForAccount(RedshiftClient, this.accountConfig).then(function (redshift) {
       return Promise.all(
         resources.map(function (xr) {
           logger.info(
@@ -180,10 +180,10 @@ class RedshiftClusterDriver extends DriverInterface {
             action.tags.map((xt) => xt.Key),
           );
           return redshift
-            .deleteTags({
+            .send(new DeleteTagsCommand({
               ResourceName: xr.resourceArn,
               TagKeys: action.tags.map((xt) => xt.Key),
-            })
+            }))
             .catch(function (err) {
               logger.error('Error unsettings tags for Redshift cluster %s, stack trace will follow:', xr.resourceId);
               logger.error(err);
@@ -206,9 +206,9 @@ class RedshiftClusterDriver extends DriverInterface {
     const logger = this.logger;
     logger.debug('Redshift Cluster module collecting account: %j', this.accountConfig.name);
 
-    const redshift = await getAwsClientForAccount(Redshift, this.accountConfig);
+    const redshift = await getAwsClientForAccount(RedshiftClient, this.accountConfig);
 
-    const redshiftClusters = (await redshift.describeClusters({}).then((c) => c.Clusters)) || [];
+    const redshiftClusters = (await redshift.send(new DescribeClustersCommand({})).then((c) => c.Clusters)) || [];
 
     logger.info('Found %d Redshift clusters', redshiftClusters.length);
 

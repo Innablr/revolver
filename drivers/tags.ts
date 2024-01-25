@@ -3,6 +3,8 @@ import { RevolverLogObject } from '../lib/logger';
 import { ToolingInterface } from './instrumentedResource';
 import { RevolverActionWithTags } from '../actions/actions';
 import { chunkArray, unique } from '../lib/common';
+import { CreateVolumeCommandOutput, EC2, Instance, Tag, EC2Client, StartInstancesCommand, StopInstancesCommand, CreateTagsCommand, DeleteTagsCommand } from '@aws-sdk/client-ec2';
+import { AddTagsToResourceCommand, RDSClient, RemoveTagsFromResourceCommand } from '@aws-sdk/client-rds';
 
 export interface TagInterface {
   Key: string;
@@ -11,7 +13,7 @@ export interface TagInterface {
 
 export interface Tagger {
   setTag(
-    awsClient: any,
+    awsClient: any, // TODO: type Client
     logger: Logger<RevolverLogObject>,
     resources: ToolingInterface[],
     action: RevolverActionWithTags,
@@ -20,7 +22,7 @@ export interface Tagger {
   masksetTag(resource: ToolingInterface, action: RevolverActionWithTags): string | undefined;
 
   unsetTag(
-    awsClient: any,
+    awsClient: any, // TODO: type Client
     logger: Logger<RevolverLogObject>,
     resources: ToolingInterface[],
     action: RevolverActionWithTags,
@@ -31,7 +33,7 @@ export interface Tagger {
 
 class RDSTagger implements Tagger {
   setTag(
-    rds: any,
+    rds: RDSClient,
     logger: Logger<RevolverLogObject>,
     resources: ToolingInterface[],
     action: RevolverActionWithTags,
@@ -44,13 +46,14 @@ class RDSTagger implements Tagger {
         }));
         logger.info('%s %s will be set tag %j', xr.resourceType, xr.resourceId, safeValues);
         try {
-          return await rds.addTagsToResource({
+          return await rds.send(new AddTagsToResourceCommand({
             ResourceName: xr.resourceArn,
             Tags: safeValues,
-          });
+          }));
         } catch (e) {
           logger.error('Error settings tags for %s %s, stack trace will follow:', xr.resourceType, xr.resourceId);
           logger.error(e);
+          return undefined;
         }
       }),
     );
@@ -66,7 +69,7 @@ class RDSTagger implements Tagger {
   }
 
   unsetTag(
-    rds: any,
+    rds: RDSClient,
     logger: Logger<RevolverLogObject>,
     resources: ToolingInterface[],
     action: RevolverActionWithTags,
@@ -75,13 +78,14 @@ class RDSTagger implements Tagger {
       resources.map(async function (xr) {
         logger.info('RDS instance %s will be unset tags %j', xr.resourceId, action.tags);
         try {
-          return await rds.removeTagsFromResource({
+          return await rds.send(new RemoveTagsFromResourceCommand({
             ResourceName: xr.resourceArn,
             TagKeys: action.tags.map((xt: TagInterface) => xt.Key),
-          });
+          }));
         } catch (e) {
           logger.error('Error unsettings tags for %s %s, stack trace will follow:', xr.resourceType, xr.resourceId);
           logger.error(e);
+          return undefined;
         }
       }),
     );
@@ -99,7 +103,7 @@ class RDSTagger implements Tagger {
 
 class EC2Tagger implements Tagger {
   setTag(
-    ec2: any,
+    ec2: EC2Client,
     logger: Logger<RevolverLogObject>,
     resources: ToolingInterface[],
     action: RevolverActionWithTags,
@@ -113,10 +117,10 @@ class EC2Tagger implements Tagger {
 
     return Promise.all(
       resourceChunks.map((chunk) =>
-        ec2.createTags({
+        ec2.send(new CreateTagsCommand({
           Resources: chunk.map((xr) => xr.resourceId),
           Tags: action.tags,
-        }),
+        })),
       ),
     );
   }
@@ -131,7 +135,7 @@ class EC2Tagger implements Tagger {
   }
 
   unsetTag(
-    ec2: any,
+    ec2: EC2Client,
     logger: Logger<RevolverLogObject>,
     resources: ToolingInterface[],
     action: RevolverActionWithTags,
@@ -145,10 +149,10 @@ class EC2Tagger implements Tagger {
 
     return Promise.all(
       resourceChunks.map((chunk) =>
-        ec2.deleteTags({
+        ec2.send(new DeleteTagsCommand({
           Resources: chunk.map((xr) => xr.resourceId),
           Tags: action.tags,
-        }),
+        })),
       ),
     );
   }

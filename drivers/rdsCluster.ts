@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { RDS, Tag } from '@aws-sdk/client-rds';
+import { DescribeDBClustersCommand, DescribeDBInstancesCommand, RDSClient, StartDBClusterCommand, StopDBClusterCommand, Tag } from '@aws-sdk/client-rds';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
@@ -52,11 +52,11 @@ class InstrumentedRdsCluster extends ToolingInterface {
 
 class RdsClusterDriver extends DriverInterface {
   async start(resources: InstrumentedRdsCluster[]) {
-    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
+    const rds = await getAwsClientForAccount(RDSClient, this.accountConfig);
     return Promise.all(
       resources.map((xr) => {
         this.logger.info('RDS cluster %s will start', xr.resourceId);
-        return rds.startDBCluster({ DBClusterIdentifier: xr.resourceId }).catch((err) => {
+        return rds.send(new StartDBClusterCommand({ DBClusterIdentifier: xr.resourceId })).catch((err) => {
           this.logger.error('Error starting RDS instance %s, stack trace will follow:', xr.resourceId);
           this.logger.error(err);
         });
@@ -72,11 +72,11 @@ class RdsClusterDriver extends DriverInterface {
   }
 
   async stop(resources: InstrumentedRdsCluster[]) {
-    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
+    const rds = await getAwsClientForAccount(RDSClient, this.accountConfig);
     return Promise.all(
       resources.map((xr) => {
         this.logger.info('RDS cluster %s will stop', xr.resourceId);
-        return rds.stopDBCluster({ DBClusterIdentifier: xr.resourceId }).catch((err) => {
+        return rds.send(new StopDBClusterCommand({ DBClusterIdentifier: xr.resourceId })).catch((err) => {
           this.logger.error('Error stopping RDS instance %s, stack trace will follow:', xr.resourceId);
           this.logger.error(err);
         });
@@ -97,7 +97,7 @@ class RdsClusterDriver extends DriverInterface {
   }
 
   async setTag(resources: InstrumentedRdsCluster[], action: RevolverActionWithTags) {
-    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
+    const rds = await getAwsClientForAccount(RDSClient, this.accountConfig);
     return rdsTagger.setTag(rds, this.logger, resources, action);
   }
 
@@ -106,7 +106,7 @@ class RdsClusterDriver extends DriverInterface {
   }
 
   async unsetTag(resources: InstrumentedRdsCluster[], action: RevolverActionWithTags) {
-    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
+    const rds = await getAwsClientForAccount(RDSClient, this.accountConfig);
     return rdsTagger.unsetTag(rds, this.logger, resources, action);
   }
 
@@ -117,9 +117,9 @@ class RdsClusterDriver extends DriverInterface {
   async collect() {
     const logger = this.logger;
     logger.debug('RDS Cluster module collecting account: %j', this.accountConfig.name);
-    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
-    const clusters = await rds.describeDBClusters({});
-    const instances = await rds.describeDBInstances({});
+    const rds = await getAwsClientForAccount(RDSClient, this.accountConfig);
+    const clusters = await rds.send(new DescribeDBClustersCommand({}));
+    const instances = await rds.send(new DescribeDBInstancesCommand({}));
 
     const instrumentedClusters = clusters
       .DBClusters!.map((xc) => new InstrumentedRdsCluster(xc))
