@@ -189,6 +189,8 @@ class Ec2Driver extends DriverInterface {
     logger.debug('EC2 module collecting account: %j', this.accountConfig.name);
 
     const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
+    const autoscaling = await getAwsClientForAccount(AutoScalingClient, this.accountConfig);
+
     const allEc2Iinstances = (await paginateAwsCall(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
       (xr) => xr.Instances,
     );
@@ -200,7 +202,6 @@ class Ec2Driver extends DriverInterface {
       return true;
     });
 
-    const autoscaling = await getAwsClientForAccount(AutoScalingClient, this.accountConfig);
     const autoscalingGroups = await paginateAwsCall(paginateDescribeAutoScalingGroups, autoscaling, 'AutoScalingGroups');
 
     for (const xi of ec2Instances) {
