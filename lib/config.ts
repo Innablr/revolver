@@ -2,12 +2,11 @@ import { logger } from './logger';
 import { promises as fs } from 'fs';
 import path = require('node:path');
 import yaml from 'js-yaml';
-import { Organizations } from '@aws-sdk/client-organizations';
+import { Organizations, paginateListAccounts } from '@aws-sdk/client-organizations';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { paginateAwsCall } from './common';
 import merge from 'ts-deepmerge';
 import { getAwsConfig } from './awsConfig';
-import { fromNodeProviderChain,  } from '@aws-sdk/credential-providers';
 
 export class RevolverConfig {
   validateConfig(data: string) {
@@ -53,7 +52,7 @@ export class RevolverConfig {
       creds.map(async (cr: any) => {
         const config = getAwsConfig(orgsRegion, cr);
         const client = new Organizations(config); // TODO: check this works
-        const accounts = await paginateAwsCall(client.listAccounts.bind(client), 'Accounts');
+        const accounts = await paginateAwsCall(paginateListAccounts, client, 'Accounts');
         accounts.forEach((account) => {
           account.accountId = account.Id;
           delete account.Id;

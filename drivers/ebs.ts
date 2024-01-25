@@ -1,6 +1,6 @@
 import { CreateVolumeCommandOutput, EC2Client, Tag, paginateDescribeVolumes, paginateDescribeInstances } from '@aws-sdk/client-ec2';
 import { DateTime } from 'luxon';
-import { paginateAwsV3 } from '../lib/common';
+import { paginateAwsCall } from '../lib/common';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
@@ -95,8 +95,8 @@ class EBSDriver extends DriverInterface {
 
     const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
 
-    const ebsVolumes = await paginateAwsV3(paginateDescribeVolumes, ec2, 'Volumes');
-    const ec2instances = (await paginateAwsV3(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
+    const ebsVolumes = await paginateAwsCall(paginateDescribeVolumes, ec2, 'Volumes');
+    const ec2instances = (await paginateAwsCall(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
       (xr) => xr.Instances,
     );
 

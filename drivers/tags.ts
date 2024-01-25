@@ -3,7 +3,7 @@ import { RevolverLogObject } from '../lib/logger';
 import { ToolingInterface } from './instrumentedResource';
 import { RevolverActionWithTags } from '../actions/actions';
 import { chunkArray, unique } from '../lib/common';
-import { CreateVolumeCommandOutput, EC2, Instance, Tag, EC2Client, StartInstancesCommand, StopInstancesCommand, CreateTagsCommand, DeleteTagsCommand } from '@aws-sdk/client-ec2';
+import { EC2Client, CreateTagsCommand, DeleteTagsCommand } from '@aws-sdk/client-ec2';
 import { AddTagsToResourceCommand, RDSClient, RemoveTagsFromResourceCommand } from '@aws-sdk/client-rds';
 
 export interface TagInterface {

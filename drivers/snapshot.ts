@@ -3,7 +3,7 @@ import { EC2Client, Tag, paginateDescribeInstances, paginateDescribeSnapshots, p
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverActionWithTags } from '../actions/actions';
-import { paginateAwsCall, paginateAwsV3 } from '../lib/common';
+import { paginateAwsCall } from '../lib/common';
 import { ec2Tagger } from './tags';
 import { getAwsClientForAccount } from '../lib/awsConfig';
 
@@ -77,13 +77,13 @@ class SnapshotDriver extends DriverInterface {
 
     const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
     // const allEc2Iinstances = (await paginateAwsV3(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
-    const snapshots = await paginateAwsV3(paginateDescribeSnapshots, ec2, 'Snapshots', {
+    const snapshots = await paginateAwsCall(paginateDescribeSnapshots, ec2, 'Snapshots', {
       OwnerIds: [this.accountId],
     });
     logger.debug('Snapshots %d found', snapshots.length);
 
-    const volumes = await paginateAwsV3(paginateDescribeVolumes, ec2, 'Volumes');
-    const instances = (await paginateAwsV3(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
+    const volumes = await paginateAwsCall(paginateDescribeVolumes, ec2, 'Volumes');
+    const instances = (await paginateAwsCall(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
       (xr) => xr.Instances,
     );
 

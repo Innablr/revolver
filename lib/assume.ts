@@ -1,5 +1,5 @@
 import { logger } from './logger';
-import { STS, STSClientConfig } from '@aws-sdk/client-sts';
+import { STS } from '@aws-sdk/client-sts';
 import dateTime from './dateTime';
 import { DateTime } from 'luxon';
 import { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
