@@ -1,3 +1,4 @@
+
 async function paginateAwsCall(fn: (...args: any[]) => any, what: string, params?: any) {
   let entityList: any[] = [];
   const parameters = params || {};
@@ -6,6 +7,19 @@ async function paginateAwsCall(fn: (...args: any[]) => any, what: string, params
   while (r.NextToken !== undefined) {
     r = await fn(Object.assign({}, parameters, { NextToken: r.NextToken }));
     entityList = entityList.concat(r[what]);
+  }
+  return entityList;
+}
+
+async function paginateAwsV3(paginatorRef: any, client: any, what: string, params?: any) {
+  // TODO: improve parameter typing:
+  //   paginatorRef = f(PaginationConfiguration, request)
+  //   client = Client
+  const parameters = params || {};
+  const paginator = paginatorRef({client: client}, parameters)
+  let entityList: any[] = [];
+  for await (const page of paginator) {
+    entityList.push(...page[what])
   }
   return entityList;
 }
@@ -39,4 +53,4 @@ function unique<T>(array: T[]): T[] {
   return uniqueBy(array, (x: T) => x);
 }
 
-export { paginateAwsCall, chunkArray, uniqueBy, unique };
+export { paginateAwsCall, paginateAwsV3, chunkArray, uniqueBy, unique };
