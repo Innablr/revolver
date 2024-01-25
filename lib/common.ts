@@ -1,11 +1,12 @@
-async function paginateAwsCall(fn: (...args: any[]) => any, what: string, params?: any) {
-  let entityList: any[] = [];
+async function paginateAwsCall(paginatorRef: any, client: any, what: string, params?: any) {
+  // TODO: improve parameter typing:
+  //   paginatorRef = f(PaginationConfiguration, request)
+  //   client = Client
   const parameters = params || {};
-  let r = await fn(parameters);
-  entityList = entityList.concat(entityList, r[what]);
-  while (r.NextToken !== undefined) {
-    r = await fn(Object.assign({}, parameters, { NextToken: r.NextToken }));
-    entityList = entityList.concat(r[what]);
+  const paginator = paginatorRef({client: client}, parameters)
+  let entityList: any[] = [];
+  for await (const page of paginator) {
+    entityList.push(...page[what])
   }
   return entityList;
 }

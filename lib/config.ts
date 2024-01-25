@@ -2,8 +2,8 @@ import { logger } from './logger';
 import { promises as fs } from 'fs';
 import path = require('node:path');
 import yaml from 'js-yaml';
-import { Organizations, OrganizationsClientConfig } from '@aws-sdk/client-organizations';
-import { S3, S3ClientConfig } from '@aws-sdk/client-s3';
+import { Organizations, paginateListAccounts } from '@aws-sdk/client-organizations';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { paginateAwsCall } from './common';
 import merge from 'ts-deepmerge';
 import { getAwsConfig } from './awsConfig';
@@ -37,11 +37,11 @@ export class RevolverConfig {
   }
 
   async readConfigFromS3(configBucket: string, configKey: string): Promise<string> {
-    const config = getAwsConfig();
-    const s3 = new S3(config);
+    const config = getAwsConfig('ap-southeast-2');  // TODO: FIXME! should be able to get default region from somewhere?
+    const s3 = new S3Client(config);
     logger.debug(`Fetching config from bucket [${configBucket}] key [${configKey}]`);
 
-    const configObject = await s3.getObject({ Bucket: configBucket, Key: configKey });
+    const configObject = await s3.send(new GetObjectCommand({ Bucket: configBucket, Key: configKey }));
     logger.debug(`Found S3 object MIME ${configObject.ContentType}`);
     return this.validateConfig(await configObject.Body!.transformToString());
   }
@@ -52,7 +52,7 @@ export class RevolverConfig {
       creds.map(async (cr: any) => {
         const config = getAwsConfig(orgsRegion, cr);
         const client = new Organizations(config); // TODO: check this works
-        const accounts = await paginateAwsCall(client.listAccounts.bind(client), 'Accounts');
+        const accounts = await paginateAwsCall(paginateListAccounts, client, 'Accounts');
         accounts.forEach((account) => {
           account.accountId = account.Id;
           delete account.Id;

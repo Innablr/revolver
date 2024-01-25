@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { RDS, Tag } from '@aws-sdk/client-rds';
+import { DescribeDBInstancesCommand, ListTagsForResourceCommand, RDSClient, StartDBInstanceCommand, StopDBInstanceCommand, Tag } from '@aws-sdk/client-rds';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
@@ -52,13 +52,13 @@ class InstrumentedRdsInstance extends ToolingInterface {
 class RdsInstanceDriver extends DriverInterface {
   start(resources: InstrumentedRdsInstance[]) {
     const logger = this.logger;
-    return getAwsClientForAccount(RDS, this.accountConfig)
+    return getAwsClientForAccount(RDSClient, this.accountConfig)
       .then(function (rds) {
         return Promise.all(
           resources.map(function (xr) {
             logger.info('RDS instance %s will start', xr.resourceId);
             return rds
-              .startDBInstance({ DBInstanceIdentifier: xr.resourceId })
+              .send(new StartDBInstanceCommand({ DBInstanceIdentifier: xr.resourceId }))
               .catch(function (err) {
                 logger.error('Error starting RDS instance %s, stack trace will follow:', xr.resourceId);
                 logger.error(err);
@@ -95,7 +95,7 @@ class RdsInstanceDriver extends DriverInterface {
 
   stop(resources: InstrumentedRdsInstance[]) {
     const logger = this.logger;
-    return getAwsClientForAccount(RDS, this.accountConfig).then(function (rds) {
+    return getAwsClientForAccount(RDSClient, this.accountConfig).then(function (rds) {
       return Promise.all(
         resources.map(function (xr) {
           if (xr.resource.DBInstanceStatus !== 'available') {
@@ -103,7 +103,7 @@ class RdsInstanceDriver extends DriverInterface {
             return Promise.resolve();
           }
           logger.info('RDS instance %s will stop', xr.resourceId);
-          return rds.stopDBInstance({ DBInstanceIdentifier: xr.resourceId }).catch(function (err) {
+          return rds.send(new StopDBInstanceCommand({ DBInstanceIdentifier: xr.resourceId })).catch(function (err) {
             logger.error('Error stopping RDS instance %s, stack trace will follow:', xr.resourceId);
             logger.error(err);
           });
@@ -147,7 +147,7 @@ class RdsInstanceDriver extends DriverInterface {
   }
 
   async setTag(resources: InstrumentedRdsInstance[], action: RevolverActionWithTags) {
-    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
+    const rds = await getAwsClientForAccount(RDSClient, this.accountConfig);
     return rdsTagger.setTag(rds, this.logger, resources, action);
   }
 
@@ -156,7 +156,7 @@ class RdsInstanceDriver extends DriverInterface {
   }
 
   async unsetTag(resources: InstrumentedRdsInstance[], action: RevolverActionWithTags) {
-    const rds = await getAwsClientForAccount(RDS, this.accountConfig);
+    const rds = await getAwsClientForAccount(RDSClient, this.accountConfig);
     return rdsTagger.unsetTag(rds, this.logger, resources, action);
   }
 
@@ -167,15 +167,15 @@ class RdsInstanceDriver extends DriverInterface {
   collect() {
     const logger = this.logger;
     logger.debug('RDS module collecting account: %j', this.accountConfig.name);
-    return getAwsClientForAccount(RDS, this.accountConfig)
-      .then((rds) => rds.describeDBInstances({}))
+    return getAwsClientForAccount(RDSClient, this.accountConfig)
+      .then((rds) => rds.send(new DescribeDBInstancesCommand({})))
       .then((r) => r.DBInstances!.map((xr) => new InstrumentedRdsInstance(xr)))
-      .then((r) => Promise.all([Promise.resolve(r), getAwsClientForAccount(RDS, this.accountConfig)]))
+      .then((r) => Promise.all([Promise.resolve(r), getAwsClientForAccount(RDSClient, this.accountConfig)]))
       .then(([r, rds]) =>
         Promise.all(
           r.map(function (xr) {
             return rds
-              .listTagsForResource({ ResourceName: xr.resourceArn })
+              .send(new ListTagsForResourceCommand({ ResourceName: xr.resourceArn }))
               .then((t) => {
                 xr.tags = t.TagList || [];
               })

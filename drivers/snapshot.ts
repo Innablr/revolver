@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { EC2, Tag } from '@aws-sdk/client-ec2';
+import { EC2Client, Tag, paginateDescribeInstances, paginateDescribeSnapshots, paginateDescribeVolumes } from '@aws-sdk/client-ec2';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverActionWithTags } from '../actions/actions';
@@ -54,7 +54,7 @@ class SnapshotDriver extends DriverInterface {
   }
 
   async setTag(resources: InstrumentedSnapshot[], action: RevolverActionWithTags) {
-    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
+    const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
     return ec2Tagger.setTag(ec2, this.logger, resources, action);
   }
 
@@ -63,7 +63,7 @@ class SnapshotDriver extends DriverInterface {
   }
 
   async unsetTag(resources: InstrumentedSnapshot[], action: RevolverActionWithTags) {
-    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
+    const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
     return ec2Tagger.unsetTag(ec2, this.logger, resources, action);
   }
 
@@ -75,14 +75,15 @@ class SnapshotDriver extends DriverInterface {
     const logger = this.logger;
     logger.debug('Snapshot module collecting account: %j', this.accountConfig.name);
 
-    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
-    const snapshots = await paginateAwsCall(ec2.describeSnapshots.bind(ec2), 'Snapshots', {
+    const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
+    // const allEc2Iinstances = (await paginateAwsV3(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
+    const snapshots = await paginateAwsCall(paginateDescribeSnapshots, ec2, 'Snapshots', {
       OwnerIds: [this.accountId],
     });
     logger.debug('Snapshots %d found', snapshots.length);
 
-    const volumes = await paginateAwsCall(ec2.describeVolumes.bind(ec2), 'Volumes');
-    const instances = (await paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(
+    const volumes = await paginateAwsCall(paginateDescribeVolumes, ec2, 'Volumes');
+    const instances = (await paginateAwsCall(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
       (xr) => xr.Instances,
     );
 

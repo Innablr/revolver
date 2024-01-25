@@ -1,4 +1,4 @@
-import { CreateVolumeCommandOutput, EC2, Tag } from '@aws-sdk/client-ec2';
+import { CreateVolumeCommandOutput, EC2Client, Tag, paginateDescribeVolumes, paginateDescribeInstances } from '@aws-sdk/client-ec2';
 import { DateTime } from 'luxon';
 import { paginateAwsCall } from '../lib/common';
 import { ToolingInterface } from './instrumentedResource';
@@ -63,7 +63,7 @@ class EBSDriver extends DriverInterface {
   }
 
   async setTag(resources: InstrumentedEBS[], action: RevolverActionWithTags) {
-    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
+    const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
     return ec2Tagger.setTag(ec2, this.logger, resources, action);
   }
 
@@ -72,7 +72,7 @@ class EBSDriver extends DriverInterface {
   }
 
   async unsetTag(resources: InstrumentedEBS[], action: RevolverActionWithTags) {
-    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
+    const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
     return ec2Tagger.unsetTag(ec2, this.logger, resources, action);
   }
 
@@ -93,10 +93,10 @@ class EBSDriver extends DriverInterface {
     const logger = this.logger;
     logger.debug('EBS module collecting account: %j', this.accountConfig.name);
 
-    const ec2 = await getAwsClientForAccount(EC2, this.accountConfig);
+    const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
 
-    const ebsVolumes = await paginateAwsCall(ec2.describeVolumes.bind(ec2), 'Volumes');
-    const ec2instances = (await paginateAwsCall(ec2.describeInstances.bind(ec2), 'Reservations')).flatMap(
+    const ebsVolumes = await paginateAwsCall(paginateDescribeVolumes, ec2, 'Volumes');
+    const ec2instances = (await paginateAwsCall(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
       (xr) => xr.Instances,
     );
 
