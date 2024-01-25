@@ -4,7 +4,7 @@ import { CreateVolumeCommandOutput, Instance, Tag, EC2Client, StartInstancesComm
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
-import { chunkArray, paginateAwsV3 } from '../lib/common';
+import { chunkArray, paginateAwsCall } from '../lib/common';
 import { ec2Tagger } from './tags';
 import { getAwsClientForAccount } from '../lib/awsConfig';
 
@@ -189,7 +189,7 @@ class Ec2Driver extends DriverInterface {
     logger.debug('EC2 module collecting account: %j', this.accountConfig.name);
 
     const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
-    const allEc2Iinstances = (await paginateAwsV3(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
+    const allEc2Iinstances = (await paginateAwsCall(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
       (xr) => xr.Instances,
     );
     const ec2Instances = allEc2Iinstances.filter(function (xi) {
@@ -201,7 +201,7 @@ class Ec2Driver extends DriverInterface {
     });
 
     const autoscaling = await getAwsClientForAccount(AutoScalingClient, this.accountConfig);
-    const autoscalingGroups = await paginateAwsV3(paginateDescribeAutoScalingGroups, autoscaling, 'AutoScalingGroups');
+    const autoscalingGroups = await paginateAwsCall(paginateDescribeAutoScalingGroups, autoscaling, 'AutoScalingGroups');
 
     for (const xi of ec2Instances) {
       const asg = autoscalingGroups.find(
