@@ -3,6 +3,7 @@
 revolver-config.yaml
 
 # Build and auto-generated files
+dist
 revolver.zip
 *.js
 *.d.ts

@@ -36,5 +36,8 @@ const r = revolverHandle(event, context, () => {});
 if (r instanceof Promise) {
   r.then(() => {
     console.log('Done');
+  }).catch((e: Error) => {
+    console.error(e);
+    process.exit(1);
   });
 }
