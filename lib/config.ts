@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import path = require('node:path');
 import yaml from 'js-yaml';
 import { Organizations } from '@aws-sdk/client-organizations';
-import { S3 } from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { paginateAwsCall } from './common';
 import merge from 'ts-deepmerge';
 import { getAwsConfig } from './awsConfig';
@@ -37,11 +37,11 @@ export class RevolverConfig {
   }
 
   async readConfigFromS3(configBucket: string, configKey: string): Promise<string> {
-    const config = getAwsConfig();
-    const s3 = new S3(config);
+    const config = getAwsConfig('ap-southeast-2');  // TODO: FIXME! should be able to get default region from somewhere?
+    const s3 = new S3Client(config);
     logger.debug(`Fetching config from bucket [${configBucket}] key [${configKey}]`);
 
-    const configObject = await s3.getObject({ Bucket: configBucket, Key: configKey });
+    const configObject = await s3.send(new GetObjectCommand({ Bucket: configBucket, Key: configKey }));
     logger.debug(`Found S3 object MIME ${configObject.ContentType}`);
     return this.validateConfig(await configObject.Body!.transformToString());
   }
