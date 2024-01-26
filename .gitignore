@@ -22,3 +22,6 @@ cdk.context.json
 *~
 *.swp
 .vscode
+
+# Resource file output
+resources.json
