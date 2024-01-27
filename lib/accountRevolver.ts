@@ -73,6 +73,7 @@ export class AccountRevolver {
   }
 
   async saveResources(filename: string) {
+    this.logger.info(`Writing resources to ${filename}`);
     writeFileSync(filename, this.resources, { spaces: 2 });
   }
 
