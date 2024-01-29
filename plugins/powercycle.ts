@@ -67,7 +67,7 @@ export default class PowerCyclePlugin extends RevolverPlugin {
         logger.error(`Availability parser returns [${r}], which is not supported`);
     }
 
-    logger.debug('Finally got actions', resource.actions.map((xa: any) => xa.what));
+    logger.debug(`Finally got actions: [${resource.actions.map((xa: any) => xa.what)}]`);
     return Promise.resolve(resource);
   }
 }
