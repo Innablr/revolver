@@ -41,6 +41,17 @@ export abstract class ToolingInterface {
     this.actions.push(action);
   }
 
+  toJSON() {
+    return {
+      resourceId: this.resourceId,
+      resourceType: this.resourceType,
+      resourceArn: this.resourceArn,
+      launchTimeUtc: this.launchTimeUtc,
+      resourceState: this.resourceState,
+      resource: this.resource,
+    };
+  }
+
   abstract get resourceId(): string;
 
   abstract get resourceType(): string;
