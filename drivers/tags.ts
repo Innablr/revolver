@@ -44,15 +44,14 @@ class RDSTagger implements Tagger {
           Key: xt.Key,
           Value: xt.Value.replace(/[^A-Za-z0-9 _.:/=+\-@]/g, '_'),
         }));
-        logger.info('%s %s will be set tag %j', xr.resourceType, xr.resourceId, safeValues);
+        logger.info(`${xr.resourceType} ${xr.resourceId} will be set tag ${safeValues}`);
         try {
           return await rds.send(new AddTagsToResourceCommand({
             ResourceName: xr.resourceArn,
             Tags: safeValues,
           }));
         } catch (e) {
-          logger.error('Error settings tags for %s %s, stack trace will follow:', xr.resourceType, xr.resourceId);
-          logger.error(e);
+          logger.error(`Error settings tags for ${xr.resourceType} ${xr.resourceId}, stack trace will follow`, e);
           return undefined;
         }
       }),
@@ -76,15 +75,14 @@ class RDSTagger implements Tagger {
   ): Promise<any> {
     return Promise.all(
       resources.map(async function (xr) {
-        logger.info('RDS instance %s will be unset tags %j', xr.resourceId, action.tags);
+        logger.info(`RDS instance ${xr.resourceId} will be unset tags ${action.tags}`);
         try {
           return await rds.send(new RemoveTagsFromResourceCommand({
             ResourceName: xr.resourceArn,
             TagKeys: action.tags.map((xt: TagInterface) => xt.Key),
           }));
         } catch (e) {
-          logger.error('Error unsettings tags for %s %s, stack trace will follow:', xr.resourceType, xr.resourceId);
-          logger.error(e);
+          logger.error(`Error unsettings tags for ${xr.resourceType} ${xr.resourceId}, stack trace will follow`, e);
           return undefined;
         }
       }),

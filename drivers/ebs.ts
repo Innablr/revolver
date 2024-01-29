@@ -91,7 +91,7 @@ class EBSDriver extends DriverInterface {
 
   async collect() {
     const logger = this.logger;
-    logger.debug('EBS module collecting account: %j', this.accountConfig.name);
+    logger.debug(`EBS module collecting account: ${this.accountConfig.name}`);
 
     const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
 
@@ -100,7 +100,7 @@ class EBSDriver extends DriverInterface {
       (xr) => xr.Instances,
     );
 
-    logger.debug('Found %d ebs volumes', ebsVolumes.length);
+    logger.debug(`Found ${ebsVolumes.length} ebs volumes`);
 
     for (const volume of ebsVolumes) {
       if (volume.State === 'in-use') {
