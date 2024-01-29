@@ -24,3 +24,6 @@ cdk.context.json
 .vscode
 
 megalinter-reports/
+
+# Resource file output
+resources.json
