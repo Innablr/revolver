@@ -2,7 +2,6 @@ import { DriverInterface } from '../drivers/driverInterface';
 import { ToolingInterface } from '../drivers/instrumentedResource';
 import { RevolverPlugin } from '../plugins/pluginInterface';
 import { logger } from './logger';
-import * as path from 'path';
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -43,7 +42,7 @@ export class AccountRevolver {
       activePlugins.flatMap((xs: string) => {
         this.logger.info(`Configuring plugin ${xs}...`);
         return this.config.plugins[xs].configs.map(async (xp: any) => {
-          const PluginModule = await import(path.join('..', 'plugins', xs));
+          const PluginModule = await require(`../plugins/${xs}`);
           return new PluginModule['default'](this.config, xs, xp);
         });
       }),
@@ -54,7 +53,8 @@ export class AccountRevolver {
       this.config.drivers
         .filter((xd: any) => this.supportedDrivers.indexOf(xd.name) > -1)
         .map(async (xd: any) => {
-          const DriverModule = await import(path.join('..', 'drivers', xd.name));
+          this.logger.info(`Configuring driver ${xd.name}...`);
+          const DriverModule = await require(`../drivers/${xd.name}`);
           return new DriverModule.default(this.config, xd);
         }),
     );

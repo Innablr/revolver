@@ -1,7 +1,6 @@
 import { RevolverPlugin } from './pluginInterface';
 import dateTime from '../lib/dateTime';
 import { NoopAction, SetTagAction, StartAction, StopAction } from '../actions/actions';
-import getParser from './parsers';
 
 export default class PowerCyclePlugin extends RevolverPlugin {
   private parser: any;
@@ -20,7 +19,8 @@ export default class PowerCyclePlugin extends RevolverPlugin {
   }
 
   async initialise(): Promise<PowerCyclePlugin> {
-    this.parser = await getParser(this.pluginConfig.tagging || 'strict');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    this.parser = await require(`./parsers/${this.pluginConfig.tagging || 'strict'}`).default;
     return Promise.resolve(this);
   }
 
