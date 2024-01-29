@@ -26,7 +26,7 @@ export class RevolverConfig {
       account.settings = Object.assign({}, config.defaults.settings, account.settings);
     });
 
-    logger.debug('Read Revolver config: %j', config);
+    logger.debug('Read Revolver config', config);
     return config;
   }
 
@@ -68,7 +68,7 @@ export class RevolverConfig {
       }),
     );
     const flatAccounts = allAccounts.flat();
-    logger.info('%d Accounts found on the Organizations listed', flatAccounts.length);
+    logger.info(`${flatAccounts.length} Accounts found on the Organizations listed`);
     return flatAccounts;
   }
 

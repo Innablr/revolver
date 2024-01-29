@@ -55,10 +55,9 @@ class RdsClusterDriver extends DriverInterface {
     const rds = await getAwsClientForAccount(RDSClient, this.accountConfig);
     return Promise.all(
       resources.map((xr) => {
-        this.logger.info('RDS cluster %s will start', xr.resourceId);
+        this.logger.info(`RDS cluster ${xr.resourceId} will start`);
         return rds.send(new StartDBClusterCommand({ DBClusterIdentifier: xr.resourceId })).catch((err) => {
-          this.logger.error('Error starting RDS instance %s, stack trace will follow:', xr.resourceId);
-          this.logger.error(err);
+          this.logger.error(`Error starting RDS instance ${xr.resourceId}, stack trace will follow`, err);
         });
       }),
     );
@@ -75,10 +74,9 @@ class RdsClusterDriver extends DriverInterface {
     const rds = await getAwsClientForAccount(RDSClient, this.accountConfig);
     return Promise.all(
       resources.map((xr) => {
-        this.logger.info('RDS cluster %s will stop', xr.resourceId);
+        this.logger.info(`RDS cluster ${xr.resourceId} will stop`);
         return rds.send(new StopDBClusterCommand({ DBClusterIdentifier: xr.resourceId })).catch((err) => {
-          this.logger.error('Error stopping RDS instance %s, stack trace will follow:', xr.resourceId);
-          this.logger.error(err);
+          this.logger.error(`Error stopping RDS instance ${xr.resourceId}, stack trace will follow`, err);
         });
       }),
     );
@@ -116,7 +114,7 @@ class RdsClusterDriver extends DriverInterface {
 
   async collect() {
     const logger = this.logger;
-    logger.debug('RDS Cluster module collecting account: %j', this.accountConfig.name);
+    logger.debug(`RDS Cluster module collecting account: ${this.accountConfig.name}`);
     const rds = await getAwsClientForAccount(RDSClient, this.accountConfig);
     const clusters = await rds.send(new DescribeDBClustersCommand({}));
     const instances = await rds.send(new DescribeDBInstancesCommand({}));
@@ -130,7 +128,7 @@ class RdsClusterDriver extends DriverInterface {
         return xc;
       });
 
-    logger.info('Found %d RDS clusters', instrumentedClusters.length);
+    logger.info(`Found ${instrumentedClusters.length} RDS clusters`);
     return instrumentedClusters;
   }
 }

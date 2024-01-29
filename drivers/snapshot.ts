@@ -73,14 +73,14 @@ class SnapshotDriver extends DriverInterface {
 
   async collect() {
     const logger = this.logger;
-    logger.debug('Snapshot module collecting account: %j', this.accountConfig.name);
+    logger.debug(`Snapshot module collecting account: ${this.accountConfig.name}`);
 
     const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
     // const allEc2Iinstances = (await paginateAwsV3(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
     const snapshots = await paginateAwsCall(paginateDescribeSnapshots, ec2, 'Snapshots', {
       OwnerIds: [this.accountId],
     });
-    logger.debug('Snapshots %d found', snapshots.length);
+    logger.debug(`Snapshots ${snapshots.length} found`);
 
     const volumes = await paginateAwsCall(paginateDescribeVolumes, ec2, 'Volumes');
     const instances = (await paginateAwsCall(paginateDescribeInstances, ec2, 'Reservations')).flatMap(

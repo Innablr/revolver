@@ -96,7 +96,7 @@ class RedshiftClusterDriver extends DriverInterface {
         redshift = r;
       })
       .then(function () {
-        logger.info('Redshift cluster %s will now be deleted with snapshot %s', cluster.resourceId, snapshotId);
+        logger.info(`Redshift cluster ${cluster.resourceId} will now be deleted with snapshot ${snapshotId}`);
         return redshift.send(new DeleteClusterCommand({
           ClusterIdentifier: cluster.resourceId,
           FinalClusterSnapshotIdentifier: snapshotId,
@@ -104,15 +104,14 @@ class RedshiftClusterDriver extends DriverInterface {
         }));
       })
       .then(function () {
-        logger.debug('Saving cluster %s tags in snapshot %s', cluster.resourceId, snapshotId);
+        logger.debug(`Saving cluster ${cluster.resourceId} tags in snapshot ${snapshotId}`);
         return redshift.send(new CreateTagsCommand({
           ResourceName: snapshotArn,
           Tags: preserveTags,
         }));
       })
       .catch(function (err) {
-        logger.error('Error stopping Redshift cluster %s, stack trace will follow:', cluster.resourceId);
-        logger.error(err);
+        logger.error(`Error stopping Redshift cluster ${cluster.resourceId}, stack trace will follow`, err);
       });
   }
 
@@ -145,15 +144,14 @@ class RedshiftClusterDriver extends DriverInterface {
             Key: xt.Key,
             Value: xt.Value.replace(/[^A-Za-z0-9 _.:/=+\-@]/g, '_'),
           }));
-          logger.info('Redshift cluster %s will be set tags %j', xr.resourceId, safeValues);
+          logger.info(`Redshift cluster ${xr.resourceId} will be set tags ${safeValues}`);
           return redshift
             .send(new CreateTagsCommand({
               ResourceName: xr.resourceArn,
               Tags: safeValues,
             }))
             .catch(function (err) {
-              logger.error('Error settings tags for Redshift cluster %s, stack trace will follow:', xr.resourceId);
-              logger.error(err);
+              logger.error(`Error settings tags for Redshift cluster ${xr.resourceId}, stack trace will follow`, err);
             });
         }),
       );
@@ -185,8 +183,7 @@ class RedshiftClusterDriver extends DriverInterface {
               TagKeys: action.tags.map((xt) => xt.Key),
             }))
             .catch(function (err) {
-              logger.error('Error unsettings tags for Redshift cluster %s, stack trace will follow:', xr.resourceId);
-              logger.error(err);
+              logger.error(`Error unsettings tags for Redshift cluster ${xr.resourceId}, stack trace will follow`, err);
             });
         }),
       );
@@ -204,13 +201,13 @@ class RedshiftClusterDriver extends DriverInterface {
 
   async collect() {
     const logger = this.logger;
-    logger.debug('Redshift Cluster module collecting account: %j', this.accountConfig.name);
+    logger.debug(`Redshift Cluster module collecting account:${this.accountConfig.name}`);
 
     const redshift = await getAwsClientForAccount(RedshiftClient, this.accountConfig);
 
     const redshiftClusters = (await redshift.send(new DescribeClustersCommand({})).then((c) => c.Clusters)) || [];
 
-    logger.info('Found %d Redshift clusters', redshiftClusters.length);
+    logger.info(`Found ${redshiftClusters.length} Redshift clusters`);
 
     return await Promise.all(
       redshiftClusters.map(

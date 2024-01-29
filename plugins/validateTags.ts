@@ -41,7 +41,7 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
           }
           break;
         default:
-          logger.error('Action %s is not supported by %s', xa, this.name);
+          logger.error(`Action ${xa} is not supported by ${this.name}`);
       }
     });
   }

@@ -70,7 +70,7 @@ export abstract class DriverInterface {
                 return false;
               }
             }
-            logger.debug('Resource %s also has action %s', xxr.resourceId, matchingAction.present);
+            logger.debug(`Resource ${xxr.resourceId} also has action ${matchingAction.present}`);
             matchingAction.done = true;
             return true;
           });

@@ -98,9 +98,9 @@ class Ec2Driver extends DriverInterface {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       await Promise.all(
         asgs.map(function (xa: string) {
-          logger.info('Resuming ASG %s', xa);
+          logger.info(`Resuming ASG ${xa}`);
           return autoscaling.send(new ResumeProcessesCommand({ AutoScalingGroupName: xa })).catch((e) => {
-            logger.error('Autoscaling group %s failed to resume: %s', xa, e);
+            logger.error(`Autoscaling group ${xa} failed to resume`, e);
           });
         }),
       );
@@ -132,9 +132,9 @@ class Ec2Driver extends DriverInterface {
 
     await Promise.all(
       asgs.map(function (xa: string) {
-        logger.info('Pausing ASG %s', xa);
+        logger.info(`Pausing ASG ${xa}`);
         return autoscaling.send(new SuspendProcessesCommand({ AutoScalingGroupName: xa })).catch((e) => {
-          logger.error('Autoscaling group %s failed to resume: %s', xa, e);
+          logger.error(`Autoscaling group ${xa} failed to resume`, e);
         });
       }),
     );
@@ -186,7 +186,7 @@ class Ec2Driver extends DriverInterface {
   async collect() {
     const logger = this.logger;
     const inoperableStates = ['terminated', 'shutting-down'];
-    logger.debug('EC2 module collecting account: %j', this.accountConfig.name);
+    logger.debug(`EC2 module collecting account: ${this.accountConfig.name}`);
 
     const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
     const autoscaling = await getAwsClientForAccount(AutoScalingClient, this.accountConfig);
@@ -196,7 +196,7 @@ class Ec2Driver extends DriverInterface {
     );
     const ec2Instances = allEc2Iinstances.filter(function (xi) {
       if (inoperableStates.find((x) => x === xi.State.Name)) {
-        logger.info('EC2 instance %s state %s is inoperable', xi.InstanceId, xi.State.Name);
+        logger.info(`EC2 instance ${xi.InstanceId} state ${xi.State.Name} is inoperable`);
         return false;
       }
       return true;

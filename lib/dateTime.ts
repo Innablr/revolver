@@ -6,7 +6,7 @@ class DateTime {
 
   freezeTime(t: string) {
     this.currentTime = LuxonDateTime.fromISO(t).toUTC();
-    logger.debug('Freezing time: %s', this.currentTime);
+    logger.debug(`Freezing time: ${this.currentTime}`);
   }
 
   getTime(tz?: string) {
