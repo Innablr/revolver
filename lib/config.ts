@@ -37,7 +37,7 @@ export class RevolverConfig {
   }
 
   async readConfigFromS3(configBucket: string, configKey: string): Promise<string> {
-    const config = getAwsConfig('ap-southeast-2');  // TODO: FIXME! should be able to get default region from somewhere?
+    const config = getAwsConfig();
     const s3 = new S3Client(config);
     logger.debug(`Fetching config from bucket [${configBucket}] key [${configKey}]`);
 

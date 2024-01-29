@@ -2,6 +2,7 @@ import { DriverInterface } from '../drivers/driverInterface';
 import { ToolingInterface } from '../drivers/instrumentedResource';
 import { RevolverPlugin } from '../plugins/pluginInterface';
 import { logger } from './logger';
+import { writeFileSync } from 'jsonfile';
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -71,6 +72,11 @@ export class AccountRevolver {
     this.resources = (await Promise.all(this.drivers.map((xd) => xd.collect()))).flatMap((xr) => xr);
   }
 
+  async saveResources(filename: string) {
+    this.logger.info(`Writing resources to ${filename}`);
+    writeFileSync(filename, this.resources, { spaces: 2 });
+  }
+
   async runPlugins(): Promise<void> {
     this.logger.info('Plugins will process resources');
     await Promise.all(
@@ -90,6 +96,9 @@ export class AccountRevolver {
   async revolve(): Promise<void> {
     try {
       await this.loadResources();
+      if (this.config.settings.saveResources) {
+        this.saveResources(this.config.settings.saveResources);
+      }
       await this.runPlugins();
       await this.runActions();
     } catch (err) {
