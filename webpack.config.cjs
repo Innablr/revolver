@@ -19,6 +19,9 @@ module.exports = {
   },
   output: {
     filename: 'revolver.js',
+    library: {
+      type: 'commonjs2',
+    },
     path: path.resolve(__dirname, 'dist'),
   },
   plugins: [
