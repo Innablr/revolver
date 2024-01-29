@@ -3,7 +3,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'production',
-  entry: './invoke.ts',
+  entry: './revolver.ts',
   target: 'node',
   module: {
     rules: [
