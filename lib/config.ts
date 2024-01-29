@@ -5,7 +5,7 @@ import yaml from 'js-yaml';
 import { Organizations, paginateListAccounts } from '@aws-sdk/client-organizations';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { paginateAwsCall } from './common';
-import merge from 'ts-deepmerge';
+import { merge } from 'ts-deepmerge';
 import { getAwsConfig } from './awsConfig';
 
 export class RevolverConfig {
