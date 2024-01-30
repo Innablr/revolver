@@ -1,8 +1,7 @@
 import { RevolverPlugin } from './pluginInterface';
 import dateTime from '../lib/dateTime';
 import { NoopAction, StartAction, StopAction } from '../actions/actions';
-import getParser from './parsers';
-import { Filter, initializeFilter } from './filters';
+import { Filter } from './filters';
 
 interface Matcher {
   name: string;
@@ -28,16 +27,23 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
     this.timezoneTagName = this.accountConfig.timezoneTag || 'Timezone';
 
     // todo explicit type conversion
-    this.matchers = pluginConfig.matchers.sort((a: Matcher, b: Matcher) => b.priority - a.priority);
+    this.matchers = pluginConfig.matchers.sort((a: Matcher, b: Matcher) => {
+      if (isNaN(b.priority)) b.priority = 0;
+      if (isNaN(a.priority)) a.priority = 0;
+      return b.priority - a.priority;
+    });
   }
 
   async initialise(): Promise<PowerCycleCentralPlugin> {
-    this.parser = await getParser(this.pluginConfig.parser || 'strict');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    this.parser = await require(`./parsers/${this.pluginConfig.parser || 'strict'}`).default;
     const localTimeNow = dateTime.getTime('utc');
 
     this.matchers = await Promise.all(
       this.matchers.map(async (matcher) => {
-        const filter = await initializeFilter(matcher.filter);
+        const name = Object.keys(matcher.filter)[0];
+        const i = await require(`./filters/${name}`);
+        const filter = await new i.default(matcher.filter[name]).ready();
         return {
           name: matcher.name,
           filter: filter,

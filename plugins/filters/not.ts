@@ -1,5 +1,5 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { Filter, FilterCtor, initializeFilter } from './index';
+import { Filter, FilterCtor } from './index';
 
 export default class FilterNot implements Filter, FilterCtor {
   private element: Filter;
@@ -12,10 +12,16 @@ export default class FilterNot implements Filter, FilterCtor {
 
   constructor(config: any) {
     this.isReady = new Promise((resolve) => {
-      initializeFilter(config).then((filter) => {
-        this.element = filter;
-        resolve(this);
+
+      const name = Object.keys(config)[0];
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require(`./${name}`).then((i: any) => {
+        new i.default(config[name]).ready().then((filter: Filter) => {
+          this.element = filter;
+            resolve(this);
+        })
       });
+
     });
   }
   matches(resource: ToolingInterface): boolean {
