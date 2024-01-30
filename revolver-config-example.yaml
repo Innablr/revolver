@@ -31,6 +31,13 @@ defaults:
           availabilityTag: Schedule
           availabilityTagPriority: 10
           matchers:
+            - name: within australia
+              filter:
+                resource:
+                  path: "Placement.AvailabilityZone | contains(@, 'ap-southeast')"
+                  value: "ap-southeast"
+              schedule: 24x5
+              priority: 10
             - name: default untagged schedule
               filter:
                 and:
