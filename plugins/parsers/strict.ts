@@ -1,5 +1,7 @@
 import { DateTime, Interval } from 'luxon';
 
+const zeroPad = (num:number, places:number) => String(num).padStart(places, '0')
+
 class ParsedComponent {
   private timeHourLiteral: string | null = null;
   private timeMinuteLiteral: string | null;
@@ -28,7 +30,7 @@ class ParsedComponent {
   }
 
   get time() {
-    return `${this.timeHour}:${this.timeMinute}`;
+    return `${this.timeHour}:${zeroPad(this.timeMinute,2)}`;
   }
 
   get days() {
