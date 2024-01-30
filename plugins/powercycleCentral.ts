@@ -83,7 +83,14 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
     // TODO nicer logging defaults to not be too verbose
 
     const highestMatch = this.matchers.find((matcher: Matcher) => {
-      return matcher.filter.matches(resource);
+      try {
+        return matcher.filter.matches(resource);
+      } catch (e: any) {
+        // errors can occur if the jmespath doesn't relate to the resource at all
+        // expected behaviour is a no-match
+        logger.debug(`Matcher "${matcher.name}" error ignored: ${e.message}`);
+        return false;
+      }
     });
 
     if (!highestMatch) {

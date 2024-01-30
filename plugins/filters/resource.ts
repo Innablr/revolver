@@ -5,7 +5,7 @@ import { search } from 'jmespath';
 export default class FilterResource implements Filter, FilterCtor {
   private resourcePath: string;
   private resourceValue: string;
-  private resourceRegexp: string;
+  private resourceRegexp: RegExp;
 
   private readonly isReady: Promise<Filter>;
 
@@ -14,10 +14,18 @@ export default class FilterResource implements Filter, FilterCtor {
   }
 
   constructor(config: any) {
-    this.isReady = new Promise((resolve) => {
-      this.resourcePath = config["path"];
-      this.resourceValue = config["value"];
-      this.resourceRegexp = config["regexp"];
+    this.isReady = new Promise((resolve, reject) => {
+      // can't validate path as it depends on the input
+      this.resourcePath = config['path'];
+      this.resourceValue = config['value'];
+      if (config['regexp'] !== undefined) {
+        try {
+          this.resourceRegexp = new RegExp(config['regexp']);
+        } catch (e: any) {
+          reject(`invalid regexp "${config['regexp']}" in filter: ${e.message}"`);
+        }
+      }
+
       resolve(this);
     });
   }
@@ -29,8 +37,7 @@ export default class FilterResource implements Filter, FilterCtor {
     }
 
     if (this.resourceRegexp !== undefined) {
-      const re = new RegExp(this.resourceRegexp);
-      const match = re.exec(searchValue);
+      const match = this.resourceRegexp.exec(searchValue);
       return match !== null;
     }
     return false;
