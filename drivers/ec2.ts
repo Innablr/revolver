@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { AutoScalingClient, ResumeProcessesCommand, SuspendProcessesCommand, paginateDescribeAutoScalingGroups } from '@aws-sdk/client-auto-scaling';
-import { CreateVolumeCommandOutput, Instance, Tag, EC2Client, StartInstancesCommand, StopInstancesCommand, paginateDescribeInstances } from '@aws-sdk/client-ec2';
+import { Instance, Tag, EC2Client, StartInstancesCommand, StopInstancesCommand, paginateDescribeInstances } from '@aws-sdk/client-ec2';
 import { ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
@@ -11,7 +11,7 @@ import { getAwsClientForAccount } from '../lib/awsConfig';
 class InstrumentedEc2 extends ToolingInterface {
   private instanceARN: string;
 
-  constructor(resource: CreateVolumeCommandOutput, instanceARN: string) {
+  constructor(resource: Instance, instanceARN: string) {
     super(resource);
     this.instanceARN = instanceARN;
   }
