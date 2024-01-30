@@ -44,7 +44,7 @@ class RDSTagger implements Tagger {
           Key: xt.Key,
           Value: xt.Value.replace(/[^A-Za-z0-9 _.:/=+\-@]/g, '_'),
         }));
-        logger.info(`${xr.resourceType} ${xr.resourceId} will be set tag ${safeValues}`);
+        logger.info(`${xr.resourceType} ${xr.resourceId} will be set tag ${JSON.stringify(safeValues)}`);
         try {
           return await rds.send(new AddTagsToResourceCommand({
             ResourceName: xr.resourceArn,
