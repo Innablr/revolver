@@ -31,17 +31,26 @@ defaults:
           availabilityTag: Schedule
           availabilityTagPriority: 10
           matchers:
+            - name: no large instances
+              filter:
+                resource:
+                  path: "InstanceType"
+                  regexp: "\\.\\d{0,2}x?large"
+              schedule: "0x7"
+              priority: 20
             - name: within australia
               filter:
                 resource:
                   path: "Placement.AvailabilityZone | contains(@, 'ap-southeast')"
-                  value: "true"
+                  value: true
               schedule: 24x5
               priority: 10
-            - name: default untagged schedule
+            - name: default tagged schedule
               filter:
                 and:
-                  - id: i-0123456789abcdef1
+                  - tag:
+                      name: "CostCentre"
+                      value: "1234"
                   - type: ec2
               schedule: 24x7
               priority: 1
