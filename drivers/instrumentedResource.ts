@@ -52,6 +52,25 @@ export abstract class ToolingInterface {
     };
   }
 
+  get region() {
+    if (this.resourceArn === undefined) return undefined;
+    const s = this.resourceArn.split(':');
+    if (s.length < 6) return undefined;
+    return s[3];
+  }
+  get accountId() {
+    if (this.resourceArn === undefined) return undefined;
+    const s = this.resourceArn.split(':');
+    if (s.length < 6) return undefined;
+    return s[4];
+  }
+  get awsResourceType() {
+    if (this.resourceArn === undefined) return undefined;
+    const s = this.resourceArn.split(':');
+    if (s.length < 6) return undefined;
+    return s[2];
+  }
+
   abstract get resourceId(): string;
 
   abstract get resourceType(): string;
