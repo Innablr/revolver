@@ -97,6 +97,11 @@ export abstract class DriverInterface {
             xr.resourceType,
             allWithAction.map((xxr) => xxr.resourceId),
           );
+
+          if ((this as any)[xa.what] === undefined) {
+            logger.error(`Driver ${this.name} doesn't implement action ${xa.what}`);
+          }
+
           return (this as any)[xa.what](allWithAction, xa).catch((err: Error) => {
             logger.error(
               'Error in driver %s processing action [%s] on resources %j, stack trace will follow:',
