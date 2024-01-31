@@ -48,7 +48,7 @@ const basicEc2 = {
   resourceState: 'running',
   tags: {
     Schedule: '24x7',
-    CostCenter: '1234',
+    CostCenter: 'Primary-1234',
   },
   resource: {
     InstanceType: 't2.small',
@@ -66,7 +66,7 @@ const basicRds = {
   resourceState: 'running',
   tags: {
     Schedule: '24x7',
-    CostCenter: '1234',
+    CostCenter: 'Primary-1234',
   },
   resource: {
     DBInstanceClass: 'db.t3.micro',
@@ -120,9 +120,11 @@ const filterTests = [
   {
     name: 'tag',
     tests: [
-      { name: 'match', filter: { tag: { name: 'Schedule', value:'24x7'} }, resource: basicEc2, matches: true },
+      { name: 'match value', filter: { tag: { name: 'Schedule', value:'24x7'} }, resource: basicEc2, matches: true },
       { name: 'no match value', filter: { tag: { name: 'Schedule', value:'99x99'} }, resource: basicEc2, matches: false },
       { name: 'no match name', filter: { tag: { name: 'RandomTag', value:'things'} }, resource: basicEc2, matches: false },
+      { name: 'match contains insensitive', filter: { tag: { name: 'CostCenter', contains:'primary'} }, resource: basicEc2, matches: true },
+      { name: 'no match contains', filter: { tag: { name: 'CostCenter', contains:'blah'} }, resource: basicEc2, matches: false },
     ],
   },
   {
@@ -155,6 +157,8 @@ const filterTests = [
     name: 'resource',
     tests: [
       { name: 'match exact value', filter: { resource: { path: 'InstanceType', value: 't2.small'} }, resource: basicEc2, matches: true },
+      { name: 'match contains', filter: { resource: { path: 'InstanceType', contains: 'small'} }, resource: basicEc2, matches: true },
+      { name: 'no match contains', filter: { resource: { path: 'InstanceType', contains: 'large'} }, resource: basicEc2, matches: false },
       { name: 'match valid jmes with regex', filter: { resource: { path: 'Placement.AvailabilityZone', regexp: '\\w{2}.southeast.\\d\\w'} }, resource: basicEc2, matches: true },
       { name: 'no match invalid jmes', filter: { resource: { path: 'Placement.AvailabilityZone', regexp: '\\w{2}.southeast.\\d\\w'}}, resource:  basicRds, matches: false },
     ],
