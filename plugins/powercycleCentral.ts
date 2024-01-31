@@ -97,7 +97,7 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
 
     const taggedSchedule = resource.tag(this.scheduleTagName);
     // use the tagged schedule if it's a higher priority or there's no existing match
-    if (!highestMatch || this.scheduleTagPriority >= highestMatch.priority) {
+    if (taggedSchedule !== undefined && (!highestMatch || this.scheduleTagPriority >= highestMatch.priority)) {
       highestMatch = {
         name: `Tag:${this.scheduleTagName}`,
         filter: undefined,

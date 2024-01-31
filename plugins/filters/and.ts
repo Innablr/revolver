@@ -26,6 +26,7 @@ export default class FilterAnd implements Filter, FilterCtor {
   }
 
   matches(resource: ToolingInterface): boolean {
+    if (this.elements.length === 0) return false;
     return this.elements.reduce<boolean>((a: boolean, b: Filter): boolean => {
       return a && b.matches(resource);
     }, true);
