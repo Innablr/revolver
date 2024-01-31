@@ -1,8 +1,8 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
 import { Filter, FilterCtor } from './index';
 
-export default class FilterId implements Filter, FilterCtor {
-  private id: string;
+export default class FilterBool implements Filter, FilterCtor {
+  private yes: boolean;
 
   private readonly isReady: Promise<Filter>;
 
@@ -12,12 +12,13 @@ export default class FilterId implements Filter, FilterCtor {
 
   constructor(config: any) {
     this.isReady = new Promise((resolve) => {
-      this.id = config;
+      this.yes = config;
       resolve(this);
     });
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   matches(resource: ToolingInterface): boolean {
-    return resource.resourceId === this.id;
+    return this.yes;
   }
 
 }

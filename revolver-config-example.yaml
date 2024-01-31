@@ -29,13 +29,17 @@ defaults:
       configs:
         - parser: strict
           availabilityTag: Schedule
-          availabilityTagPriority: 10
+          availabilityTagPriority: 5
           matchers:
             - name: no large instances
               filter:
-                resource:
-                  path: "InstanceType"
-                  regexp: "\\.\\d{0,2}x?large"
+                or:
+                  - resource:
+                      path: "InstanceType"
+                      regexp: "\\.\\d{0,2}x?large"
+                  - resource:
+                      path: "InstanceType"
+                      regexp: "\\.metal\\-\\d{1,2}xl"
               schedule: "0x7"
               priority: 20
             - name: within australia

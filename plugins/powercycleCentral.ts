@@ -13,8 +13,10 @@ interface Matcher {
 
 export default class PowerCycleCentralPlugin extends RevolverPlugin {
   private parser: any;
+
   private readonly scheduleTagName: string;
   private readonly timezoneTagName: string;
+  private readonly scheduleTagPriority: number;
 
   private matchers: Matcher[];
 
@@ -25,6 +27,7 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
     // TODO global defaults for these
     this.scheduleTagName = this.pluginConfig.availabilityTag || 'Schedule';
     this.timezoneTagName = this.accountConfig.timezoneTag || 'Timezone';
+    this.scheduleTagPriority = this.pluginConfig.availabilityTagPriority || 0;
 
     // todo explicit type conversion
     this.matchers = pluginConfig.matchers.sort((a: Matcher, b: Matcher) => {
@@ -81,8 +84,7 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
     logger.debug(`Plugin ${this.name} Processing ${resource.resourceType} ${resource.resourceId}, timezone ${tz}`);
 
     // TODO nicer logging defaults to not be too verbose
-
-    const highestMatch = this.matchers.find((matcher: Matcher) => {
+    let highestMatch = this.matchers.find((matcher: Matcher) => {
       try {
         return matcher.filter.matches(resource);
       } catch (e: any) {
@@ -93,16 +95,20 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
       }
     });
 
-    if (!highestMatch) {
-      logger.debug('No schedule matching resource %s', resource.resourceId);
-      return Promise.resolve(resource);
-    }
 
     const taggedSchedule = resource.tag(this.scheduleTagName);
-    if (this.pluginConfig.availabilityTagPriority >= highestMatch.priority) {
-      logger.debug(
-        `Resource has a higher priority (${this.pluginConfig.availabilityTagPriority}) schedule tag: ${taggedSchedule}`,
-      );
+    // use the tagged schedule if it's a higher priority or there's no existing match
+    if (!highestMatch || this.scheduleTagPriority >= highestMatch.priority) {
+      highestMatch = {
+        name: `Tag:${this.scheduleTagName}`,
+        filter: undefined,
+        schedule: taggedSchedule,
+        priority: this.scheduleTagPriority,
+      };
+    }
+
+    if (!highestMatch) {
+      logger.debug('No schedule matching resource %s', resource.resourceId);
       return Promise.resolve(resource);
     }
 
@@ -111,7 +117,6 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
 
     switch (r) {
       case 'UNPARSEABLE':
-        // shouldn't occur as this is checked during initialize
         logger.warn("Schedule couldn't be parsed: %s", highestMatch.schedule, reason);
         break;
       case 'START':
