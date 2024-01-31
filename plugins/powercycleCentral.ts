@@ -67,8 +67,7 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
       });
 
     if (invalidSchedules.length > 0) {
-      const reason = `Plugin ${this.name} has invalid schedules "${invalidSchedules.join(',')}"`;
-      this.logger.error(reason);
+      this.logger.error(`Plugin ${this.name} has invalid schedules "${invalidSchedules.join(',')}"`);
 
       // TODO errors aren't handled from the caller, this is passed to the top and crashes, plugin should just not load
       // return Promise.reject(`Plugin ${this.name} has invalid schedules ${invalidSchedules.join(',')}`);
@@ -108,37 +107,34 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
     }
 
     if (!highestMatch) {
-      logger.debug('No schedule matching resource %s', resource.resourceId);
+      logger.debug(`No schedule matching resource ${resource.resourceId}`);
       return Promise.resolve(resource);
     }
 
-    logger.debug(`Match for "${highestMatch.name}". Checking availability %j`, highestMatch.schedule);
+    logger.debug(`Match for "${highestMatch.name}". Checking availability ${highestMatch.schedule}`);
     const [r, reason] = this.parser(highestMatch.schedule, localTimeNow);
 
     switch (r) {
       case 'UNPARSEABLE':
-        logger.warn("Schedule couldn't be parsed: %s", highestMatch.schedule, reason);
+        logger.warn(`Schedule ${highestMatch.schedule} couldn't be parsed: ${reason}`);
         break;
       case 'START':
-        logger.debug('Resource should be started: %s', reason);
+        logger.debug(`Resource should be started: ${reason}`);
         resource.addAction(new StartAction(this));
         break;
       case 'STOP':
-        logger.debug('Resource should be stopped: %s', reason);
+        logger.debug(`Resource should be stopped: ${reason}`);
         resource.addAction(new StopAction(this));
         break;
       case 'NOOP':
-        logger.debug('Resource should be left alone: %s', reason);
+        logger.debug(`Resource should be left alone: ${reason}`);
         resource.addAction(new NoopAction(this, reason));
         break;
       default:
-        logger.error('Availability parser returns [%s], which is not supported');
+        logger.error(`Availability parser returns [${r}], which is not supported`);
     }
 
-    logger.debug(
-      'Finally got actions: %j',
-      resource.actions.map((xa: any) => xa.what),
-    );
+    logger.debug(`Finally got actions: ${resource.actions.map((xa: any) => xa.what)}`);
     return Promise.resolve(resource);
   }
 }
