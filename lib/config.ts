@@ -7,10 +7,12 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { paginateAwsCall } from './common';
 import { merge } from 'ts-deepmerge';
 import { getAwsConfig } from './awsConfig';
+import ConfigSchema from './config-schema';
 
 export class RevolverConfig {
   validateConfig(data: string) {
     const config: any = yaml.load(data);
+    const parsedConfig = ConfigSchema.parse(config);
     if (!Array.isArray(config.accounts.includeList)) {
       throw new Error('Invalid configuration: "includeList" key is either missing or not an array');
     }

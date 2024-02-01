@@ -35,15 +35,16 @@
     "luxon": "^3.4.4",
     "proxy-agent": "^6.3.1",
     "ts-deepmerge": "^7.0.0",
-    "tslog": "^4.9.2"
+    "tslog": "^4.9.2",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.132",
     "@types/chai": "^4.3.11",
     "@types/chai-as-promised": "^7.1.8",
-    "@types/jsonfile": "^6.1.4",
     "@types/jest": "^29.5.11",
     "@types/js-yaml": "^4.0.9",
+    "@types/jsonfile": "^6.1.4",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20.11.7",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
