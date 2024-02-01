@@ -2,7 +2,16 @@ import { logger } from '../lib/logger';
 import { DateTime } from 'luxon';
 import { RevolverAction } from '../actions/actions';
 
-export abstract class ToolingInterface {
+export interface InstrumentedResource {
+  resourceId: string;
+  resourceType: string;
+  resourceArn: string;
+  launchTimeUtc: DateTime;
+  resourceState: string;
+  resource: any;
+}
+
+export abstract class ToolingInterface implements InstrumentedResource {
   public resource: any;
   public actions: RevolverAction[];
 
@@ -41,7 +50,7 @@ export abstract class ToolingInterface {
     this.actions.push(action);
   }
 
-  toJSON() {
+  toJSON(): InstrumentedResource {
     return {
       resourceId: this.resourceId,
       resourceType: this.resourceType,
@@ -50,6 +59,25 @@ export abstract class ToolingInterface {
       resourceState: this.resourceState,
       resource: this.resource,
     };
+  }
+
+  get region() {
+    if (this.resourceArn === undefined) return undefined;
+    const s = this.resourceArn.split(':');
+    if (s.length < 6) return undefined;
+    return s[3];
+  }
+  get accountId() {
+    if (this.resourceArn === undefined) return undefined;
+    const s = this.resourceArn.split(':');
+    if (s.length < 6) return undefined;
+    return s[4];
+  }
+  get awsResourceType() {
+    if (this.resourceArn === undefined) return undefined;
+    const s = this.resourceArn.split(':');
+    if (s.length < 6) return undefined;
+    return s[2];
   }
 
   abstract get resourceId(): string;

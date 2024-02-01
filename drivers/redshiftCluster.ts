@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { Cluster, CreateTagsCommand, DeleteClusterCommand, DeleteTagsCommand, DescribeClustersCommand, RedshiftClient, Tag } from '@aws-sdk/client-redshift';
 import assume from '../lib/assume';
-import { ToolingInterface } from './instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import dateTime from '../lib/dateTime';
@@ -218,6 +218,9 @@ class RedshiftClusterDriver extends DriverInterface {
           ),
       ),
     );
+  }
+  resource(obj: InstrumentedResource): ToolingInterface {
+    return new InstrumentedRedshiftCluster(obj.resource, obj.resourceArn)
   }
 }
 

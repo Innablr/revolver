@@ -13,6 +13,7 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
     'rdsMultiAz',
     'rdsCluster',
     'redshiftCluster',
+    'local',
   ];
 
   private setActions(resource: any, actionsDef: string[], tag: string, message: string) {
