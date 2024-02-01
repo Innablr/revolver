@@ -79,17 +79,6 @@ export abstract class DriverInterface {
             return null;
           }
 
-          if (this.driverConfig.pretend !== false) {
-            logger.info(
-              'Pretending that %s will execute %s on %s %j',
-              xa.who.name,
-              xa.present,
-              xr.resourceType,
-              allWithAction.map((xxr) => xxr.resourceId),
-            );
-            return this.pretendAction(allWithAction, xa);
-          }
-
           logger.info(
             '%s will execute %s on %s %j',
             xa.who.name,
@@ -97,6 +86,11 @@ export abstract class DriverInterface {
             xr.resourceType,
             allWithAction.map((xxr) => xxr.resourceId),
           );
+
+          if (this.driverConfig.pretend !== false) {
+            return this.pretendAction(allWithAction, xa);
+          }
+
           return (this as any)[xa.what](allWithAction, xa).catch((err: Error) => {
             logger.error(
               'Error in driver %s processing action [%s] on resources %j, stack trace will follow:',
