@@ -22,7 +22,7 @@ export default z.object({
                 active: z.boolean(),
                 configs: z.tuple([
                     z.object({
-                        xxxtagging: z.string(),
+                        tagging: z.string(),
                         availabilityTag: z.string().default('Schedule')
                     }),
                 ]),
