@@ -11,8 +11,8 @@ import ConfigSchema from './config-schema';
 
 export class RevolverConfig {
   validateConfig(data: string) {
-    const config: any = yaml.load(data);
-    const parsedConfig = ConfigSchema.parse(config);
+    const rawConfig: any = yaml.load(data);
+    const config = ConfigSchema.parse(rawConfig);
     if (!Array.isArray(config.accounts.includeList)) {
       throw new Error('Invalid configuration: "includeList" key is either missing or not an array');
     }
@@ -38,7 +38,7 @@ export class RevolverConfig {
     return this.validateConfig(await fs.readFile(fullPath, { encoding: 'utf8' }));
   }
 
-  async readConfigFromS3(configBucket: string, configKey: string): Promise<string> {
+  async readConfigFromS3(configBucket: string, configKey: string) {
     const config = getAwsConfig();
     const s3 = new S3Client(config);
     logger.debug(`Fetching config from bucket [${configBucket}] key [${configKey}]`);
