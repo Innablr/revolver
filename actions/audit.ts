@@ -35,11 +35,11 @@ export class ActionAuditLogCSV extends ActionAuditLog {
     if (this.append) mode = 'a';
     fs.open(this.outputFile, mode).then(async (f) => {
       if (!this.append) {
-        await f.write(`time,plugin,driver,resourceType,resourceId,status,action,reason\n`);
+        await f.write(`time,plugin,driver,resourceType,resourceId,action,status,reason\n`);
       }
       for (const e of this.entries) {
         const reason = `"${e.reason.replaceAll('"', '""')}"`;
-        const line = `${e.time},${e.plugin},${e.driver},${e.resourceType},${e.resourceId},${e.status},${e.action},${reason}\n`;
+        const line = `${e.time},${e.plugin},${e.driver},${e.resourceType},${e.resourceId},${e.action},${e.status},${reason}\n`;
         await f.write(line);
       }
     });
@@ -52,10 +52,10 @@ export class ActionAuditLogConsole extends ActionAuditLog {
   }
 
   process() {
-    console.log(`${'PLUGIN'.padEnd(20)}${'DRIVER'.padEnd(25)}${'TYPE'.padEnd(5)}${'ID'.padEnd(40)}${'STATUS'.padEnd(10)}${'ACTION'.padEnd(10)}${'REASON'}`)
+    console.log(`${'PLUGIN'.padEnd(20)}${'DRIVER'.padEnd(25)}${'TYPE'.padEnd(5)}${'ID'.padEnd(40)}${'ACTION'.padEnd(10)}${'STATUS'.padEnd(10)}${'REASON'}`)
     for (const e of this.entries) {
       const reason = `"${e.reason.replaceAll('"', '""')}"`;
-      const line = `${e.plugin.padEnd(20)}${e.driver.padEnd(25)}${e.resourceType.padEnd(5)}${e.resourceId.padEnd(40)}${e.status.padEnd(10)}${e.action.padEnd(10)}${reason}`;
+      const line = `${e.plugin.padEnd(20)}${e.driver.padEnd(25)}${e.resourceType.padEnd(5)}${e.resourceId.padEnd(40)}${e.action.padEnd(10)}${e.status.padEnd(10)}${reason}`;
       console.log(line);
     }
   }

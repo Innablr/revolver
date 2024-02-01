@@ -52,7 +52,7 @@ export abstract class DriverInterface {
   }
 
   private appendAuditLog(xa: RevolverAction, allWithAction: ToolingInterface[], status: string): void {
-    for(const a of allWithAction) {
+    for (const a of allWithAction) {
       const auditResType = a.awsResourceType !== undefined ? a.awsResourceType : '';
       let auditReason = xa.reason;
       if (auditReason === undefined) auditReason = '';
