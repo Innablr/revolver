@@ -2,12 +2,16 @@ import { Logger } from 'tslog';
 import { logger, RevolverLogObject } from '../lib/logger';
 import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { RevolverAction } from '../actions/actions';
+import { ActionAuditEntry } from "../actions/audit";
+import { DateTime } from "luxon";
 
 export abstract class DriverInterface {
   protected accountConfig: any;
   protected driverConfig: any;
   protected accountId: string;
   protected logger: Logger<RevolverLogObject>;
+
+  protected actionAuditLog: ActionAuditEntry[];
 
   constructor(accountConfig: any, driverConfig: any) {
     this.accountConfig = accountConfig.settings;
@@ -18,6 +22,7 @@ export abstract class DriverInterface {
       { accountId: this.accountId, accountName: this.accountConfig.name, driverName: this.name },
     );
     this.logger.debug(`Initialising driver ${this.name} for account ${this.accountConfig.name}`);
+    this.actionAuditLog = [];
   }
 
   get name() {
@@ -40,6 +45,28 @@ export abstract class DriverInterface {
   initialise() {
     this.logger.info(`Driver ${this.name} is initialising...`);
     return Promise.resolve(this);
+  }
+
+  getAuditLog(): ActionAuditEntry[] {
+    return this.actionAuditLog;
+  }
+
+  private appendAuditLog(xa: RevolverAction, allWithAction: ToolingInterface[], status: string): void {
+    for(const a of allWithAction) {
+      const auditResType = a.awsResourceType !== undefined ? a.awsResourceType : '';
+      let auditReason = xa.reason;
+      if (auditReason === undefined) auditReason = '';
+      this.actionAuditLog.push({
+        time: DateTime.now(),
+        plugin: xa.who.name,
+        driver: this.name,
+        resourceType: auditResType,
+        resourceId: a.resourceId,
+        action: xa.what,
+        reason: auditReason,
+        status: status,
+      });
+    }
   }
 
   processActions(resources: ToolingInterface[]): Promise<any> {
@@ -88,6 +115,7 @@ export abstract class DriverInterface {
           );
 
           if (this.driverConfig.pretend !== false) {
+            this.appendAuditLog(xa, allWithAction, 'pretend');
             return this.pretendAction(allWithAction, xa);
           }
 
@@ -95,15 +123,20 @@ export abstract class DriverInterface {
             logger.error(`Driver ${this.name} doesn't implement action ${xa.what}`);
           }
 
-          return (this as any)[xa.what](allWithAction, xa).catch((err: Error) => {
-            logger.error(
-              'Error in driver %s processing action [%s] on resources %j, stack trace will follow:',
-              this.name,
-              xa.present,
-              allWithAction.map((xxr) => xxr.resourceId),
-            );
-            logger.error(err);
-          });
+          return (this as any)[xa.what](allWithAction, xa)
+            .then(() => {
+              this.appendAuditLog(xa, allWithAction, 'success');
+            })
+            .catch((err: Error) => {
+              this.appendAuditLog(xa, allWithAction, err.message);
+              logger.error(
+                'Error in driver %s processing action [%s] on resources %j, stack trace will follow:',
+                this.name,
+                xa.present,
+                allWithAction.map((xxr) => xxr.resourceId),
+              );
+              logger.error(err);
+            });
         });
         return o.concat(a.filter((xa) => xa));
       }, []),

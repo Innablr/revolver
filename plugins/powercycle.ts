@@ -54,14 +54,14 @@ export default class PowerCyclePlugin extends RevolverPlugin {
         break;
       case 'START':
         logger.debug(`Resource should be started: ${reason}`);
-        resource.addAction(new StartAction(this));
+        resource.addAction(new StartAction(this, reason));
         if (resource.resourceState !== 'running') {
           resource.addAction(new SetTagAction(this, this.reasonTagName, reason));
         }
         break;
       case 'STOP':
         logger.debug(`Resource should be stopped: ${reason}`);
-        resource.addAction(new StopAction(this));
+        resource.addAction(new StopAction(this, reason));
         if (resource.resourceState === 'running') {
           resource.addAction(new SetTagAction(this, this.reasonTagName, reason));
         }

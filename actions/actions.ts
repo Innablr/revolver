@@ -55,6 +55,7 @@ export class SetTagAction extends RevolverActionWithTags {
 
   constructor(who: RevolverPlugin, tag: string, value: string) {
     super(who, 'setTag');
+    this.reason = `${tag}:${value}`
     this.tags = [
       {
         Key: tag,
@@ -86,6 +87,7 @@ export class UnsetTagAction extends RevolverActionWithTags {
 
   constructor(who: RevolverPlugin, tag: string) {
     super(who, 'unsetTag');
+    this.reason = tag;
     this.tags = [
       {
         Key: tag,
@@ -115,18 +117,20 @@ export class UnsetTagAction extends RevolverActionWithTags {
 export class StopAction extends RevolverAction {
   public changesState: boolean;
 
-  constructor(who: RevolverPlugin) {
+  constructor(who: RevolverPlugin, reason: string) {
     super(who, 'stop');
     this.changesState = true;
+    this.reason = reason;
   }
 }
 
 export class StartAction extends RevolverAction {
   public changesState: boolean;
 
-  constructor(who: RevolverPlugin) {
+  constructor(who: RevolverPlugin, reason: string) {
     super(who, 'start');
     this.changesState = true;
+    this.reason = reason;
   }
 }
 
