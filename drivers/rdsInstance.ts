@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { DescribeDBInstancesCommand, ListTagsForResourceCommand, RDSClient, StartDBInstanceCommand, StopDBInstanceCommand, Tag } from '@aws-sdk/client-rds';
-import { ToolingInterface } from './instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { rdsTagger } from './tags';
@@ -181,6 +181,9 @@ class RdsInstanceDriver extends DriverInterface {
           }),
         ),
       );
+  }
+  resource(obj: InstrumentedResource): ToolingInterface {
+    return new InstrumentedRdsInstance(obj.resource)
   }
 }
 

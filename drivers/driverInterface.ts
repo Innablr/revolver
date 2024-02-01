@@ -1,6 +1,6 @@
 import { Logger } from 'tslog';
 import { logger, RevolverLogObject } from '../lib/logger';
-import { ToolingInterface } from './instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { RevolverAction } from '../actions/actions';
 
 export abstract class DriverInterface {
@@ -97,6 +97,11 @@ export abstract class DriverInterface {
             xr.resourceType,
             allWithAction.map((xxr) => xxr.resourceId),
           );
+
+          if ((this as any)[xa.what] === undefined) {
+            logger.error(`Driver ${this.name} doesn't implement action ${xa.what}`);
+          }
+
           return (this as any)[xa.what](allWithAction, xa).catch((err: Error) => {
             logger.error(
               'Error in driver %s processing action [%s] on resources %j, stack trace will follow:',
@@ -113,4 +118,6 @@ export abstract class DriverInterface {
   }
 
   abstract collect(): Promise<ToolingInterface[]>;
+
+  abstract resource(obj: InstrumentedResource): ToolingInterface;
 }

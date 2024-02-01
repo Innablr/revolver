@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { EC2Client, Tag, paginateDescribeInstances, paginateDescribeSnapshots, paginateDescribeVolumes } from '@aws-sdk/client-ec2';
-import { ToolingInterface } from './instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { DriverInterface } from './driverInterface';
 import { RevolverActionWithTags } from '../actions/actions';
 import { paginateAwsCall } from '../lib/common';
@@ -102,6 +102,10 @@ class SnapshotDriver extends DriverInterface {
 
     return snapshots.map((snapshot) => new InstrumentedSnapshot(snapshot));
   }
+  resource(obj: InstrumentedResource): ToolingInterface {
+    return new InstrumentedSnapshot(obj.resource);
+  }
+
 }
 
 export default SnapshotDriver;

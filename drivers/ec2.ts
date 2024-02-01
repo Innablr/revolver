@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { AutoScalingClient, ResumeProcessesCommand, SuspendProcessesCommand, paginateDescribeAutoScalingGroups } from '@aws-sdk/client-auto-scaling';
 import { Instance, Tag, EC2Client, StartInstancesCommand, StopInstancesCommand, paginateDescribeInstances } from '@aws-sdk/client-ec2';
-import { ToolingInterface } from './instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { chunkArray, paginateAwsCall } from '../lib/common';
@@ -218,6 +218,10 @@ class Ec2Driver extends DriverInterface {
       (xi) =>
         new InstrumentedEc2(xi, `arn:aws:ec2:${this.accountConfig.region}:${this.accountId}:volume/${xi.InstanceId}`),
     );
+  }
+
+  resource(obj: InstrumentedResource): ToolingInterface {
+    return new InstrumentedEc2(obj.resource, obj.resourceArn)
   }
 }
 
