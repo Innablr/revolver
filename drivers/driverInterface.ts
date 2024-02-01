@@ -1,6 +1,6 @@
 import { Logger } from 'tslog';
 import { logger, RevolverLogObject } from '../lib/logger';
-import { ToolingInterface } from './instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { RevolverAction } from '../actions/actions';
 
 export abstract class DriverInterface {
@@ -118,4 +118,6 @@ export abstract class DriverInterface {
   }
 
   abstract collect(): Promise<ToolingInterface[]>;
+
+  abstract resource(obj: InstrumentedResource): ToolingInterface;
 }

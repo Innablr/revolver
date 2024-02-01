@@ -1,8 +1,10 @@
 import { DriverInterface } from '../drivers/driverInterface';
-import { ToolingInterface } from '../drivers/instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from "../drivers/instrumentedResource";
 import { RevolverPlugin } from '../plugins/pluginInterface';
 import { logger } from './logger';
 import { writeFileSync } from 'jsonfile';
+import path from "node:path";
+import { promises as fs } from "fs";
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -69,8 +71,27 @@ export class AccountRevolver {
   }
 
   async loadResources(): Promise<void> {
+    const local = this.config.settings.localResourcesFile;
+    let localResources: InstrumentedResource[];
+    if (local !== undefined) {
+      this.logger.info(`Loading resources locally from ${local}`);
+      const resourcesFilePath = path.resolve(local);
+      const localResourcesStr = await fs.readFile(resourcesFilePath, { encoding: 'utf-8'});
+      localResources = JSON.parse(localResourcesStr);
+    }
+
     this.logger.info('Loading resources');
-    this.resources = (await Promise.all(this.drivers.map((xd) => xd.collect()))).flatMap((xr) => xr);
+    this.resources = (await Promise.all(this.drivers.map((xd) => {
+          if (local !== undefined) {
+            return localResources
+              .filter((res: InstrumentedResource) => res.resourceType === xd.name)
+              .map((res: InstrumentedResource) => xd.resource(res));
+          } else {
+            return xd.collect();
+          }
+        }),
+      )
+    ).flatMap((xr) => xr);
   }
 
   async saveResources(filename: string) {

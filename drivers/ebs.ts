@@ -1,7 +1,7 @@
 import { CreateVolumeCommandOutput, EC2Client, Tag, paginateDescribeVolumes, paginateDescribeInstances } from '@aws-sdk/client-ec2';
 import { DateTime } from 'luxon';
 import { paginateAwsCall } from '../lib/common';
-import { ToolingInterface } from './instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { ec2Tagger } from './tags';
@@ -113,6 +113,9 @@ class EBSDriver extends DriverInterface {
       (xe) =>
         new InstrumentedEBS(xe, `arn:aws:ec2:${this.accountConfig.region}:${this.accountId}:volume/${xe.VolumeId}`),
     );
+  }
+  resource(obj: InstrumentedResource): ToolingInterface {
+    return new InstrumentedEBS(obj.resource, obj.resourceArn)
   }
 }
 
