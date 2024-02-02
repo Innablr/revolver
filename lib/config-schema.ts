@@ -53,13 +53,13 @@ export default z.object({
     accounts: z.object({
         includeList: z.array(
             z.object({
-                accountId: z.string(),
+                accountId: z.number().int(),
                 settings: z.object({ name: z.string() }),
             }),
         ).default([]),
         excludeList: z.array(
             z.object({
-                accountId: z.string(),
+                accountId: z.number().int(),
                 settings: z.object({ name: z.string() }),
             }),
         ).default([]),

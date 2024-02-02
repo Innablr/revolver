@@ -71,10 +71,10 @@ organizations:
 
 accounts:
   includeList:
-    - accountId: "222222222222"
+    - accountId: 222222222222
       settings:
         name: whatdev
   excludeList:
-    - accountId: "333333333333"
+    - accountId: 333333333333
       settings:
         name: whatprod
