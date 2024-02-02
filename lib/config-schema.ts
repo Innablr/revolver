@@ -4,7 +4,7 @@ export default z.object({
     defaults: z.object({
         settings: z.object({
             region: z.string().optional(),
-            timezone: z.string(),
+            timezone: z.string().default('utc'),
             timezoneTag: z.string().default('Timezone'),
             organizationRoleName: z.string(),
             revolverRoleName: z.string(),
@@ -22,7 +22,7 @@ export default z.object({
                 active: z.boolean(),
                 configs: z.tuple([
                     z.object({
-                        tagging: z.string(),
+                        tagging: z.string().default('strict'),
                         availabilityTag: z.string().default('Schedule')
                     }),
                 ]),
