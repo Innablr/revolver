@@ -93,6 +93,35 @@ export class AccountRevolver {
         }),
       )
     ).flatMap((xr) => xr);
+
+    if (this.config.settings.excludeResources && this.config.settings.excludeResources.length > 0) {
+      // mark which resource indices match an excludeResource filter
+      const excludedIndices = await Promise.all<boolean>(
+        // for each resource
+        this.resources.map(async (resource) => {
+          const matchingFilters = await Promise.all<boolean>(
+            // for each filter (.map() due to await being needed to load the filters)
+            this.config.settings.excludeResources.map(async (filterConfig: any): Promise<boolean> => {
+              const name = Object.keys(filterConfig)[0];
+              const i = await require(`../plugins/filters/${name}`);
+              const filter = await new i.default(filterConfig[name]).ready();
+
+              return filter.matches(resource);
+            }),
+          );
+          // true if any filter matches
+          return matchingFilters.reduce((a, i) => a || i, false);
+        }),
+      );
+
+      this.resources = this.resources.filter((_resource, index) => {
+        return !excludedIndices[index];
+      });
+
+      if (excludedIndices.length - this.resources.length > 0) {
+        this.logger.info(`Excluding ${excludedIndices.length - this.resources.length} resources from processing`);
+      }
+    }
   }
 
   async saveResources(filename: string) {

@@ -87,6 +87,7 @@ Main Revolver configuration is done in YAML. First line in the config file must 
 
 
 
+
     Example `defaults` section:
 
     ```yaml
