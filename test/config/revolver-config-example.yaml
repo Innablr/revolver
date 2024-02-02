@@ -24,8 +24,10 @@ defaults:
 organizations:
   - accountId: 000000000000
     settings:
-      region: ap-southeast-2
-      name: eh-global-apse2
+      name: some-org-name
+      stuff: 123 # ignored
+      region: whatever # override default
+      # revolverRoleName from defaults
   - accountId: 111111111111
     settings:
       region: eu-west-1
