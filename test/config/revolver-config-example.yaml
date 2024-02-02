@@ -1,0 +1,42 @@
+---
+defaults:
+  settings:
+    region: ap-southeast-2
+    timezone: Australia/Melbourne
+    # timezoneTag: Timezone
+    organizationRoleName: AWSOrganizationsReadOnly
+    revolverRoleName: ssPowerCycle
+    saveResources: resources.json
+
+  drivers:
+    - name: ec2
+      # active: true
+      # pretend: false
+
+
+  plugins:
+    powercycle:
+      active: true
+      configs:
+        - tagging: strict
+          availabilityTag: Schedule
+
+organizations:
+  - accountId: 000000000000
+    settings:
+      region: ap-southeast-2
+      name: eh-global-apse2
+  - accountId: 111111111111
+    settings:
+      region: eu-west-1
+      name: eh-global-euw1
+
+accounts:
+  includeList:
+    - accountId: 222222222222
+      settings:
+        name: whatdev
+  # excludeList: []
+#     - accountId: "333333333333"
+#       settings:
+#         name: whatprod
