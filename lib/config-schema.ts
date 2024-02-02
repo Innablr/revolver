@@ -1,15 +1,19 @@
 import { z } from "zod";
 
+
+// Used for defaults, and a partial used for org/account overrides
+const Settings = z.object({
+    region: z.string().optional(),
+    timezone: z.string().default('utc'),
+    timezoneTag: z.string().default('Timezone'),
+    organizationRoleName: z.string(),
+    revolverRoleName: z.string(),
+    saveResources: z.string(),
+});
+
 export default z.object({
     defaults: z.object({
-        settings: z.object({
-            region: z.string().optional(),
-            timezone: z.string().default('utc'),
-            timezoneTag: z.string().default('Timezone'),
-            organizationRoleName: z.string(),
-            revolverRoleName: z.string(),
-            saveResources: z.string(),
-        }),
+        settings: Settings,
         drivers: z.array(
             z.object({
                 name: z.string(),
@@ -46,7 +50,7 @@ export default z.object({
     organizations: z.array(
         z.object({
             accountId: z.number().int(),
-            settings: z.object({ region: z.string(), name: z.string() }),
+            settings: z.object({name: z.string()}).merge(Settings.partial()),
         })
     ).default([]),
 
@@ -54,7 +58,7 @@ export default z.object({
         includeList: z.array(
             z.object({
                 accountId: z.number().int(),
-                settings: z.object({ name: z.string() }),
+                settings: z.object({name: z.string()}).merge(Settings.partial()),
             }),
         ).default([]),
         excludeList: z.array(
