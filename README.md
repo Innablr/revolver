@@ -74,7 +74,7 @@ Main Revolver configuration is done in YAML. First line in the config file must 
     | Option name | Description | Default |
     |-|-|-|
     | region | Specifies the default AWS region | - |
-    | timezone | Specifies the default time zone | - |
+    | timezone | Specifies the default time zone | utc |
     | timezoneTag | Revolver will read this tag on individual resources to override account-wide timezone | Timezone |
     | organization_role_name | Role to be assumed on the main account from organizations to get the accounts list from it | - |
     | revolver_role_name | Revolver role name to be assumed on each client account | - |

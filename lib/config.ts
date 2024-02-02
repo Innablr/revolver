@@ -7,16 +7,12 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { paginateAwsCall } from './common';
 import { merge } from 'ts-deepmerge';
 import { getAwsConfig } from './awsConfig';
+import ConfigSchema from './config-schema';
 
 export class RevolverConfig {
   validateConfig(data: string) {
-    const config: any = yaml.load(data);
-    if (!Array.isArray(config.accounts.includeList)) {
-      throw new Error('Invalid configuration: "includeList" key is either missing or not an array');
-    }
-    if (!Array.isArray(config.accounts.excludeList)) {
-      throw new Error('Invalid configuration: "excludeList" key is either missing or not an array');
-    }
+    const rawConfig: any = yaml.load(data);
+    const config = ConfigSchema.parse(rawConfig);
     // merge default settings and extract some info
     config.organizations.forEach((org: any) => {
       org.settings = Object.assign({}, config.defaults.settings, org.settings);
@@ -36,7 +32,7 @@ export class RevolverConfig {
     return this.validateConfig(await fs.readFile(fullPath, { encoding: 'utf8' }));
   }
 
-  async readConfigFromS3(configBucket: string, configKey: string): Promise<string> {
+  async readConfigFromS3(configBucket: string, configKey: string) {
     const config = getAwsConfig();
     const s3 = new S3Client(config);
     logger.debug(`Fetching config from bucket [${configBucket}] key [${configKey}]`);
