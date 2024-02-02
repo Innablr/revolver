@@ -14,7 +14,7 @@ const environ = new Environ();
 
 environ.logFormat = (process.env['LOG_FORMAT'] as 'json' | 'pretty' | 'hidden' | undefined) || 'pretty';
 environ.stylePrettyLogs = (process.env['STYLE_PRETTY_LOGS'] || 'true') == 'true';
-environ.logLevel = process.env['DEBUG_LEVEL'] || 'debug';
+environ.logLevel = process.env['LOG_LEVEL'] || process.env['DEBUG_LEVEL'] || 'debug';
 environ.configPath = process.env['CONFIG_FILE'];
 environ.configBucket = process.env['S3_BUCKET'];
 environ.configKey = process.env['S3_KEY'] || 'config/revolver.yaml';

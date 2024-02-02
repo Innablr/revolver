@@ -56,7 +56,7 @@ Revolver reads some of the low-level configuration from environment variables an
 |-|-|-|
 |S3_BUCKET|S3 bucket where the config file is stored|-|
 |S3_KEY|S3 key of the config file|-|
-|DEBUG_LEVEL|Log level|info|
+|LOG_LEVEL|Log level|debug|
 |LOG_FORMAT|Log format|pretty|
 |STYLE_PRETTY_LOGS|Defines whether logs should be styled and colorized|true|
 
