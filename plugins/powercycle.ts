@@ -19,22 +19,22 @@ export default class PowerCyclePlugin extends RevolverPlugin {
 
   constructor(accountConfig: any, pluginName: string, pluginConfig: any) {
     super(accountConfig, pluginName, pluginConfig);
-    this.scheduleTagName = this.pluginConfig.availabilityTag || 'Schedule';
-    this.timezoneTagName = this.accountConfig.timezoneTag || 'Timezone';
+    this.scheduleTagName = this.pluginConfig.availabilityTag;
+    this.timezoneTagName = this.accountConfig.timezoneTag;
     this.warningTagName = `Warning${this.scheduleTagName}`;
     this.reasonTagName = `Reason${this.scheduleTagName}`;
   }
 
   async initialise(): Promise<PowerCyclePlugin> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    this.parser = await require(`./parsers/${this.pluginConfig.tagging || 'strict'}`).default;
+    this.parser = await require(`./parsers/${this.pluginConfig.tagging}`).default;
     return Promise.resolve(this);
   }
 
   generateActions(resource: any): Promise<any> {
     const logger = this.logger;
     const scheduleTag = resource.tag(this.scheduleTagName);
-    const tz = resource.tag(this.timezoneTagName) || this.accountConfig.timezone || 'utc';
+    const tz = resource.tag(this.timezoneTagName) || this.accountConfig.timezone;
     const localTimeNow = dateTime.getTime(tz);
     logger.debug(`Plugin ${this.name} Processing ${resource.resourceType} ${resource.resourceId}, timezone ${tz}`);
 

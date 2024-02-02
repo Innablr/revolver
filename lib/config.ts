@@ -13,12 +13,6 @@ export class RevolverConfig {
   validateConfig(data: string) {
     const rawConfig: any = yaml.load(data);
     const config = ConfigSchema.parse(rawConfig);
-    if (!Array.isArray(config.accounts.includeList)) {
-      throw new Error('Invalid configuration: "includeList" key is either missing or not an array');
-    }
-    if (!Array.isArray(config.accounts.excludeList)) {
-      throw new Error('Invalid configuration: "excludeList" key is either missing or not an array');
-    }
     // merge default settings and extract some info
     config.organizations.forEach((org: any) => {
       org.settings = Object.assign({}, config.defaults.settings, org.settings);
