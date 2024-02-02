@@ -7,6 +7,7 @@ describe('Validate example config', function () {
     const rc = new RevolverConfig();
     const config = await rc.readConfigFromFile(path.join(__dirname, 'revolver-config-example.yaml'));
     expect(config.defaults.settings.region).to.equal('ap-southeast-2');
+    expect(config.defaults.settings.timezone).to.equal('utc');
     expect(config.defaults.settings.timezoneTag).to.equal('Timezone');
     expect(config.defaults.drivers[0].name).to.equal('ec2');
     expect(config.defaults.drivers[0].active).to.equal(true);
