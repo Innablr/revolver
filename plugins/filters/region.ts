@@ -1,7 +1,8 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { Filter, FilterCtor } from './index';
+import { arrayToOr, Filter, FilterCtor } from './index';
 
 export default class FilterRegion implements Filter, FilterCtor {
+  static readonly FILTER_NAME = 'region';
   private region: string;
 
   private readonly isReady: Promise<Filter>;
@@ -12,8 +13,12 @@ export default class FilterRegion implements Filter, FilterCtor {
 
   constructor(config: any) {
     this.isReady = new Promise((resolve) => {
-      this.region = config;
-      resolve(this);
+      if (Array.isArray(config)) {
+        resolve(arrayToOr(FilterRegion.FILTER_NAME, config));
+      } else {
+        this.region = config;
+        resolve(this);
+      }
     });
   }
   matches(resource: ToolingInterface): boolean {

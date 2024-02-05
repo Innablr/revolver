@@ -1,7 +1,8 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { Filter, FilterCtor } from './index';
+import { arrayToOr, Filter, FilterCtor } from "./index";
 
-export default class FilterAccountNumber implements Filter, FilterCtor {
+export default class FilterAccountId implements Filter, FilterCtor {
+  static readonly FILTER_NAME = 'accountId';
   private accountId: string;
 
   private readonly isReady: Promise<Filter>;
@@ -12,8 +13,12 @@ export default class FilterAccountNumber implements Filter, FilterCtor {
 
   constructor(config: any) {
     this.isReady = new Promise((resolve) => {
-      this.accountId = config;
-      resolve(this);
+      if (Array.isArray(config)) {
+        resolve(arrayToOr(FilterAccountId.FILTER_NAME, config));
+      } else {
+        this.accountId = config;
+        resolve(this);
+      }
     });
   }
   matches(resource: ToolingInterface): boolean {

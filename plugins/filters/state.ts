@@ -1,7 +1,8 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { Filter, FilterCtor } from './index';
+import { arrayToOr, Filter, FilterCtor } from './index';
 
 export default class FilterState implements Filter, FilterCtor {
+  static readonly FILTER_NAME = 'state';
   private state: string;
   private readonly isReady: Promise<Filter>;
 
@@ -11,8 +12,12 @@ export default class FilterState implements Filter, FilterCtor {
 
   constructor(config: any) {
     this.isReady = new Promise((resolve) => {
-      this.state = config;
-      resolve(this);
+      if (Array.isArray(config)) {
+        resolve(arrayToOr(FilterState.FILTER_NAME, config));
+      } else {
+        this.state = config;
+        resolve(this);
+      }
     });
   }
 

@@ -162,9 +162,38 @@ const filterTests = [
       { name: 'match valid jmes with regex', filter: { resource: { path: 'Placement.AvailabilityZone', regexp: '\\w{2}.southeast.\\d\\w'} }, resource: basicEc2, matches: true },
       { name: 'no match invalid jmes', filter: { resource: { path: 'Placement.AvailabilityZone', regexp: '\\w{2}.southeast.\\d\\w'}}, resource:  basicRds, matches: false },
     ],
+  },
+  {
+    name: 'implicit top level AND',
+    tests: [
+      { name: 'match and if top level is an array', filter: [ {resource: {path: 'InstanceType', value: 't2.small'}}, { id: 'i-1234'}], resource: basicEc2, matches: true },
+      { name: 'no match and and if top level is an array', filter: [ {resource: {path: 'InstanceType', value: 't2.small'}}, { id: 'i-9999'}], resource: basicEc2, matches: false },
+    ]
+  },
+  {
+    name: 'implicit filter level OR',
+    tests: [
+      { name: 'match account ID or if filter value is a 1 array', filter: { accountId: ['123456789012']}, resource: basicEc2, matches: true },
+      { name: 'match account ID or if filter value is a 2 array', filter: { accountId: ['999999999999', '123456789012']}, resource: basicEc2, matches: true },
+      { name: 'no match account ID or if filter value is an empty array', filter: { accountId: []}, resource: basicEc2, matches: false },
+      { name: 'no match account ID or if filter value is a 2 array', filter: { accountId: ['999999999999', '888888888888']}, resource: basicEc2, matches: false },
+      { name: 'match ID in array', filter: { id: ['i-9999', 'i-1234']}, resource: basicEc2, matches: true },
+      { name: 'match region in array', filter: { region: ['ap-southeast-2', 'us-east-1']}, resource: basicEc2, matches: true },
+      { name: 'match state in array', filter: { state: ['stopped', 'running']}, resource: basicEc2, matches: true },
+      { name: 'match type in array', filter: { type: ['ec2', 'rds']}, resource: basicEc2, matches: true },
+    ]
+  },
+  {
+    name: 'short string representation of filters',
+    tests: [
+      { name: 'match tag in array', filter: { tag: ['CostCenter|Primary-1234', 'CostCenter|Secondary-1234']}, resource: basicEc2, matches: true },
+      { name: 'match tag single', filter: { tag: 'CostCenter|Primary-1234'}, resource: basicEc2, matches: true },
+      { name: 'match mixed tag types in array', filter: { tag: ['CostCenter|Primary-1234', { name: 'CostCenter', value: 'Secondary-1234'}]}, resource: basicEc2, matches: true },
+      { name: 'match resource in array', filter: { resource: ['Field.DoesNotExist|blah', 'Placement.AvailabilityZone|ap-southeast-2c']}, resource: basicEc2, matches: true },
+      { name: 'match resource single', filter: { resource: 'Placement.AvailabilityZone|ap-southeast-2c'}, resource: basicEc2, matches: true },
+      { name: 'match mixed resource types in array', filter: { resource: ['Field.DoesNotExist|blah', { path: 'Placement.AvailabilityZone', value: 'ap-southeast-2c'}]}, resource: basicEc2, matches: true },
+    ]
   }
-
-
 ];
 
 describe('filter', function () {

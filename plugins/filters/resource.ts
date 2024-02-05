@@ -1,8 +1,9 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { Filter, FilterCtor } from './index';
+import { arrayToOr, Filter, FilterCtor, stringToComponents } from "./index";
 import { search } from 'jmespath';
 
 export default class FilterResource implements Filter, FilterCtor {
+  static readonly FILTER_NAME = 'resource';
   private resourcePath: string;
   private resourceValue: string;
   private resourceRegexp: RegExp;
@@ -16,19 +17,40 @@ export default class FilterResource implements Filter, FilterCtor {
 
   constructor(config: any) {
     this.isReady = new Promise((resolve, reject) => {
-      // can't validate path as it depends on the input
-      this.resourcePath = config['path'];
-      this.resourceValue = config['value'];
-      this.resourceContains = config['contains'];
-      if (config['regexp'] !== undefined) {
-        try {
-          this.resourceRegexp = new RegExp(config['regexp']);
-        } catch (e: any) {
-          reject(`invalid regexp "${config['regexp']}" in filter: ${e.message}"`);
-        }
-      }
+      if (Array.isArray(config)) {
+        const elements = config.map((elem) => {
+          if (typeof elem === 'string') {
+            const [key, val] = stringToComponents(elem);
+            return {
+              path: key,
+              value: val,
+            };
+          } else {
+            return elem;
+          }
+        });
+        resolve(arrayToOr(FilterResource.FILTER_NAME, elements));
 
-      resolve(this);
+      } else if (typeof config === 'string') {
+        const [key, val] = stringToComponents(config);
+        this.resourcePath = key;
+        this.resourceValue = val;
+        resolve(this);
+      } else {
+        // can't validate path as it depends on the input
+        this.resourcePath = config['path'];
+        this.resourceValue = config['value'];
+        this.resourceContains = config['contains'];
+        if (config['regexp'] !== undefined) {
+          try {
+            this.resourceRegexp = new RegExp(config['regexp']);
+          } catch (e: any) {
+            reject(`invalid regexp "${config['regexp']}" in filter: ${e.message}"`);
+          }
+        }
+
+        resolve(this);
+      }
     });
   }
 

@@ -1,7 +1,8 @@
 import { RevolverPlugin } from './pluginInterface';
 import dateTime from '../lib/dateTime';
 import { NoopAction, StartAction, StopAction } from '../actions/actions';
-import { Filter } from './filters';
+import { Filter, buildFilter } from './filters';
+import getParser from "./parsers/index";
 
 interface Matcher {
   name: string;
@@ -39,14 +40,12 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
 
   async initialise(): Promise<PowerCycleCentralPlugin> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    this.parser = await require(`./parsers/${this.pluginConfig.parser || 'strict'}`).default;
+    this.parser = await getParser(this.pluginConfig.parser || 'strict')
     const localTimeNow = dateTime.getTime('utc');
 
     this.matchers = await Promise.all(
       this.matchers.map(async (matcher) => {
-        const name = Object.keys(matcher.filter)[0];
-        const i = await require(`./filters/${name}`);
-        const filter = await new i.default(matcher.filter[name]).ready();
+        const filter = await buildFilter(matcher.filter);
         return {
           name: matcher.name,
           filter: filter,

@@ -362,6 +362,15 @@ Notes
            availabilityTag: Schedule
            availabilityTagPriority: 5
            matchers:
+             - name: default tagged schedule
+               filter:
+                 and:
+                   - tag:
+                       name: "CostCentre"
+                       value: "1234"
+                   - type: ec2
+               schedule: 24x7
+               priority: 1
              - name: no large instances
                filter:
                  or:
@@ -382,11 +391,8 @@ Notes
                priority: 10
              - name: default tagged schedule
                filter:
-                 and:
-                   - tag:
-                       name: "CostCentre"
-                       value: "1234"
-                   - type: ec2
+                 - tag: ["CostCentre|1234", "CostCentre|4567"]
+                 - type: ec2
                schedule: 24x7
                priority: 1
 
