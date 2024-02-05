@@ -14,7 +14,7 @@ describe('Validate example config', function () {
     expect(config.defaults.settings.timezone).to.equal('utc');
     expect(config.defaults.settings.timezoneTag).to.equal('Timezone');
     expect(config.accounts.includeList).to.have.lengthOf(1);
-    expect(config.accounts.includeList[0].accountId).to.equal(222222222222);
+    expect(config.accounts.includeList[0].accountId).to.equal("002222222222");
     expect(config.accounts.excludeList).to.deep.equal([]);
 
     // driver settings

@@ -7,21 +7,11 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { paginateAwsCall } from './common';
 import { merge } from 'ts-deepmerge';
 import { getAwsConfig } from './awsConfig';
-import ConfigSchema from './config-schema';
+import { ConfigSchema } from './config-schema';
 
 export class RevolverConfig {
   validateConfig(data: string) {
-    const rawConfig: any = yaml.load(data);
-    const config = ConfigSchema.parse(rawConfig);
-    // merge default settings and extract some info
-    config.organizations.forEach((org: any) => {
-      org.settings = Object.assign({}, config.defaults.settings, org.settings);
-    });
-
-    config.accounts.includeList.forEach((account: any) => {
-      account.settings = Object.assign({}, config.defaults.settings, account.settings);
-    });
-
+    const config = ConfigSchema.parse(yaml.load(data));
     logger.debug('Read Revolver config', config);
     return config;
   }
