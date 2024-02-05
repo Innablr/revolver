@@ -21,7 +21,7 @@
   "dependencies": {
     "@aws-sdk/client-auto-scaling": "^3.501.0",
     "@aws-sdk/client-ec2": "^3.501.0",
-    "@aws-sdk/client-organizations": "^3.501.0",
+    "@aws-sdk/client-organizations": "^3.504.0",
     "@aws-sdk/client-rds": "^3.501.0",
     "@aws-sdk/client-redshift": "^3.501.0",
     "@aws-sdk/client-s3": "^3.501.0",
