@@ -15,7 +15,7 @@ const Settings = z.object({
             file: z.string(),
             append: z.boolean().default(false),
         }).optional()
-    })
+    }).optional()
 });
 
 export default z.object({
