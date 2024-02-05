@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 
+const AWSAccountId = z.string().regex(/\d{12}/)
+
 // Used for defaults, and a partial used for org/account overrides
 const Settings = z.object({
     region: z.string().optional(),
@@ -8,9 +10,10 @@ const Settings = z.object({
     timezoneTag: z.string().default('Timezone'),
     organizationRoleName: z.string(),
     revolverRoleName: z.string(),
-    saveResources: z.string(),
+    saveResources: z.string().optional(),
+    localResourcesFile: z.string().optional(),
     audit: z.object({
-        console: z.boolean().optional(),
+        console: z.null().optional(),
         csv: z.object({
             file: z.string(),
             append: z.boolean().default(false),
@@ -56,23 +59,23 @@ export default z.object({
 
     organizations: z.array(
         z.object({
-            accountId: z.number().int(),
+            accountId: AWSAccountId,
             settings: z.object({name: z.string()}).merge(Settings.partial()),
-        })
+        }).strict()
     ).default([]),
 
     accounts: z.object({
         includeList: z.array(
             z.object({
-                accountId: z.number().int(),
+                accountId: AWSAccountId,
                 settings: z.object({name: z.string()}).merge(Settings.partial()),
-            }),
+            }).strict(),
         ).default([]),
         excludeList: z.array(
             z.object({
-                accountId: z.number().int(),
+                accountId: AWSAccountId,
                 settings: z.object({ name: z.string() }),
-            }),
+            }).strict(),
         ).default([]),
     }),
 });
