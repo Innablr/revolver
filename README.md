@@ -402,15 +402,6 @@ Notes
                  - resource: "Placement.AvailabilityZone||contains|ap-southeast"
                schedule: 24x7
                priority: 1
-             - name: default tagged schedule
-               filter:
-                 and:
-                   - tag:
-                       name: "CostCentre"
-                       value: "1234"
-                   - type: ec2
-               schedule: 24x7
-               priority: 1
              - name: no large instances
                filter:
                  or:
