@@ -44,11 +44,18 @@ export async function arrayToOr(filterName: string, config: any): Promise<Filter
   return new FilterOr(orConfig).ready();
 }
 
-export function stringToComponents(elem: string): [string, string] {
-  const x = elem.split('|');
-  const key = x[0];
-  const val = x.slice(1).join('|');
-  return [key, val]
+export function stringToComponents(elem: string): [string, string, string] {
+  const tokens = elem.split('|');
+  const key = tokens[0];
+  if (tokens.length < 2) return [key, '', ''];
+  if (tokens[1] === '' && tokens.length > 3) {
+    const option = tokens[2];
+    const value = tokens.slice(3).join('|');
+    return [key, option, value];
+  } else {
+    const value = tokens.slice(1).join('|');
+    return [key, '', value];
+  }
 }
 
 /*

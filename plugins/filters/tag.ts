@@ -1,5 +1,5 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { arrayToOr, Filter, FilterCtor, stringToComponents } from "./index";
+import { arrayToOr, Filter, FilterCtor, stringToComponents } from './index';
 
 export default class FilterTag implements Filter, FilterCtor {
   static readonly FILTER_NAME = 'tag';
@@ -17,27 +17,33 @@ export default class FilterTag implements Filter, FilterCtor {
       if (Array.isArray(config)) {
         const elements = config.map((elem) => {
           if (typeof elem === 'string') {
-            const [key, val] = stringToComponents(elem);
+            const [key, option, val] = stringToComponents(elem);
             return {
               name: key,
-              value: val,
+              [option || 'value']: val,
             };
           } else {
             return elem;
           }
         });
         resolve(arrayToOr(FilterTag.FILTER_NAME, elements));
-      } else if (typeof config === 'string') {
-        const [key, val] = stringToComponents(config);
-        this.tagName = key;
-        this.tagValue = val;
-        resolve(this);
-      } else {
-        this.tagName = config['name'];
-        this.tagValue = config['value'];
-        this.tagContains = config['contains'];
-        resolve(this);
+        return
       }
+
+      let appliedConfig = config;
+      if (typeof config === 'string') {
+        const [key, option, val] = stringToComponents(config);
+        appliedConfig = {
+          name: key,
+          [option || 'value']: val,
+        };
+      }
+
+      this.tagName = appliedConfig['name'];
+      this.tagValue = appliedConfig['value'];
+      this.tagContains = appliedConfig['contains'];
+      resolve(this);
+
     });
   }
 

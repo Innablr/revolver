@@ -187,11 +187,20 @@ const filterTests = [
     name: 'short string representation of filters',
     tests: [
       { name: 'match tag in array', filter: { tag: ['CostCenter|Primary-1234', 'CostCenter|Secondary-1234']}, resource: basicEc2, matches: true },
-      { name: 'match tag single', filter: { tag: 'CostCenter|Primary-1234'}, resource: basicEc2, matches: true },
+      { name: 'no match tag in array', filter: { tag: ['CostCenter|Primary-8765', 'CostCenter|Secondary-1234']}, resource: basicEc2, matches: false },
+      { name: 'match tag single', filter: { tag: 'CostCenter|Primary-1234' }, resource: basicEc2, matches: true },
+      { name: 'no match tag single', filter: { tag: 'CostCenter|Secondary-1234' }, resource: basicEc2, matches: false },
       { name: 'match mixed tag types in array', filter: { tag: ['CostCenter|Primary-1234', { name: 'CostCenter', value: 'Secondary-1234'}]}, resource: basicEc2, matches: true },
+      { name: 'match tag single value', filter: { tag: 'CostCenter||value|Primary-1234' }, resource: basicEc2, matches: true },
+      { name: 'match tag single contains', filter: { tag: 'CostCenter||contains|Primary' }, resource: basicEc2, matches: true },
       { name: 'match resource in array', filter: { resource: ['Field.DoesNotExist|blah', 'Placement.AvailabilityZone|ap-southeast-2c']}, resource: basicEc2, matches: true },
+      { name: 'no match resource in array', filter: { resource: ['Field.DoesNotExist|blah', 'Placement.AvailabilityZone|us-east-1a']}, resource: basicEc2, matches: false },
       { name: 'match resource single', filter: { resource: 'Placement.AvailabilityZone|ap-southeast-2c'}, resource: basicEc2, matches: true },
+      { name: 'no match resource single', filter: { resource: 'Placement.AvailabilityZone|us-east-1a'}, resource: basicEc2, matches: false },
       { name: 'match mixed resource types in array', filter: { resource: ['Field.DoesNotExist|blah', { path: 'Placement.AvailabilityZone', value: 'ap-southeast-2c'}]}, resource: basicEc2, matches: true },
+      { name: 'match resource single value', filter: { resource: 'Placement.AvailabilityZone||value|ap-southeast-2c'}, resource: basicEc2, matches: true },
+      { name: 'match resource single contains', filter: { resource: 'Placement.AvailabilityZone||contains|southeast'}, resource: basicEc2, matches: true },
+      { name: 'match resource single regex', filter: { resource: 'Placement.AvailabilityZone||regexp|\\w{2}\\-\\w+\\-\\d\\w'}, resource: basicEc2, matches: true },
     ]
   }
 ];

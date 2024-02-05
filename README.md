@@ -315,19 +315,52 @@ If multiple matches filter the same resource, the matcher with the highest prior
 | priority | How to rank this matcher against others, highest number is highest priority | `number` >= 0                                  | `0`     |
 
 ##### Filter
-| Filter Name | Value                                                            | Description                                                                                                                                                                                                                                                                                                                                                                      |
-|-------------|------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| id          | `string`                                                         | Matches resource ID exactly  (e.g i-1234..)                                                                                                                                                                                                                                                                                                                                      |
-| state       | `string`                                                         | Matches resource state exactly (running,stopped,...)                                                                                                                                                                                                                                                                                                                             |
-| tag         | `{ name string, value string \| contains string}`                | Matches resource tag name exactly. Tag value either needs to exactly match `value` if set, or case-insensitively contain `contains` if it's set instead.                                                                                                                                                                                                                         |
-| type        | `string`                                                         | Matches resource type exactly  (ec2,rds,...)                                                                                                                                                                                                                                                                                                                                     |
-| region      | `string`                                                         | Matches resource region exactly  (ap-southeast-2, us-east-1,...)                                                                                                                                                                                                                                                                                                                 |
-| accountId   | `string`                                                         | Matches resource accountId exactly  (123456789012,...)                                                                                                                                                                                                                                                                                                                           |
-| resource    | `{ path string, value any \| regexp string \| contains string }` | Matches extra resource properties, specific to the resource type.`path` is a [jmespath](https://jmespath.org/ ), the value returned by jmespath either needs to match `value` exactly, match the regular expression in `regexp` or case-insensitively contain `contains` (non strings will be converted to strings for `contains`). Remember to escape backslashes for `regexp`. |
-| and         | `Filter[]`                                                       | Matches when _all_ the filters within it match                                                                                                                                                                                                                                                                                                                                   |
-| or          | `Filter[]`                                                       | Matches when _any_ of the filters within match                                                                                                                                                                                                                                                                                                                                   |
-| not         | `Filter`                                                         | Matches when the filter within _doesn't_ match                                                                                                                                                                                                                                                                                                                                   |
-| bool        | `true` or `false`                                                | Matches when set to `true`, doesn't match otherwise                                                                                                                                                                                                                                                                                                                              |
+Filters specify a set of criteria for a resource to match against. They are comprised of several filter objects than can be joined together with `AND` or `OR` operations.
+
+Filters can be specified as objects or as string arrays, utilizing the shorthand string format if the filter has more than one parameter.
+String values for filters can be put in an array to imply an `OR` operation over them.
+If the top level value is an array, an implicit `AND` is applied over all filters in the array.
+
+e.g. The following filters are identical.
+
+*Shorthand form*
+```yaml
+filter:
+  - type: ['ec2', 'rds']
+  - tag: 'CostCenter||contains|things'
+  - accountId: ['111111111111', '222222222222']
+```
+
+*Object form*
+```yaml
+filter:
+  and:
+    - or:
+        - type: 'ec2'
+        - type: 'rds'
+    - tag:
+        name: 'CostCenter'
+        contains: 'things'
+    - or:
+      - accountId: '111111111111'
+      - accountId: '222222222222'
+
+```
+
+
+| Filter Name | Value                                                            | Shorthand Examples                                                                                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                            |
+|-------------|------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| id          | `string`                                                         |                                                                                                                                                             | Matches resource ID exactly  (e.g i-1234..)                                                                                                                                                                                                                                                                                                                                                                                            |
+| state       | `string`                                                         |                                                                                                                                                             | Matches resource state exactly (running,stopped,...)                                                                                                                                                                                                                                                                                                                                                                                   |
+| tag         | `{ name string, value string \| contains string}`                | `TagName\|string`<br/>`TagName\|\|value\|string`<br/>`TagName\|\|contains\|string`                                                                          | Matches resource tag name exactly. Tag value either needs to exactly match `value` if set, or case-insensitively contain `contains` if it's set instead. Default shorthand setting is `value` if not specified.                                                                                                                                                                                                                        |
+| type        | `string`                                                         |                                                                                                                                                             | Matches resource type exactly  (ec2,rds,...)                                                                                                                                                                                                                                                                                                                                                                                           |
+| region      | `string`                                                         |                                                                                                                                                             | Matches resource region exactly  (ap-southeast-2, us-east-1,...)                                                                                                                                                                                                                                                                                                                                                                       |
+| accountId   | `string`                                                         |                                                                                                                                                             | Matches resource accountId exactly  (123456789012,...)                                                                                                                                                                                                                                                                                                                                                                                 |
+| resource    | `{ path string, value any \| regexp string \| contains string }` | `jmes.path.value\|string`<br/>`jmes.path.value\|\|value\|string`<br/>`jmes.path.value\|\|contains\|string`<br/> `jmes.path.value\|\|regexp\|some.\\d.regex` | Matches extra resource properties, specific to the resource type.`path` is a [jmespath](https://jmespath.org/ ), the value returned by jmespath either needs to match `value` exactly, match the regular expression in `regexp` or case-insensitively contain `contains` (non strings will be converted to strings for `contains`). Remember to escape backslashes for `regexp`. Default shorthand setting is `value` if not specified |
+| and         | `Filter[]`                                                       |                                                                                                                                                             | Matches when _all_ the filters within it match                                                                                                                                                                                                                                                                                                                                                                                         |
+| or          | `Filter[]`                                                       |                                                                                                                                                             | Matches when _any_ of the filters within match                                                                                                                                                                                                                                                                                                                                                                                         |
+| not         | `Filter`                                                         |                                                                                                                                                             | Matches when the filter within _doesn't_ match                                                                                                                                                                                                                                                                                                                                                                                         |
+| bool        | `true` or `false`                                                |                                                                                                                                                             | Matches when set to `true`, doesn't match otherwise                                                                                                                                                                                                                                                                                                                                                                                    |
 
 ###### JMESPath
 [JMESPath](https://jmespath.org/) is a JSON path query language. It's used in revolver to query against detailed resource properties for filtering using the `resource` filter.
@@ -364,6 +397,13 @@ Notes
            matchers:
              - name: default tagged schedule
                filter:
+                 - tag: ["CostCentre||value|1234", "CostCentre|4567"]
+                 - type: ec2
+                 - resource: "Placement.AvailabilityZone||contains|ap-southeast"
+               schedule: 24x7
+               priority: 1
+             - name: default tagged schedule
+               filter:
                  and:
                    - tag:
                        name: "CostCentre"
@@ -389,11 +429,5 @@ Notes
                    value: true
                schedule: 24x5
                priority: 10
-             - name: default tagged schedule
-               filter:
-                 - tag: ["CostCentre|1234", "CostCentre|4567"]
-                 - type: ec2
-               schedule: 24x7
-               priority: 1
 
 ```

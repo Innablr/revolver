@@ -1,5 +1,5 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { arrayToOr, Filter, FilterCtor, stringToComponents } from "./index";
+import { arrayToOr, Filter, FilterCtor, stringToComponents } from './index';
 import { search } from 'jmespath';
 
 export default class FilterResource implements Filter, FilterCtor {
@@ -20,37 +20,41 @@ export default class FilterResource implements Filter, FilterCtor {
       if (Array.isArray(config)) {
         const elements = config.map((elem) => {
           if (typeof elem === 'string') {
-            const [key, val] = stringToComponents(elem);
+            const [key, option, val] = stringToComponents(elem);
             return {
               path: key,
-              value: val,
+              [option || 'value']: val,
             };
           } else {
             return elem;
           }
         });
         resolve(arrayToOr(FilterResource.FILTER_NAME, elements));
-
-      } else if (typeof config === 'string') {
-        const [key, val] = stringToComponents(config);
-        this.resourcePath = key;
-        this.resourceValue = val;
-        resolve(this);
-      } else {
-        // can't validate path as it depends on the input
-        this.resourcePath = config['path'];
-        this.resourceValue = config['value'];
-        this.resourceContains = config['contains'];
-        if (config['regexp'] !== undefined) {
-          try {
-            this.resourceRegexp = new RegExp(config['regexp']);
-          } catch (e: any) {
-            reject(`invalid regexp "${config['regexp']}" in filter: ${e.message}"`);
-          }
-        }
-
-        resolve(this);
+        return;
       }
+
+      let appliedConfig = config;
+      if (typeof config === 'string') {
+        const [key, option, val] = stringToComponents(config);
+        appliedConfig = {
+          path: key,
+          [option || 'value']: val,
+        };
+      }
+
+      // can't validate path as it depends on the input
+      this.resourcePath = appliedConfig['path'];
+      this.resourceValue = appliedConfig['value'];
+      this.resourceContains = appliedConfig['contains'];
+      if (appliedConfig['regexp'] !== undefined) {
+        try {
+          this.resourceRegexp = new RegExp(appliedConfig['regexp']);
+        } catch (e: any) {
+          reject(`invalid regexp "${appliedConfig['regexp']}" in filter: ${e.message}"`);
+        }
+      }
+
+      resolve(this);
     });
   }
 
