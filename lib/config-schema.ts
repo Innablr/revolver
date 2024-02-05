@@ -9,6 +9,13 @@ const Settings = z.object({
     organizationRoleName: z.string(),
     revolverRoleName: z.string(),
     saveResources: z.string(),
+    audit: z.object({
+        console: z.boolean().optional(),
+        csv: z.object({
+            file: z.string(),
+            append: z.boolean().default(false),
+        }).optional()
+    })
 });
 
 export default z.object({
