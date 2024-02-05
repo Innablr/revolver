@@ -11,7 +11,7 @@ const Settings = z.object({
     saveResources: z.string(),
 });
 
-export default z.object({
+const ConfigSchema = z.object({
     defaults: z.object({
         settings: Settings,
         drivers: z.array(
@@ -68,4 +68,16 @@ export default z.object({
             }),
         ).default([]),
     }),
+}).transform(config => {
+    // copy .defaults.settings into .organizations[].settings
+    config.organizations.forEach((org: any) => {
+      org.settings = Object.assign({}, config.defaults.settings, org.settings);
+    });
+    // copy .defaults.settings into ..accounts.includeList[].settings
+    config.accounts.includeList.forEach((account: any) => {
+      account.settings = Object.assign({}, config.defaults.settings, account.settings);
+    });
+    return config;
 });
+
+export { ConfigSchema };
