@@ -31,7 +31,7 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
           break;
         case 'stop':
           if (utcTimeNow.diff(resource.launchTimeUtc, 'minutes') > Duration.fromObject({ minutes: 30 })) {
-            resource.addAction(new StopAction(this));
+            resource.addAction(new StopAction(this, `${resource.resourceType} ${resource.resourceId} tag ${tag} is missing`));
           } else {
             resource.addAction(
               new NoopAction(

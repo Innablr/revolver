@@ -7,6 +7,11 @@ defaults:
     organizationRoleName: AWSOrganizationsReadOnly
     revolverRoleName: ssPowerCycle
     saveResources: resources.json
+    audit:
+      console: true
+      csv:
+        file: 'audit.csv'
+        append: true
 
   drivers:
     - name: ec2

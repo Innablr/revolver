@@ -5,6 +5,7 @@ import { logger } from './logger';
 import { writeFileSync } from 'jsonfile';
 import path from "node:path";
 import { promises as fs } from "fs";
+import { ActionAuditEntry, ActionAuditLogConsole, ActionAuditLogCSV } from "../actions/audit";
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -115,6 +116,25 @@ export class AccountRevolver {
     );
   }
 
+  async processAuditLog(): Promise<void> {
+    this.logger.info('Processing action audit log');
+    const entries = this.drivers.map((d) => d.getAuditLog()).reduce((a, l) => a.concat(l), []);
+
+    for(const auditFormat of Object.keys(this.config.settings.audit)) {
+      const auditConfig = this.config.settings.audit[auditFormat];
+      switch (auditFormat.toLowerCase()) {
+        case 'csv':
+          new ActionAuditLogCSV(entries, path.resolve(auditConfig.file), auditConfig.append).process();
+          break;
+        case 'console':
+          new ActionAuditLogConsole(entries).process();
+          break;
+        default:
+          logger.warn(`no implementation for audit format ${auditFormat}`);
+      }
+    }
+  }
+
   async revolve(): Promise<void> {
     try {
       await this.loadResources();
@@ -123,6 +143,9 @@ export class AccountRevolver {
       }
       await this.runPlugins();
       await this.runActions();
+      if (this.config.settings.audit) {
+        await this.processAuditLog();
+      }
     } catch (err) {
       this.logger.error(`Error processing account ${this.config.settings.name}, stack trace will follow:`);
       this.logger.error(err);
