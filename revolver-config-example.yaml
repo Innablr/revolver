@@ -29,6 +29,19 @@ defaults:
       configs:
         - tagging: strict
           availabilityTag: Schedule
+
+    powercycleCentral:
+      active: true
+      configs:
+        - parser: strict
+          availabilityTag: Schedule
+          matchers:
+            - name: stop-junk
+              schedule: "0x7"
+              priority: 5
+              filter: 
+                - type: ec2
+
     validateTags:
       active: true
       configs:
