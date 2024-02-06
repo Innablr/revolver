@@ -5,7 +5,7 @@ import { logger } from './logger';
 import { writeFileSync } from 'jsonfile';
 import path from "node:path";
 import { promises as fs } from "fs";
-import { ActionAuditEntry, ActionAuditLogConsole, ActionAuditLogCSV } from "../actions/audit";
+import { ActionAuditLogConsole, ActionAuditLogCSV } from "../actions/audit";
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -16,7 +16,6 @@ export class AccountRevolver {
     'rdsCluster',
     'redshiftCluster',
     'redshiftClusterSnapshot',
-    'local'
   ];
   readonly supportedPlugins = ['powercycle', 'powercycleCentral', 'validateTags', 'restoreRdsSg'];
 

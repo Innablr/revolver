@@ -119,15 +119,15 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
         break;
       case 'START':
         logger.debug(`Resource should be started: ${reason}`);
-        resource.addAction(new StartAction(this));
+        resource.addAction(new StartAction(this, `[${highestMatch.name}]: ${reason}`));
         break;
       case 'STOP':
         logger.debug(`Resource should be stopped: ${reason}`);
-        resource.addAction(new StopAction(this));
+        resource.addAction(new StopAction(this, `[${highestMatch.name}]: ${reason}`));
         break;
       case 'NOOP':
         logger.debug(`Resource should be left alone: ${reason}`);
-        resource.addAction(new NoopAction(this, reason));
+        resource.addAction(new NoopAction(this, `[${highestMatch.name}]: ${reason}`));
         break;
       default:
         logger.error(`Availability parser returns [${r}], which is not supported`);
