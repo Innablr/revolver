@@ -1,7 +1,50 @@
 import { z } from "zod";
 
 
-const AWSAccountId = z.string().regex(/\d{12}/)
+const AWSAccountId = z.string().regex(/\d{12}/);
+const ShorthandFilter = z.string().regex(/^([^|]+)\|.*/);
+
+const BaseFilters = z.object({
+    id: z.union([z.array(z.string()), z.string()]).optional(),
+    accountId: z.union([z.array(z.string()), z.string()]).optional(),
+    region: z.union([z.array(z.string()), z.string()]).optional(),
+    state: z.union([z.array(z.string()), z.string()]).optional(),
+    type: z.union([z.array(z.string()), z.string()]).optional(),
+    bool: z.boolean().optional(),
+    tag: z.union([
+        z.array(ShorthandFilter),
+        ShorthandFilter,
+        z.object({
+            name: z.string(),
+            value: z.string().optional(),
+            contains: z.string().optional(),
+        }).strict()
+      ]).optional(),
+    resource: z.union([
+        z.array(ShorthandFilter),
+        ShorthandFilter,
+        z.object({
+            path: z.string(),
+            value: z.any().optional(),
+            contains: z.string().optional(),
+            regexp: z.string().optional(),
+        }).strict()
+      ]).optional()
+  }).strict()
+
+// meta filters are recursive, need this to allow parsing to occur properly
+type FilterT = z.infer<typeof BaseFilters> & {
+  not?: FilterT;
+  or?: FilterT[];
+  and?: FilterT[];
+};
+
+const Filters: z.ZodType<FilterT> = BaseFilters.extend({
+  not: z.lazy(() => Filters).optional(),
+  or: z.lazy(() => Filters.array()).optional(),
+  and: z.lazy(() => Filters.array()).optional(),
+}).strict();
+
 
 // Used for defaults, and a partial used for org/account overrides
 const Settings = z.object({
@@ -34,13 +77,30 @@ const ConfigSchema = z.object({
         plugins: z.object({
             powercycle: z.object({
                 active: z.boolean(),
-                configs: z.tuple([
+                configs: z.array(
                     z.object({
                         tagging: z.string().default('strict'),
                         availabilityTag: z.string().default('Schedule')
                     }),
-                ]),
+                ),
             }).optional(),
+          powercycleCentral: z.object({
+            active: z.boolean(),
+            configs: z.array(
+              z.object({
+                parser: z.string().default('strict'),
+                availabilityTag: z.string().default('Schedule'),
+                availabilityTagPriority: z.number().default(0),
+                matchers: z.array(
+                  z.object({
+                    name: z.string(),
+                    schedule: z.string(),
+                    priority: z.number(),
+                    filter: z.union([z.array(Filters), Filters]),
+                  }))
+              })),
+
+          }).optional(),
             validateTags: z.object({
                 active: z.boolean(),
                 configs: z.array(
@@ -54,7 +114,7 @@ const ConfigSchema = z.object({
                     }),
                 ),
             }).optional(),
-        }),
+        }).strict(),
     }),
 
     organizations: z.array(
