@@ -1,13 +1,11 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { arrayToOr, Filter, FilterCtor, stringToComponents } from './index';
+import { arrayToOr, Filter, FilterCtor, StringCompareOptions } from './index';
 import { search } from 'jmespath';
 
 export default class FilterResource implements Filter, FilterCtor {
   static readonly FILTER_NAME = 'resource';
   private resourcePath: string;
-  private resourceValue: string;
-  private resourceRegexp: RegExp;
-  private resourceContains: string;
+  private compareOptions: StringCompareOptions;
 
   private readonly isReady: Promise<Filter>;
 
@@ -16,15 +14,15 @@ export default class FilterResource implements Filter, FilterCtor {
   }
 
   constructor(config: any) {
-    this.isReady = new Promise((resolve, reject) => {
+    this.isReady = new Promise((resolve) => {
       if (Array.isArray(config)) {
         const elements = config.map((elem) => {
           if (typeof elem === 'string') {
-            const [key, option, val] = stringToComponents(elem);
+            const [key, opts] = StringCompareOptions.keyValueStringToOptions(elem);
             return {
               path: key,
-              [option || 'value']: val,
-            };
+              ...opts,
+            }
           } else {
             return elem;
           }
@@ -35,24 +33,16 @@ export default class FilterResource implements Filter, FilterCtor {
 
       let appliedConfig = config;
       if (typeof config === 'string') {
-        const [key, option, val] = stringToComponents(config);
+        const [key, opts] = StringCompareOptions.keyValueStringToOptions(config);
         appliedConfig = {
           path: key,
-          [option || 'value']: val,
-        };
+          ...opts,
+        }
       }
 
       // can't validate path as it depends on the input
       this.resourcePath = appliedConfig['path'];
-      this.resourceValue = appliedConfig['value'];
-      this.resourceContains = appliedConfig['contains'];
-      if (appliedConfig['regexp'] !== undefined) {
-        try {
-          this.resourceRegexp = new RegExp(appliedConfig['regexp']);
-        } catch (e: any) {
-          reject(`invalid regexp "${appliedConfig['regexp']}" in filter: ${e.message}"`);
-        }
-      }
+      this.compareOptions = new StringCompareOptions(appliedConfig);
 
       resolve(this);
     });
@@ -60,15 +50,7 @@ export default class FilterResource implements Filter, FilterCtor {
 
   matches(resource: ToolingInterface): boolean {
     const searchValue = search(resource.resource, this.resourcePath);
-    if (this.resourceValue !== undefined) return searchValue === this.resourceValue;
-    if (searchValue !== undefined && this.resourceRegexp !== undefined) {
-      const match = this.resourceRegexp.exec(searchValue);
-      return match !== null;
-    }
-    if (searchValue !== undefined && this.resourceContains !== undefined) {
-      const str = searchValue.toString();
-      return str.toLowerCase().includes(this.resourceContains);
-    }
-    return false;
+    if (searchValue === undefined) return false;
+    return this.compareOptions.compare(searchValue);
   }
 }

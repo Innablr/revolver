@@ -58,11 +58,11 @@ defaults:
           matchers:
             - name: short format filter
               filter:
-                - accountId: ["123456789012","234567890123"]
+                - accountId: ["123456789012","equals|234567890123"]
                 - resource: ["InstanceType|\\.\\d{0,2}x?large"]
                 - tag: ["costcenter|1234" ]
                 - or:
-                    - tag: "costcenter|4567"
+                    - tag: "costcenter||startswith|4567"
                     - tag:
                         name: "other"
                         value: "things"

@@ -1,11 +1,10 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { arrayToOr, Filter, FilterCtor, stringToComponents } from './index';
+import { arrayToOr, Filter, FilterCtor, StringCompareOptions } from './index';
 
 export default class FilterTag implements Filter, FilterCtor {
   static readonly FILTER_NAME = 'tag';
   private tagName: string;
-  private tagValue: string;
-  private tagContains: string;
+  private compareOptions: StringCompareOptions;
   private readonly isReady: Promise<Filter>;
 
   ready(): Promise<Filter> {
@@ -17,11 +16,11 @@ export default class FilterTag implements Filter, FilterCtor {
       if (Array.isArray(config)) {
         const elements = config.map((elem) => {
           if (typeof elem === 'string') {
-            const [key, option, val] = stringToComponents(elem);
+            const [key, opts] = StringCompareOptions.keyValueStringToOptions(elem)
             return {
               name: key,
-              [option || 'value']: val,
-            };
+              ...opts,
+            }
           } else {
             return elem;
           }
@@ -32,18 +31,15 @@ export default class FilterTag implements Filter, FilterCtor {
 
       let appliedConfig = config;
       if (typeof config === 'string') {
-        const [key, option, val] = stringToComponents(config);
+        const [key, opts] = StringCompareOptions.keyValueStringToOptions(config)
         appliedConfig = {
           name: key,
-          [option || 'value']: val,
-        };
+          ...opts,
+        }
       }
-
       this.tagName = appliedConfig['name'];
-      this.tagValue = appliedConfig['value'];
-      this.tagContains = appliedConfig['contains'];
+      this.compareOptions = new StringCompareOptions(appliedConfig);
       resolve(this);
-
     });
   }
 
@@ -51,9 +47,7 @@ export default class FilterTag implements Filter, FilterCtor {
 
   matches(resource: ToolingInterface): boolean {
     const t = resource.tag(this.tagName);
-    if (this.tagValue !== undefined) return t === this.tagValue;
-    if (this.tagContains !== undefined && t !== undefined)
-      return t.toLowerCase().includes(this.tagContains.toLowerCase());
-    return false;
+    if (t === undefined) return false;
+    return this.compareOptions.compare(t);
   }
 }

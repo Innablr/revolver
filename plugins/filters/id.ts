@@ -1,9 +1,9 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { arrayToOr, Filter, FilterCtor } from './index';
+import { arrayToOr, Filter, FilterCtor, StringCompareOptions } from './index';
 
 export default class FilterId implements Filter, FilterCtor {
   static readonly FILTER_NAME = 'id';
-  private id: string;
+  private compareOptions: StringCompareOptions;
 
   private readonly isReady: Promise<Filter>;
 
@@ -16,13 +16,13 @@ export default class FilterId implements Filter, FilterCtor {
       if (Array.isArray(config)) {
         resolve(arrayToOr(FilterId.FILTER_NAME, config));
       } else {
-        this.id = config;
+        this.compareOptions = new StringCompareOptions(StringCompareOptions.valueStringToOptions(config));
         resolve(this);
       }
     });
   }
 
   matches(resource: ToolingInterface): boolean {
-    return resource.resourceId === this.id;
+    return this.compareOptions.compare(resource.resourceId);
   }
 }

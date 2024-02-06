@@ -1,5 +1,4 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource';
-import path from 'node:path';
 
 import FilterAnd from './and';
 import FilterOr from './or';
@@ -20,6 +19,11 @@ export interface FilterCtor {
   ready(): Promise<Filter>;
 }
 
+
+/**
+ * Create filter based on a generic config map. keys match up against file names for filters.
+ * @param config
+ */
 export async function buildFilter(config: any): Promise<Filter> {
   if (Array.isArray(config)) {
     // if top level is array, put in an implicit AND filter
@@ -32,6 +36,7 @@ export async function buildFilter(config: any): Promise<Filter> {
   }
 }
 
+// filter user only. converts an array set on a filter to an actual FilterOr
 export async function arrayToOr(filterName: string, config: any): Promise<Filter> {
   if (!Array.isArray(config)) {
     throw Error('not an array');
@@ -44,26 +49,93 @@ export async function arrayToOr(filterName: string, config: any): Promise<Filter
   return new FilterOr(orConfig).ready();
 }
 
-export function stringToComponents(elem: string): [string, string, string] {
-  const tokens = elem.split('|');
-  const key = tokens[0];
-  if (tokens.length < 2) return [key, '', ''];
-  if (tokens[1] === '' && tokens.length > 3) {
-    const option = tokens[2];
-    const value = tokens.slice(3).join('|');
-    return [key, option, value];
-  } else {
-    const value = tokens.slice(1).join('|');
-    return [key, '', value];
-  }
-}
+// filter user only. Controls the string value interpretation of all filters to facilite several comparison options
+export class StringCompareOptions {
 
-/*
-  Don't use this for anything other than tests
-  Bundler needs to see a `require` with a literal string somewhere to work correctly
- */
-export async function buildFilterOld(config: any): Promise<Filter> {
-  const key = Object.keys(config)[0];
-  const i = await import(path.join(__dirname, key));
-  return new i.default(config[key]).ready();
+  static defaultCompare: string = 'equals'
+
+  equals: string | undefined;
+  iequals: string | undefined;
+  contains: string | undefined;
+  regexp: RegExp | undefined;
+  startswith: string | undefined;
+  endswith: string | undefined;
+
+  constructor(config: any) {
+    this.equals = config['equals'];
+    this.iequals = config['iequals'];
+    this.contains = config['contains'];
+    this.startswith = config['startswith'];
+    this.endswith = config['endswith'];
+    this.equals = config['equals'];
+
+    if (config['regexp'] !== undefined) {
+      // will throw on failure to compile
+      this.regexp = new RegExp(config['regexp']);
+    }
+  }
+
+  // order matters here if several options are specified. only one will be tested
+  compare(value: string | undefined): boolean {
+    if(value === undefined) {
+      return false;
+    }
+    if(this.equals) {
+      return value === this.equals;
+    }
+    if(this.iequals) {
+      return value.toLowerCase() === this.iequals.toLowerCase();
+    }
+    else if (this.regexp) {
+      return this.regexp.exec(value) !== null;
+    }
+    else if (this.contains) {
+      return value.toLowerCase().includes(this.contains.toLowerCase());
+    }
+    else if (this.startswith) {
+      return value.toLowerCase().startsWith(this.startswith.toLowerCase());
+    }
+    else if (this.endswith) {
+      return value.toLowerCase().endsWith(this.endswith.toLowerCase());
+    }
+    else return false
+  }
+
+  // convert `key|value` or `key||option|value` to configuration for ctor
+  // used by filters that have a key setting (e.g. tag and resource)
+  static keyValueStringToOptions(value: string): [string, any] {
+    const tokens = value.split('|');
+    const key = tokens[0];
+    if (tokens.length < 2) {
+      // not valid
+      return [key, {}]
+    }
+    if (tokens[1] === '' && tokens.length > 3) {
+      // an |option| is specified
+      // tokens[1] is an empty string
+      return [key, {
+        [tokens[2]]: tokens.slice(3).join('|'),
+      }];
+    }
+    else {
+      // default option case
+      return [key,{
+        [this.defaultCompare]: tokens.slice(1).join('|'),
+      }];
+    }
+  }
+
+  // convert `value` or `option|value` to to configuration for ctor
+  // used by filters that don't have a key setting (any straight comparison filters)
+  static valueStringToOptions(value: string): any {
+    const tokens = value.split('|');
+    if (tokens.length < 2) {
+      return {
+        [this.defaultCompare]: tokens[0],
+      };
+    }
+    return{
+      [tokens[0]]: tokens.slice(1).join('|'),
+    };
+  }
 }
