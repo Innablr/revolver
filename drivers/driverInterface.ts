@@ -53,17 +53,15 @@ export abstract class DriverInterface {
 
   private appendAuditLog(xa: RevolverAction, allWithAction: ToolingInterface[], status: string): void {
     for (const a of allWithAction) {
-      const auditResType = a.awsResourceType !== undefined ? a.awsResourceType : '';
-      let auditReason = xa.reason;
-      if (auditReason === undefined) auditReason = '';
       this.actionAuditLog.push({
+        accountId: a.accountId || '',
         time: DateTime.now(),
         plugin: xa.who.name,
         driver: this.name,
-        resourceType: auditResType,
+        resourceType: a.awsResourceType || '',
         resourceId: a.resourceId,
         action: xa.what,
-        reason: auditReason,
+        reason: xa.reason || '',
         status: status,
       });
     }
