@@ -7,10 +7,11 @@ defaults:
     organizationRoleName: AWSOrganizationsReadOnly
     revolverRoleName: ssPowerCycle
     saveResources: resources.json
+    # localResourcesFile: resources.json
     audit:
-      console: true
+      console:
       csv:
-        file: 'audit.csv'
+        file: "audit.csv"
         append: true
 
   drivers:
@@ -18,17 +19,9 @@ defaults:
       active: true
       pretend: false
     - name: ebs
-      active: true
-      pretend: false
     - name: snapshot
-      active: true
-      pretend: false
     - name: rdsInstance
-      active: true
-      pretend: false
     - name: rdsCluster
-      active: true
-      pretend: false
 
   plugins:
     powercycle:
@@ -39,23 +32,20 @@ defaults:
     validateTags:
       active: true
       configs:
-        -
-          tag: Name
+        - tag: Name
           tagMissing:
             - copyFromParent
           onlyResourceTypes:
             - ebs
             - snapshot
           tagNotMatch: []
-        -
-          tag: Name
+        - tag: Name
           tagMissing:
             - warn
           onlyResourceTypes:
             - ec2
           tagNotMatch: []
-        -
-          tag: Schedule
+        - tag: Schedule
           tagMissing:
             - setDefault: 24x7
           onlyResourceTypes:
@@ -65,21 +55,22 @@ defaults:
           tagNotMatch: []
 
 organizations:
-  - accountId: 000000000000
+  - accountId: "000000000000"
     settings:
       region: ap-southeast-2
       name: eh-global-apse2
-  - accountId: 111111111111
+  - accountId: "111111111111"
     settings:
       region: eu-west-1
       name: eh-global-euw1
 
 accounts:
   includeList:
-    - accountId: 222222222222
+    - accountId: "222222222222"
       settings:
         name: whatdev
+        revolverRoleName: powerCycleRole
   excludeList:
-    - accountId: 333333333333
+    - accountId: "333333333333"
       settings:
         name: whatprod
