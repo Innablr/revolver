@@ -2,9 +2,18 @@ import { expect } from 'chai';
 import { RevolverConfig } from '../../lib/config';
 import path from 'path';
 
-const SAMPLE_CONFIG_1 = path.join(__dirname, 'revolver-config-example.yaml');
+const EXAMPLE_CONFIG = path.join(__dirname, '..', '..', 'revolver-config-example.yaml');
+const SAMPLE_CONFIG_1 = path.join(__dirname, 'revolver-config1.yaml');
 
 describe('Validate example config', function () {
+  it('Check simple parsing', async function () {
+    const config = await new RevolverConfig().readConfigFromFile(EXAMPLE_CONFIG);
+    expect(config.defaults.settings.region).to.equal('ap-southeast-2');
+  });
+});
+
+
+describe('Validate test config', function () {
 
   it('Check simple parsing', async function () {
     const config = await new RevolverConfig().readConfigFromFile(SAMPLE_CONFIG_1);
