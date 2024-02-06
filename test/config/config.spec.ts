@@ -37,5 +37,12 @@ describe('Validate test config', function () {
     expect(config.organizations[0].settings.region).to.equal('whatever');
     expect(config.organizations[0].settings.revolverRoleName).to.equal('ssPowerCycle');
     expect(config.organizations[1].settings.region).to.equal('eu-west-1');
+
+    expect(config.defaults.plugins.powercycleCentral?.configs.length).to.equal(1);
+    expect(config.defaults.plugins.powercycleCentral?.configs[0].matchers.length).to.equal(5);
+    expect(config.defaults.plugins.powercycleCentral?.configs[0].availabilityTagPriority).to.equal(5);
+    expect((config.defaults.plugins.powercycleCentral?.configs[0].matchers[0].filter as any[]).length).to.equal(3);
+    expect(Object.keys(config.defaults.plugins.powercycleCentral?.configs[0].matchers[2].filter as object)[0]).to.equal('resource');
+
   });
 });
