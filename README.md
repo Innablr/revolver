@@ -59,6 +59,7 @@ Revolver reads some of the low-level configuration from environment variables an
 |LOG_LEVEL|Log level|debug|
 |LOG_FORMAT|Log format|pretty|
 |STYLE_PRETTY_LOGS|Defines whether logs should be styled and colorized|true|
+|PRETTY_LOG_TIME_ZONE|Set timezone of pretty log messages to either UTC (default) or local (based on your server/browser configuration)|-|
 
 In addition to that you can use:
 

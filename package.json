@@ -14,7 +14,7 @@
     "prep": "rimraf -g 'plugins/**/**.d.ts' 'plugins/**/*.js' 'drivers/**/*.d.ts' 'drivers/**/*.js' 'lib/**/*.d.ts' 'lib/**/*.js' index.d.ts index.js revolver.d.ts revolver.js",
     "bundle": "rimraf dist; npm run prep; webpack; zip -9rqj revolver.zip dist",
     "clean": "npm run prep; tsc --build ./tsconfig.json --clean && rimraf revolver.zip dist;",
-    "start": "CONFIG_FILE=revolver-config.yaml node invoke.js"
+    "start": "CONFIG_FILE=revolver-config.yaml PRETTY_LOG_TIME_ZONE=local node invoke.js"
   },
   "author": "Alex Bukharov",
   "license": "MIT",
