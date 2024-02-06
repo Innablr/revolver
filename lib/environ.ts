@@ -1,6 +1,7 @@
 class Environ {
   logFormat: 'json' | 'pretty' | 'hidden' | undefined;
   stylePrettyLogs: boolean;
+  prettyLogTimeZone: 'UTC' | 'local' | undefined;
   logLevel: string;
   configPath: string | undefined;
   configBucket: string | undefined;
@@ -14,6 +15,7 @@ const environ = new Environ();
 
 environ.logFormat = (process.env['LOG_FORMAT'] as 'json' | 'pretty' | 'hidden' | undefined) || 'pretty';
 environ.stylePrettyLogs = (process.env['STYLE_PRETTY_LOGS'] || 'true') == 'true';
+environ.prettyLogTimeZone = process.env['PRETTY_LOG_TIME_ZONE'] as 'UTC' | 'local' | undefined;
 environ.logLevel = process.env['LOG_LEVEL'] || process.env['DEBUG_LEVEL'] || 'debug';
 environ.configPath = process.env['CONFIG_FILE'];
 environ.configBucket = process.env['S3_BUCKET'];
