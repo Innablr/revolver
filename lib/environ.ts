@@ -6,6 +6,7 @@ class Environ {
   configPath: string | undefined;
   configBucket: string | undefined;
   configKey: string;
+  configValidation: boolean;
   baseBackoff: number;
   maxRetries: number;
   httpsProxy: string | undefined;
@@ -20,6 +21,7 @@ environ.logLevel = process.env['LOG_LEVEL'] || process.env['DEBUG_LEVEL'] || 'de
 environ.configPath = process.env['CONFIG_FILE'];
 environ.configBucket = process.env['S3_BUCKET'];
 environ.configKey = process.env['S3_KEY'] || 'config/revolver.yaml';
+environ.configValidation = process.env['CONFIG_VALIDATION'] != 'true';
 environ.baseBackoff = parseInt(process.env['SDK_BASE_BACKOFF'] || '300', 10);
 environ.maxRetries = parseInt(process.env['SDK_MAX_RETRIES'] || '30', 10);
 environ.httpsProxy = process.env['HTTPS_PROXY'];

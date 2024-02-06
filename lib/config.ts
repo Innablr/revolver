@@ -10,26 +10,36 @@ import { getAwsConfig } from './awsConfig';
 import { ConfigSchema } from './config-schema';
 
 export class RevolverConfig {
-  validateConfig(data: string) {
-    const config = ConfigSchema.parse(yaml.load(data));
+  validateConfig(data: string, validate: boolean) {
+    const rawConfig = yaml.load(data);
+    const result = ConfigSchema.safeParse(rawConfig);
+    let config;
+    if (result.success) {
+      config = result.data;
+    } else if (validate) {
+      throw result.error;
+    } else {
+      logger.error('Failed to validate configuration, using raw configuration', result.error);
+      config = rawConfig;
+    }
     logger.debug('Read Revolver config', config);
     return config;
   }
 
-  async readConfigFromFile(configFile: string) {
+  async readConfigFromFile(configFile: string, validate: boolean) {
     const fullPath = path.resolve(configFile);
     logger.debug(`Fetching config from file ${fullPath}`);
-    return this.validateConfig(await fs.readFile(fullPath, { encoding: 'utf8' }));
+    return this.validateConfig(await fs.readFile(fullPath, { encoding: 'utf8' }), validate);
   }
 
-  async readConfigFromS3(configBucket: string, configKey: string) {
+  async readConfigFromS3(configBucket: string, configKey: string, validate: boolean) {
     const config = getAwsConfig();
     const s3 = new S3Client(config);
     logger.debug(`Fetching config from bucket [${configBucket}] key [${configKey}]`);
 
     const configObject = await s3.send(new GetObjectCommand({ Bucket: configBucket, Key: configKey }));
     logger.debug(`Found S3 object MIME ${configObject.ContentType}`);
-    return this.validateConfig(await configObject.Body!.transformToString());
+    return this.validateConfig(await configObject.Body!.transformToString(), validate);
   }
 
   async getOrganisationsAccounts(creds: any[]) {
