@@ -205,7 +205,7 @@ function startOrStop(tag: string, timeNow: DateTime) {
   }
 
   if (t.start.isSet) {
-    const r = `It's now ${timeNow.toFormat('ccc HH:MM Z')}}, resource starts at ${t.start.time} ${t.days ? t.days : 'all week'}`;
+    const r = `It's now ${timeNow.toFormat('ccc HH:MM Z')}, resource starts at ${t.start.time} ${t.days ? t.days : 'all week'}`;
     if (t.dayIn(timeNow)) {
       if (t.start.timePast(timeNow) && !t.start.timePast(timeNow.minus({ minutes: 15 }))) {
         return ['START', r];
@@ -215,7 +215,7 @@ function startOrStop(tag: string, timeNow: DateTime) {
   }
 
   if (t.stop.isSet) {
-    const r = `It's now ${timeNow.toFormat('ccc HH:MM Z')}}, resource stops at ${t.stop.time} ${t.days ? t.days : 'all week'}`;
+    const r = `It's now ${timeNow.toFormat('ccc HH:MM Z')}, resource stops at ${t.stop.time} ${t.days ? t.days : 'all week'}`;
     if (t.dayIn(timeNow)) {
       if (t.stop.timePast(timeNow) && !t.stop.timePast(timeNow.minus({ minutes: 15 }))) {
         return ['STOP', r];
