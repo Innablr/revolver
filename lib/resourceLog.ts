@@ -20,8 +20,19 @@ export class ResourceLogConsole extends ResourceLog {
     super(entries);
   }
   process(): void {
-    const header = `${'ACCOUNT_ID'.padEnd(16)}${'REGION'.padEnd(20)}${'TYPE'.padEnd(20)} ${'ID'.padEnd(40)} ${'STATE'}`;
-    const lines = this.entries.map((r) => `${(r.accountId || '').padEnd(16)}${(r.region || '').padEnd(20)}${(r.resourceType || '').padEnd(20)} ${r.resourceId.padEnd(40)} ${r.resourceState}`)
+    const header =
+      `${'ACCOUNT_ID'.padEnd(16)}` +
+      `${'REGION'.padEnd(20)}` +
+      `${'TYPE'.padEnd(20)} ` +
+      `${'ID'.padEnd(40)} ` +
+      `${'STATE'}`;
+    const lines = this.entries.map((r) =>
+        `${(r.accountId || '').padEnd(16)}` +
+        `${(r.region || '').padEnd(20)}` +
+        `${(r.resourceType || '').padEnd(20)} ` +
+        `${r.resourceId.padEnd(40)} ` +
+        `${r.resourceState}`
+    )
     this.logger.info('Resources log follows');
     this.logger.info(`\n${[header].concat(lines).join('\n')}\n`);
   }
@@ -46,8 +57,19 @@ export class ResourceLogCsv extends ResourceLog {
     this.outputFile = outputFile;
   }
   process(): void {
-    const header = `${'ACCOUNT_ID'.padEnd(16)}${'REGION'.padEnd(20)}${'TYPE'.padEnd(20)} ${'ID'.padEnd(40)} ${'STATE'}`;
-    const lines = this.entries.map((r) => `${(r.accountId || '').padEnd(16)}${(r.region || '').padEnd(20)}${(r.resourceType || '').padEnd(20)} ${r.resourceId.padEnd(40)} ${r.resourceState}`)
+    const header =
+      'ACCOUNT_ID,' +
+      'REGION,' +
+      'TYPE,' +
+      'ID,' +
+      'STATE';
+    const lines = this.entries.map((r) =>
+        `${r.accountId || ''},` +
+        `${r.region || ''},` +
+        `${r.resourceType || ''},` +
+        `${r.resourceId},` +
+        `${r.resourceState}`
+    );
 
     this.logger.info(`Writing resources to ${this.outputFile}`);
     fs.open(this.outputFile, 'w').then(async (f) => {
