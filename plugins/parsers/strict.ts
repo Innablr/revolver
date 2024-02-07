@@ -194,7 +194,8 @@ function startOrStop(tag: string, timeNow: DateTime) {
   }
 
   if (t.isWindow) {
-    const r = `It's ${timeNow}, availability is from ${t.start.time} till ${t.stop.time} ${
+    //  Format is 'Wed 15:02 +11'
+    const r = `It's ${timeNow.toFormat('ccc HH:MM Z')}, availability is from ${t.start.time} till ${t.stop.time} ${
       t.days ? t.days : 'all week'
     }`;
     if (t.timeIn(timeNow) && t.dayIn(timeNow)) {
