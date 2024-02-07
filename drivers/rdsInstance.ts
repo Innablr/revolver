@@ -136,11 +136,7 @@ class RdsInstanceDriver extends DriverInterface {
   }
 
   noop(resources: InstrumentedRdsInstance[], action: RevolverAction) {
-    this.logger.info(
-      'RDS instances %j will noop because: %s',
-      resources.map((xr) => xr.resourceId),
-      action.reason,
-    );
+    this.logger.info(`RDS instances ${resources.map((xr) => xr.resourceId)} will noop because: ${action.reason}`);
     return Promise.resolve();
   }
 

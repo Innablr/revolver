@@ -127,11 +127,7 @@ class RedshiftClusterDriver extends DriverInterface {
   }
 
   noop(resources: InstrumentedRedshiftCluster[], action: RevolverAction) {
-    this.logger.info(
-      'Redshift clusters %j will noop because: %s',
-      resources.map((xr) => xr.resourceId),
-      action.reason,
-    );
+    this.logger.info(`Redshift clusters ${resources.map((xr) => xr.resourceId)} will noop because: ${action.reason}`);
     return Promise.resolve();
   }
 
@@ -172,11 +168,7 @@ class RedshiftClusterDriver extends DriverInterface {
     return getAwsClientForAccount(RedshiftClient, this.accountConfig).then(function (redshift) {
       return Promise.all(
         resources.map(function (xr) {
-          logger.info(
-            'Redshift cluster %s will be unset tags %s',
-            xr.resourceId,
-            action.tags.map((xt) => xt.Key),
-          );
+          logger.info(`Redshift cluster ${xr.resourceId} will be unset tags ${action.tags.map((xt) => xt.Key)}`);
           return redshift
             .send(new DeleteTagsCommand({
               ResourceName: xr.resourceArn,

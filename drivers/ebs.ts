@@ -81,11 +81,7 @@ class EBSDriver extends DriverInterface {
   }
 
   noop(resources: InstrumentedEBS[], action: RevolverAction) {
-    this.logger.info(
-      'EBS volumes %j will noop because: %s',
-      resources.map((xr) => xr.resourceId),
-      action.reason,
-    );
+    this.logger.info(`EBS volumes ${resources.map((xr) => xr.resourceId)} will noop because: ${action.reason}`);
     return Promise.resolve();
   }
 
