@@ -1,6 +1,7 @@
 import { DateTime, Interval } from 'luxon';
 
 const zeroPad = (num:number, places:number) => String(num).padStart(places, '0')
+export const reasonDateFormat = 'ccc HH:MM Z';
 
 class ParsedComponent {
   private timeHourLiteral: string | null = null;
@@ -195,7 +196,7 @@ function startOrStop(tag: string, timeNow: DateTime) {
 
   if (t.isWindow) {
     //  Format is 'Wed 15:02 +11'
-    const r = `It's ${timeNow.toFormat('ccc HH:MM Z')}, availability is from ${t.start.time} till ${t.stop.time} ${
+    const r = `It's ${timeNow.toFormat(reasonDateFormat)}, availability is from ${t.start.time} till ${t.stop.time} ${
       t.days ? t.days : 'all week'
     }`;
     if (t.timeIn(timeNow) && t.dayIn(timeNow)) {
@@ -205,7 +206,7 @@ function startOrStop(tag: string, timeNow: DateTime) {
   }
 
   if (t.start.isSet) {
-    const r = `It's now ${timeNow.toFormat('ccc HH:MM Z')}, resource starts at ${t.start.time} ${t.days ? t.days : 'all week'}`;
+    const r = `It's now ${timeNow.toFormat(reasonDateFormat)}, resource starts at ${t.start.time} ${t.days ? t.days : 'all week'}`;
     if (t.dayIn(timeNow)) {
       if (t.start.timePast(timeNow) && !t.start.timePast(timeNow.minus({ minutes: 15 }))) {
         return ['START', r];
@@ -215,7 +216,7 @@ function startOrStop(tag: string, timeNow: DateTime) {
   }
 
   if (t.stop.isSet) {
-    const r = `It's now ${timeNow.toFormat('ccc HH:MM Z')}, resource stops at ${t.stop.time} ${t.days ? t.days : 'all week'}`;
+    const r = `It's now ${timeNow.toFormat(reasonDateFormat)}, resource stops at ${t.stop.time} ${t.days ? t.days : 'all week'}`;
     if (t.dayIn(timeNow)) {
       if (t.stop.timePast(timeNow) && !t.stop.timePast(timeNow.minus({ minutes: 15 }))) {
         return ['STOP', r];
