@@ -73,6 +73,7 @@ const Settings = z.object({
             append: z.boolean().default(false),
         }).optional()
     }).optional(),
+    excludeResources: z.union([z.array(Filters), Filters]).optional(),
 });
 
 const ConfigSchema = z.object({

@@ -12,7 +12,8 @@ defaults:
         reportTags: ["Name"]
     auditLog:
       console:
-
+    excludeResources:
+      - tag: 'Schedule|ignore'
   drivers:
     - name: ec2
       active: true
