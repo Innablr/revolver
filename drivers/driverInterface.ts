@@ -52,16 +52,28 @@ export abstract class DriverInterface {
   }
 
   private appendAuditLog(xa: RevolverAction, allWithAction: ToolingInterface[], status: string): void {
-    for (const a of allWithAction) {
+    for (const ti of allWithAction) {
+      let plugin: string = xa.who.name;
+      let action: string = xa.what;
+      let reason: string = xa.reason;
+
+      // Find the specfic action for this resource as the plugin and reason may differ from xa
+      const ownAction = ti.actions.find((a) => xa.like(a) && a.done);
+      if (ownAction !== undefined) {
+        plugin = ownAction.who.name;
+        action = ownAction.what;
+        reason = ownAction.reason;
+      }
+
       this.actionAuditLog.push({
-        accountId: a.accountId || '',
+        accountId: ti.accountId || '',
         time: DateTime.now(),
-        plugin: xa.who.name,
+        plugin: plugin,
         driver: this.name,
-        resourceType: a.awsResourceType || '',
-        resourceId: a.resourceId,
-        action: xa.what,
-        reason: xa.reason || '',
+        resourceType: ti.awsResourceType || '',
+        resourceId: ti.resourceId,
+        action: action,
+        reason: reason,
         status: status,
       });
     }
