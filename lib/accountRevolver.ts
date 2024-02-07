@@ -134,11 +134,21 @@ export class AccountRevolver {
     }
   }
 
+  async logResources(): Promise<void> {
+    const header = `${'ACCOUNT_ID'.padEnd(16)}${'REGION'.padEnd(20)}${'TYPE'.padEnd(20)} ${'ID'.padEnd(40)} ${'STATE'}`;
+    const lines = this.resources.map((r) => `${(r.accountId || '').padEnd(16)}${(r.region || '').padEnd(20)}${(r.resourceType || '').padEnd(20)} ${r.resourceId.padEnd(40)} ${r.resourceState}`)
+    this.logger.info('Found resources log follows')
+    this.logger.info(`\n${[header].concat(lines).join('\n')}\n`);
+  }
+
   async revolve(): Promise<void> {
     try {
       await this.loadResources();
       if (this.config.settings.saveResources) {
         this.saveResources(this.config.settings.saveResources);
+      }
+      if (this.config.settings.logResources) {
+        await this.logResources();
       }
       await this.runPlugins();
       await this.runActions();

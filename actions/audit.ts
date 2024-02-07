@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import { promises as fs } from 'node:fs';
+import { logger } from "../lib/logger";
 
 export interface ActionAuditEntry {
   time: DateTime;
@@ -53,10 +54,10 @@ export class ActionAuditLogConsole extends ActionAuditLog {
   }
 
   process() {
-    console.log(`${'ACCOUNT_ID'.padEnd(16)}${'PLUGIN'.padEnd(20)}${'DRIVER'.padEnd(25)}${'TYPE'.padEnd(5)}${'ID'.padEnd(40)}${'ACTION'.padEnd(10)}${'STATUS'.padEnd(10)}${'REASON'}`)
-    for (const e of this.entries) {
-      const line = `${e.accountId.padEnd(16)}${e.plugin.padEnd(20)}${e.driver.padEnd(25)}${e.resourceType.padEnd(5)}${e.resourceId.padEnd(40)}${e.action.padEnd(10)}${e.status.padEnd(10)}${e.reason}`;
-      console.log(line);
-    }
+    const header = `${'ACCOUNT_ID'.padEnd(16)}${'PLUGIN'.padEnd(20)}${'DRIVER'.padEnd(25)}${'TYPE'.padEnd(5)}${'ID'.padEnd(40)}${'ACTION'.padEnd(10)}${'STATUS'.padEnd(10)}${'REASON'}`
+    const lines = this.entries.map((e) => `${e.accountId.padEnd(16)}${e.plugin.padEnd(20)}${e.driver.padEnd(25)}${e.resourceType.padEnd(5)}${e.resourceId.padEnd(40)}${e.action.padEnd(10)}${e.status.padEnd(10)}${e.reason}`)
+
+    logger.info('Audit log follows');
+    logger.info(`\n${[header].concat(lines).join('\n')}\n`);
   }
 }

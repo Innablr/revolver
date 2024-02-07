@@ -7,6 +7,9 @@ defaults:
     organizationRoleName: none
     revolverRoleName: none
     localResourcesFile: bundle-test-resources.json
+    logResources: true
+    audit:
+      console:
 
   drivers:
     - name: ec2

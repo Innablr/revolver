@@ -61,7 +61,8 @@ const Settings = z.object({
             file: z.string(),
             append: z.boolean().default(false),
         }).optional()
-    }).optional()
+    }).optional(),
+    logResources: z.boolean().default(false)
 });
 
 const ConfigSchema = z.object({
