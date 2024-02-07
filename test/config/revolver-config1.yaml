@@ -8,7 +8,7 @@ defaults:
     revolverRoleName: ssPowerCycle
     resourceLog:
       json: resources.json
-    audit:
+    auditLog:
       csv:
         file: 'audit.csv'
 

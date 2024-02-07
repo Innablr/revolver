@@ -9,7 +9,7 @@ defaults:
     localResourcesFile: bundle-test-resources.json
     resourceLog:
       console:
-    audit:
+    auditLog:
       console:
 
   drivers:

@@ -11,7 +11,7 @@ defaults:
       csv: "resources.csv"
       console:
     localResourcesFile: local-resources.json
-    audit:
+    auditLog:
       console:
       csv:
         file: "audit.csv"

@@ -59,7 +59,7 @@ const Settings = z.object({
       console: z.null().optional(),
     }).optional(),
     localResourcesFile: z.string().optional(),
-    audit: z.object({
+    auditLog: z.object({
         console: z.null().optional(),
         csv: z.object({
             file: z.string(),
