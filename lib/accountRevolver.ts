@@ -140,13 +140,13 @@ export class AccountRevolver {
       const resourceLogConfig = this.config.settings.resourceLog[logFormat];
       switch (logFormat.toLowerCase()) {
         case 'json':
-          new ResourceLogJson(this.resources, resourceLogConfig as string).process();
+          new ResourceLogJson(this.resources, this.config, resourceLogConfig as string).process();
           break;
         case 'console':
-          new ResourceLogConsole(this.resources).process();
+          new ResourceLogConsole(this.resources, this.config).process();
           break;
         case 'csv':
-          new ResourceLogCsv(this.resources, resourceLogConfig as string).process();
+          new ResourceLogCsv(this.resources, this.config, resourceLogConfig as string).process();
           break;
       }
     }

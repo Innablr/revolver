@@ -7,8 +7,10 @@ import { promises as fs } from "fs";
 abstract class ResourceLog {
   protected readonly logger;
   protected readonly entries: ToolingInterface[];
-  protected constructor(entries: ToolingInterface[]) {
+  protected readonly accountConfig: any;
+  protected constructor(entries: ToolingInterface[], accountConfig: any) {
     this.entries = entries;
+    this.accountConfig = accountConfig;
     this.logger = logger;
   }
 
@@ -16,19 +18,21 @@ abstract class ResourceLog {
 }
 
 export class ResourceLogConsole extends ResourceLog {
-  constructor(entries: ToolingInterface[]) {
-    super(entries);
+  constructor(entries: ToolingInterface[], accountConfig: any) {
+    super(entries, accountConfig);
   }
   process(): void {
     const header =
-      `${'ACCOUNT_ID'.padEnd(16)}` +
-      `${'REGION'.padEnd(20)}` +
+      `${'ACCOUNT_ID'.padEnd(16)} ` +
+      `${'ACCOUNT_NAME'.padEnd(16)} ` +
+      `${'REGION'.padEnd(20)} ` +
       `${'TYPE'.padEnd(20)} ` +
       `${'ID'.padEnd(40)} ` +
       `${'STATE'}`;
     const lines = this.entries.map((r) =>
-        `${(r.accountId || '').padEnd(16)}` +
-        `${(r.region || '').padEnd(20)}` +
+        `${(r.accountId || '').padEnd(16)} ` +
+        `${(this.accountConfig.settings.name || '').padEnd(16)} ` +
+        `${(r.region || '').padEnd(20)} ` +
         `${(r.resourceType || '').padEnd(20)} ` +
         `${r.resourceId.padEnd(40)} ` +
         `${r.resourceState}`
@@ -40,8 +44,8 @@ export class ResourceLogConsole extends ResourceLog {
 
 export class ResourceLogJson extends ResourceLog {
   private readonly outputFile;
-  constructor(entries: ToolingInterface[], outputFile: string) {
-    super(entries);
+  constructor(entries: ToolingInterface[], accountConfig: any, outputFile: string) {
+    super(entries, accountConfig);
     this.outputFile = outputFile;
   }
   process(): void {
@@ -52,19 +56,21 @@ export class ResourceLogJson extends ResourceLog {
 
 export class ResourceLogCsv extends ResourceLog {
   private readonly outputFile;
-  constructor(entries: ToolingInterface[], outputFile: string) {
-    super(entries);
+  constructor(entries: ToolingInterface[], accountConfig: any, outputFile: string) {
+    super(entries, accountConfig);
     this.outputFile = outputFile;
   }
   process(): void {
     const header =
       'ACCOUNT_ID,' +
+      'ACCOUNT_NAME' +
       'REGION,' +
       'TYPE,' +
       'ID,' +
       'STATE';
     const lines = this.entries.map((r) =>
         `${r.accountId || ''},` +
+        `${this.accountConfig.settings.name || ''},` +
         `${r.region || ''},` +
         `${r.resourceType || ''},` +
         `${r.resourceId},` +
