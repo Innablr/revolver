@@ -1,11 +1,12 @@
 import { DriverInterface } from '../drivers/driverInterface';
-import { InstrumentedResource, ToolingInterface } from "../drivers/instrumentedResource";
+import { InstrumentedResource, ToolingInterface } from '../drivers/instrumentedResource';
 import { RevolverPlugin } from '../plugins/pluginInterface';
 import { logger } from './logger';
 import { writeFileSync } from 'jsonfile';
-import path from "node:path";
-import { promises as fs } from "fs";
-import { ActionAuditLogConsole, ActionAuditLogCSV } from "../actions/audit";
+import path from 'node:path';
+import { promises as fs } from 'fs';
+import { ActionAuditLogConsole, ActionAuditLogCSV } from '../actions/audit';
+import { ResourceLogJson, ResourceLogCsv, ResourceLogConsole } from './resourceLog';
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -135,19 +136,26 @@ export class AccountRevolver {
   }
 
   async logResources(): Promise<void> {
-    const header = `${'ACCOUNT_ID'.padEnd(16)}${'REGION'.padEnd(20)}${'TYPE'.padEnd(20)} ${'ID'.padEnd(40)} ${'STATE'}`;
-    const lines = this.resources.map((r) => `${(r.accountId || '').padEnd(16)}${(r.region || '').padEnd(20)}${(r.resourceType || '').padEnd(20)} ${r.resourceId.padEnd(40)} ${r.resourceState}`)
-    this.logger.info('Found resources log follows')
-    this.logger.info(`\n${[header].concat(lines).join('\n')}\n`);
+    for(const logFormat of Object.keys(this.config.settings.resourceLog)) {
+      const resourceLogConfig = this.config.settings.resourceLog[logFormat];
+      switch (logFormat.toLowerCase()) {
+        case 'json':
+          new ResourceLogJson(this.resources, resourceLogConfig as string).process();
+          break;
+        case 'console':
+          new ResourceLogConsole(this.resources).process();
+          break;
+        case 'csv':
+          new ResourceLogCsv(this.resources, resourceLogConfig as string).process();
+          break;
+      }
+    }
   }
 
   async revolve(): Promise<void> {
     try {
       await this.loadResources();
-      if (this.config.settings.saveResources) {
-        this.saveResources(this.config.settings.saveResources);
-      }
-      if (this.config.settings.logResources) {
+      if (this.config.settings.resourceLog) {
         await this.logResources();
       }
       await this.runPlugins();

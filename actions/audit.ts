@@ -26,16 +26,20 @@ abstract class ActionAuditLog {
 export class ActionAuditLogCSV extends ActionAuditLog {
   private readonly outputFile: string;
   private readonly append: boolean;
+  protected logger;
   constructor(entries: ActionAuditEntry[], outputFile: string, append: boolean) {
     super(entries);
     this.outputFile = outputFile;
     this.append = append;
+    this.logger = logger;
   }
 
   process() {
     let mode = 'w';
     if (this.append) mode = 'a';
     fs.open(this.outputFile, mode).then(async (f) => {
+      this.logger.info(`Writing audit log to ${this.outputFile}`);
+
       if (!this.append) {
         await f.write(`time,accountId,plugin,driver,resourceType,resourceId,action,status,reason\n`);
       }

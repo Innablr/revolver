@@ -42,8 +42,12 @@ export class RevolverConfig {
       logger.debug('Read Revolver config', config);
       return config;
     } catch(e: any) {
-      const ze = e as ZodError;
-      throw new Error(`ZodError: Failed to parse\n\t${flattenZodErrors(ze, 0).join('\n\t')}`);
+      if (e instanceof ZodError) {
+        const ze = e as ZodError;
+        throw new Error(`ZodError: Failed to parse\n\t${flattenZodErrors(ze, 0).join('\n\t')}`);
+      } else {
+        throw new Error(e)
+      }
     }
   }
 

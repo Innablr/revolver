@@ -53,7 +53,11 @@ const Settings = z.object({
     timezoneTag: z.string().default('Timezone'),
     organizationRoleName: z.string(),
     revolverRoleName: z.string(),
-    saveResources: z.string().optional(),
+    resourceLog: z.object({
+      json: z.string().optional(),
+      csv: z.string().optional(),
+      console: z.null().optional(),
+    }).optional(),
     localResourcesFile: z.string().optional(),
     audit: z.object({
         console: z.null().optional(),
@@ -62,7 +66,6 @@ const Settings = z.object({
             append: z.boolean().default(false),
         }).optional()
     }).optional(),
-    logResources: z.boolean().default(false)
 });
 
 const ConfigSchema = z.object({
