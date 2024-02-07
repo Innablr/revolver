@@ -141,14 +141,7 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
           }
           return;
         }
-        this.logger.debug(
-          '%s: %s %s tag [%s] = [%s], validation successful, removing warning tag',
-          this.name,
-          resource.resourceType,
-          resource.resourceId,
-          xa,
-          tag,
-        );
+        this.logger.debug(`${this.name}: ${resource.resourceType} ${resource.resourceId} tag [${xa}] = [${tag}], validation successful, removing warning tag`);
         resource.addAction(new UnsetTagAction(this, `Warning${xa}`));
       }
     });

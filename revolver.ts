@@ -58,11 +58,7 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
     throw new Error('No accounts selected to run Revolver');
   }
 
-  logger.info(
-    'Revolver will run on %d account(s): %j',
-    authenticatedAccounts.length,
-    authenticatedAccounts.map((xa: any) => `${xa.settings.name}(${xa.account_id})`),
-  );
+  logger.info(`Revolver will run on ${authenticatedAccounts.length} account(s): ${authenticatedAccounts.map((xa: any) => `${xa.settings.name}(${xa.account_id})`)}`);
 
   const revolvers = authenticatedAccounts.map((account: any) => new AccountRevolver(account));
 

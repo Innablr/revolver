@@ -61,11 +61,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
           }
         }
 
-        logger.info(
-          'Redshift Cluster %s will now be restored from snapshot %s',
-          snapshot.resource.ClusterIdentifier,
-          snapshot.resourceId,
-        );
+        logger.info(`Redshift Cluster ${snapshot.resource.ClusterIdentifier} will now be restored from snapshot ${snapshot.resourceId}`);
         const sgTag = snapshot.tag('revolver/vpc_security_groups');
         const opts = {
           ClusterIdentifier: snapshot.resource.ClusterIdentifier,
@@ -109,11 +105,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
   }
 
   noop(resources: InstrumentedRedshiftClusterSnapshot[], action: RevolverAction) {
-    this.logger.info(
-      'Redshift snapshots %j will noop because: %s',
-      resources.map((xs) => xs.resourceId),
-      action.reason,
-    );
+    this.logger.info(`Redshift snapshots ${resources.map((xs) => xs.resourceId)} will noop because: ${action.reason}`);
     return Promise.resolve();
   }
 
@@ -154,11 +146,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
     return getAwsClientForAccount(RedshiftClient, this.accountConfig).then(function (redshift) {
       return Promise.all(
         resources.map(function (xs) {
-          logger.info(
-            'Redshift snapshot %s will be unset tags %s',
-            xs.resourceId,
-            action.tags.map((xt) => xt.Key),
-          );
+          logger.info(`Redshift snapshot ${xs.resourceId} will be unset tags ${action.tags.map((xt) => xt.Key)}`);
           return redshift
             .send(new DeleteTagsCommand({
               ResourceName: xs.resourceArn,

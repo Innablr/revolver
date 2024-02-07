@@ -34,12 +34,7 @@ export abstract class DriverInterface {
   }
 
   pretendAction(resources: ToolingInterface[], action: RevolverAction) {
-    this.logger.info(
-      'Pretending that %s resources %j will %s',
-      this.name,
-      resources.map((xr) => xr.resourceId),
-      action.present,
-    );
+    this.logger.info(`Pretending that ${this.name} resources ${resources.map((xr) => xr.resourceId)} will ${action.present}`);
   }
 
   initialise() {
@@ -85,12 +80,7 @@ export abstract class DriverInterface {
             if (typeof (this as any)[`mask${matchingAction.what}`] === 'function') {
               const reason = (this as any)[`mask${matchingAction.what}`](xxr, matchingAction);
               if (reason !== undefined) {
-                logger.debug(
-                  'Resource %s also has action %s, but it is masked because %s',
-                  xxr.resourceId,
-                  matchingAction.present,
-                  reason,
-                );
+                logger.debug(`Resource ${xxr.resourceId} also has action ${matchingAction.present}, but it is masked because ${reason}`);
                 matchingAction.done = true;
                 return false;
               }
@@ -104,13 +94,7 @@ export abstract class DriverInterface {
             return null;
           }
 
-          logger.info(
-            '%s will execute %s on %s %j',
-            xa.who.name,
-            xa.present,
-            xr.resourceType,
-            allWithAction.map((xxr) => xxr.resourceId),
-          );
+          logger.info(`${xa.who.name} will execute ${xa.present} on ${xr.resourceType} ${allWithAction.map((xxr) => xxr.resourceId)}`);
 
           if (this.driverConfig.pretend !== false) {
             this.appendAuditLog(xa, allWithAction, 'pretend');
@@ -127,12 +111,7 @@ export abstract class DriverInterface {
             })
             .catch((err: Error) => {
               this.appendAuditLog(xa, allWithAction, err.message);
-              logger.error(
-                'Error in driver %s processing action [%s] on resources %j, stack trace will follow:',
-                this.name,
-                xa.present,
-                allWithAction.map((xxr) => xxr.resourceId),
-              );
+              logger.error(`Error in driver ${this.name} processing action [${xa.present}] on resources ${allWithAction.map((xxr) => xxr.resourceId)}, stack trace will follow:`);
               logger.error(err);
             });
         });
