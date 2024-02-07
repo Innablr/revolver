@@ -124,10 +124,10 @@ export class AccountRevolver {
       const auditConfig = this.config.settings.auditLog[auditFormat];
       switch (auditFormat.toLowerCase()) {
         case 'csv':
-          new ActionAuditLogCSV(entries, path.resolve(auditConfig.file), auditConfig.append).process();
+          new ActionAuditLogCSV(entries, this.config, path.resolve(auditConfig.file), auditConfig.append).process();
           break;
         case 'console':
-          new ActionAuditLogConsole(entries).process();
+          new ActionAuditLogConsole(entries, this.config).process();
           break;
         default:
           logger.warn(`no implementation for audit log format ${auditFormat}`);
