@@ -67,7 +67,6 @@ export class StringCompareOptions {
     this.contains = config['contains'];
     this.startswith = config['startswith'];
     this.endswith = config['endswith'];
-    this.equals = config['equals'];
 
     if (config['regexp'] !== undefined) {
       // will throw on failure to compile
@@ -80,22 +79,22 @@ export class StringCompareOptions {
     if(value === undefined) {
       return false;
     }
-    if(this.equals) {
+    if(this.equals !== undefined) {
       return value === this.equals;
     }
-    if(this.iequals) {
+    if(this.iequals !== undefined) {
       return value.toLowerCase() === this.iequals.toLowerCase();
     }
-    else if (this.regexp) {
+    else if (this.regexp !== undefined) {
       return this.regexp.exec(value) !== null;
     }
-    else if (this.contains) {
+    else if (this.contains !== undefined) {
       return value.toLowerCase().includes(this.contains.toLowerCase());
     }
-    else if (this.startswith) {
+    else if (this.startswith !== undefined) {
       return value.toLowerCase().startsWith(this.startswith.toLowerCase());
     }
-    else if (this.endswith) {
+    else if (this.endswith !== undefined) {
       return value.toLowerCase().endsWith(this.endswith.toLowerCase());
     }
     else return false
@@ -112,7 +111,7 @@ export class StringCompareOptions {
     }
     if (tokens[1] === '' && tokens.length > 3) {
       // an |option| is specified
-      // tokens[1] is an empty string
+      // tokens[1] is an empty string due to ||
       return [key, {
         [tokens[2]]: tokens.slice(3).join('|'),
       }];

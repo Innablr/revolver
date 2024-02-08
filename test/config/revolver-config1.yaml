@@ -41,8 +41,8 @@ defaults:
               schedule: "0x7"
               priority: 1
               filter:
-                - accountId: ["554096786507","9876"]
-                - resource: ["InstanceType|\\.\\d{0,2}x?large", "InstanceType|t2.micro"]
+                - accountId: ["554096786507","startswith|9876"]
+                - resource: ["InstanceType||regexp|\\.\\d{0,2}x?large", "InstanceType|t2.micro"]
                 - tag: ["CostCenter|5678", "category|workload"]
             - name: longhand
               schedule: "0x7"
@@ -51,10 +51,10 @@ defaults:
                 and:
                   - or:
                       - accountId: "1234"
-                      - accountId: "4567"
+                      - accountId: "contains|4567"
                   - tag:
                       name: "CostCenter"
-                      value: "1234"
+                      equals: "1234"
                   - resource:
                       path: "InstanceType"
                       regexp: "\\.\\d{0,2}x?large"
@@ -67,7 +67,7 @@ defaults:
               filter:
                 - resource:
                     path: "Placement.AvailabilityZone | contains(@, 'ap-southeast')"
-                    value: true
+                    equals: 'true'
               schedule: 24x5
               priority: 10
             - name: default tagged schedule
@@ -75,7 +75,7 @@ defaults:
                 and:
                   - tag:
                       name: "CostCentre"
-                      value: "1234"
+                      contains: "1234"
                   - type: ec2
               schedule: 24x7
               priority: 1

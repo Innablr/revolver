@@ -2,7 +2,18 @@ import { z } from "zod";
 
 
 const AWSAccountId = z.string().regex(/\d{12}/);
+
 const ShorthandFilter = z.string().regex(/^([^|]+)\|.*/);
+
+const StringCompareOptions = z.object({
+  equals: z.string().optional(),
+  iequals: z.string().optional(),
+  contains: z.string().optional(),
+  startswith: z.string().optional(),
+  endswith: z.string().optional(),
+  regexp: z.string().optional(),
+})
+
 
 const BaseFilters = z.object({
     id: z.union([z.array(z.string()), z.string()]).optional(),
@@ -16,19 +27,14 @@ const BaseFilters = z.object({
         ShorthandFilter,
         z.object({
             name: z.string(),
-            value: z.string().optional(),
-            contains: z.string().optional(),
-        }).strict()
+        }).merge(StringCompareOptions).strict()
       ]).optional(),
     resource: z.union([
         z.array(ShorthandFilter),
         ShorthandFilter,
         z.object({
             path: z.string(),
-            value: z.any().optional(),
-            contains: z.string().optional(),
-            regexp: z.string().optional(),
-        }).strict()
+        }).merge(StringCompareOptions).strict()
       ]).optional()
   }).strict()
 
@@ -107,7 +113,7 @@ const ConfigSchema = z.object({
                   z.object({
                     name: z.string(),
                     schedule: z.string(),
-                    priority: z.number(),
+                    priority: z.number().default(0),
                     filter: z.union([z.array(Filters), Filters]),
                   }))
               })),
