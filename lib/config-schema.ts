@@ -53,15 +53,26 @@ const Settings = z.object({
     timezoneTag: z.string().default('Timezone'),
     organizationRoleName: z.string(),
     revolverRoleName: z.string(),
-    saveResources: z.string().optional(),
+    resourceLog: z.object({
+      json: z.object({
+        file: z.string(),
+      }).optional(),
+      csv: z.object({
+        file: z.string(),
+        reportTags: z.array(z.string()).optional(),
+      }).optional(),
+      console: z.null().or(z.object({
+        reportTags: z.array(z.string()).optional()
+      })).optional(),
+    }).optional(),
     localResourcesFile: z.string().optional(),
-    audit: z.object({
+    auditLog: z.object({
         console: z.null().optional(),
         csv: z.object({
             file: z.string(),
             append: z.boolean().default(false),
         }).optional()
-    }).optional()
+    }).optional(),
 });
 
 const ConfigSchema = z.object({

@@ -25,6 +25,10 @@ describe('Validate test config', function () {
     expect(config.accounts.includeList).to.have.lengthOf(1);
     expect(config.accounts.includeList[0].accountId).to.equal("002222222222");
     expect(config.accounts.excludeList).to.deep.equal([]);
+    expect(config.defaults.settings.resourceLog?.json?.file).to.equal('resources.json');
+    expect(config.defaults.settings.resourceLog?.csv?.reportTags).to.contain.all.members(["Name", "Schedule"]);
+    expect(config.defaults.settings.auditLog?.csv?.file).to.equal('audit.csv');
+
 
     // driver settings
     expect(config.defaults.drivers[0].name).to.equal('ec2');

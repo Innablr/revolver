@@ -1,11 +1,12 @@
 import { DriverInterface } from '../drivers/driverInterface';
-import { InstrumentedResource, ToolingInterface } from "../drivers/instrumentedResource";
+import { InstrumentedResource, ToolingInterface } from '../drivers/instrumentedResource';
 import { RevolverPlugin } from '../plugins/pluginInterface';
 import { logger } from './logger';
 import { writeFileSync } from 'jsonfile';
-import path from "node:path";
-import { promises as fs } from "fs";
-import { ActionAuditLogConsole, ActionAuditLogCSV } from "../actions/audit";
+import path from 'node:path';
+import { promises as fs } from 'fs';
+import { ActionAuditLogConsole, ActionAuditLogCSV } from '../actions/audit';
+import { ResourceLogJson, ResourceLogCsv, ResourceLogConsole } from './resourceLog';
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -115,21 +116,40 @@ export class AccountRevolver {
     );
   }
 
-  async processAuditLog(): Promise<void> {
+  async logAudit(): Promise<void> {
     this.logger.info('Processing action audit log');
     const entries = this.drivers.map((d) => d.getAuditLog()).reduce((a, l) => a.concat(l), []);
 
-    for(const auditFormat of Object.keys(this.config.settings.audit)) {
-      const auditConfig = this.config.settings.audit[auditFormat];
+    for(const auditFormat of Object.keys(this.config.settings.auditLog)) {
+      const auditConfig = this.config.settings.auditLog[auditFormat];
       switch (auditFormat.toLowerCase()) {
         case 'csv':
-          new ActionAuditLogCSV(entries, path.resolve(auditConfig.file), auditConfig.append).process();
+          new ActionAuditLogCSV(entries, this.config, path.resolve(auditConfig.file), auditConfig.append).process();
           break;
         case 'console':
-          new ActionAuditLogConsole(entries).process();
+          new ActionAuditLogConsole(entries, this.config).process();
           break;
         default:
-          logger.warn(`no implementation for audit format ${auditFormat}`);
+          logger.warn(`no implementation for audit log format ${auditFormat}`);
+      }
+    }
+  }
+
+  async logResources(): Promise<void> {
+    for(const logFormat of Object.keys(this.config.settings.resourceLog)) {
+      const resourceLogConfig = this.config.settings.resourceLog[logFormat];
+      switch (logFormat.toLowerCase()) {
+        case 'json':
+          new ResourceLogJson(this.resources, this.config, resourceLogConfig?.file).process();
+          break;
+        case 'console':
+          new ResourceLogConsole(this.resources, this.config, resourceLogConfig?.reportTags).process();
+          break;
+        case 'csv':
+          new ResourceLogCsv(this.resources, this.config, resourceLogConfig?.file, resourceLogConfig?.reportTags).process();
+          break;
+        default:
+          logger.warn(`no implementation for resource log format ${logFormat}`);
       }
     }
   }
@@ -137,13 +157,13 @@ export class AccountRevolver {
   async revolve(): Promise<void> {
     try {
       await this.loadResources();
-      if (this.config.settings.saveResources) {
-        this.saveResources(this.config.settings.saveResources);
+      if (this.config.settings.resourceLog) {
+        await this.logResources();
       }
       await this.runPlugins();
       await this.runActions();
-      if (this.config.settings.audit) {
-        await this.processAuditLog();
+      if (this.config.settings.auditLog) {
+        await this.logAudit();
       }
     } catch (err) {
       this.logger.error(`Error processing account ${this.config.settings.name}, stack trace will follow:`);

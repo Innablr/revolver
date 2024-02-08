@@ -6,9 +6,16 @@ defaults:
     timezoneTag: Timezone
     organizationRoleName: AWSOrganizationsReadOnly
     revolverRoleName: ssPowerCycle
-    saveResources: resources.json
-    # localResourcesFile: resources.json
-    audit:
+    resourceLog:
+      json:
+        file: "resources.json"
+      csv:
+        file: "resources.csv"
+        reportTags: ["Name", "Schedule"]
+      console:
+        reportTags: ["Name", "Schedule"]
+    localResourcesFile: local-resources.json
+    auditLog:
       console:
       csv:
         file: "audit.csv"

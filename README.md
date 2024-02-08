@@ -72,16 +72,20 @@ Main Revolver configuration is done in YAML. First line in the config file must 
 
 1. Section `defaults` defines default behavior for all accounts. Settings in this section can be overriden in the accounts section
 
-  | Option name            | Description                                                                                | Default  |
-  |------------------------|--------------------------------------------------------------------------------------------|----------|
-  | region                 | Specifies the default AWS region                                                           | -        |
-  | timezone               | Specifies the default time zone                                                            | utc      |
-  | timezoneTag            | Revolver will read this tag on individual resources to override account-wide timezone      | Timezone |
-  | organization_role_name | Role to be assumed on the main account from organizations to get the accounts list from it | -        |
-  | revolver_role_name     | Revolver role name to be assumed on each client account                                    | -        |
-  | saveResources          | Output discovered resources as JSON to the file specified here                             | -        |
-  | drivers                | List of enabled drivers and their options (see Drivers)                                    | -        |
-  | plugins                | List of enabled plugins with their options (see Plugins)                                   | -        |
+  | Option name          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Default  |
+  |----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+  | region               | Specifies the default AWS region                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | -        |
+  | timezone             | Specifies the default time zone                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | utc      |
+  | timezoneTag          | Revolver will read this tag on individual resources to override account-wide timezone                                                                                                                                                                                                                                                                                                                                                                                                                   | Timezone |
+  | organizationRoleName | Role to be assumed on the main account from organizations to get the accounts list from it. Set to `none` to disable for offline testing.                                                                                                                                                                                                                                                                                                                                                               | -        |
+  | revolverRoleName     | Revolver role name to be assumed on each client account. Set to `none` to disable for offline testing.                                                                                                                                                                                                                                                                                                                                                                                                  | -        |
+  | resourceLog          | Output discovered resources to file or console. Accepts a map of enabled resource log types. `json` requires a field `file` and will write a complete JSON of all discovered resources with all fields. `csv` requires field `file` and will write a CSV of discovered resources with a much smaller field set. `console` will write output similar to the CSV but in the logger. Both `csv` and `console` support the optional field `reportTags` as an array of resource tags to report in the output | -        |
+  | localResourcesFile   | Read resources from a JSON file generated by `resourceLog.json`. Good for offline testing of configuration.                                                                                                                                                                                                                                                                                                                                                                                             | -        |
+  | auditLog             | Configure an audit log of actions performed on resources. `auditLog` accepts a map of enabled audit types. These include <br/>> `console` to print a log to the logger, no configuration accepted<br>> `csv` to write an audit log to a csv. Configuration for `csv` requires `file` field specifying the output file and an optional boolean `append` field to instead append to the file rather than overwriting.                                                                                     | -        |
+  | drivers              | List of enabled drivers and their options (see Drivers)                                                                                                                                                                                                                                                                                                                                                                                                                                                 | -        |
+  | plugins              | List of enabled plugins with their options (see Plugins)                                                                                                                                                                                                                                                                                                                                                                                                                                                | -        |
+
+
 
     Example `defaults` section:
 
@@ -90,8 +94,21 @@ Main Revolver configuration is done in YAML. First line in the config file must 
       region: ap-southeast-2
       timezone: Australia/Melbourne
       timezoneTag: Timezone
-      organization_role_name: AWSOrganizationsReadOnly
-      revolver_role_name: ssPowerCycle
+      organizationRoleNme: AWSOrganizationsReadOnly
+      revolverRoleName: ssPowerCycle
+      resourceLog:
+        json:
+          file: resources.json
+        console:
+          reportTags: ["Name", "Schedule"]
+        csv:
+          file: resources.csv
+          reportTags: ["Name", "Schedule"]
+      auditLog:
+        console:
+        csv:
+          file: "audit.csv"
+          append: true
       drivers:
         - name: ec2
           active: true
@@ -365,7 +382,7 @@ filter:
 ###### JMESPath
 [JMESPath](https://jmespath.org/) is a JSON path query language. It's used in revolver to query against detailed resource properties for filtering using the `resource` filter.
 
-To build out a JMESPath, enable the saveResources configuration [in the configuration](####Config file) and run revolver with the drivers on `pretend` (to avoid state changes).
+To build out a JMESPath, enable the `resourceLog.json` configuration [in the configuration](####Config file) and run revolver with the drivers on `pretend` (to avoid state changes).
 This will generate a JSON of all resources. Use this json with `jmespathTester.cjs` to try out different JMESPath queries against your resources.
 
 The tester script will print out each resource ID and the value that JMESPath returned for that resource.
