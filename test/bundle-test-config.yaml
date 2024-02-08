@@ -71,7 +71,7 @@ defaults:
                     - tag: "costcenter||startswith|4567"
                     - tag:
                         name: "other"
-                        value: "things"
+                        equals: "things"
               schedule: "0x7"
               priority: 20
             - name: no large instances
@@ -89,7 +89,7 @@ defaults:
               filter:
                 resource:
                   path: "Placement.AvailabilityZone | contains(@, 'ap-southeast')"
-                  value: true
+                  equals: 'true'
               schedule: 24x5
               priority: 10
             - name: default tagged schedule
@@ -97,7 +97,7 @@ defaults:
                 and:
                   - tag:
                       name: "CostCentre"
-                      value: "1234"
+                      equals: "1234"
                   - type: ec2
               schedule: 24x7
               priority: 1
