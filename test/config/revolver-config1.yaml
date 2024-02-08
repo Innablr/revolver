@@ -15,6 +15,8 @@ defaults:
     auditLog:
       csv:
         file: 'audit.csv'
+    excludeResources:
+      - tag: 'Schedule|ignore'
 
   drivers:
     - name: ec2

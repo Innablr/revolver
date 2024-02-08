@@ -7,6 +7,7 @@ import path from 'node:path';
 import { promises as fs } from 'fs';
 import { ActionAuditLogConsole, ActionAuditLogCSV } from '../actions/audit';
 import { ResourceLogJson, ResourceLogCsv, ResourceLogConsole } from './resourceLog';
+import { buildFilter } from '../plugins/filters/index';
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -93,6 +94,19 @@ export class AccountRevolver {
         }),
       )
     ).flatMap((xr) => xr);
+
+    if (this.config.settings.excludeResources) {
+      const excludeFilter = await buildFilter(this.config.settings.excludeResources);
+
+      const excludedIndices = this.resources.map((resource) => excludeFilter.matches(resource))
+      this.resources = this.resources.filter((_resource, index) => {
+        return !excludedIndices[index];
+      });
+
+      if (excludedIndices.length - this.resources.length > 0) {
+        this.logger.info(`Excluding ${excludedIndices.length - this.resources.length} resources from processing`);
+      }
+    }
   }
 
   async saveResources(filename: string) {

@@ -20,6 +20,11 @@ defaults:
       csv:
         file: "audit.csv"
         append: true
+    excludeResources:
+      - tag:
+          name: "Schedule"
+          contains: "ignore"
+      - region: "us-east-1"
 
   drivers:
     - name: ec2
