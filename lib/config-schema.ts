@@ -21,6 +21,7 @@ const BaseFilters = z.object({
     region: z.union([z.array(z.string()), z.string()]).optional(),
     state: z.union([z.array(z.string()), z.string()]).optional(),
     type: z.union([z.array(z.string()), z.string()]).optional(),
+    name: z.union([z.array(z.string()), z.string()]).optional(),
     bool: z.boolean().optional(),
     tag: z.union([
         z.array(ShorthandFilter),

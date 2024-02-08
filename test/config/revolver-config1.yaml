@@ -79,6 +79,11 @@ defaults:
                   - type: ec2
               schedule: 24x7
               priority: 1
+            - name: explicit instance
+              filter:
+                - name: 'app-server-1'
+              schedule: 24x7
+              priority: 10
 
 organizations:
   - accountId: "000000000000"
