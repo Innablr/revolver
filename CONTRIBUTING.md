@@ -3,7 +3,7 @@
 ## Structure
 Revolver works with a pluggable interface for `drivers` and `plugins` that are executed per cloud account.
 * `drivers` implement cloud API calls, both query and update.
-* `plugins` implement power cycling logic.
+* `plugins` implement logic for generating actions (start/stop/tag etc)
 
 Main entry is `revolver.ts`, which determines what accounts it will run on.
 For each account, Revolver does the following  (see `lib/accountRevolver.ts`):
@@ -36,9 +36,11 @@ npm run start
 `start` utilizes `invoke.ts/js` to call the true `revolver.ts` with an event. This is necessary for local execution.
 
 When developing revolver, it's useful to configure it to run entirely locally with the settings:
-* `localResourcesJson: resources.json`
-* `pretend: true`
-* `revolverRoleName: none`
+* `localResourcesJson: resources.json`: Load resources from a JSON instead of calling cloud APIs
+* `pretend: true`: Set on each driver, stops the driver from actually performing any actions
+* `revolverRoleName: none`: Disable obtaining an account role and use whatever credentials are already configured.
+  * For local testing, this just bypasses an attempt to get a role when it doesn't make sense.
+  * For single account testing, this allows for usage of locally configured credentials where you might not be able to change role.
 
 Generate the `resources.json` from a real execution once (using the setting `resourceLog.json`) and then run locally
 for faster development feedback.
