@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { promises as fs } from 'node:fs';
-import { logger } from "../lib/logger";
+import { logger } from '../lib/logger';
 
 export interface ActionAuditEntry {
   time: DateTime;
@@ -45,7 +45,7 @@ export class ActionAuditLogCSV extends ActionAuditLog {
 
       if (!this.append) {
         await f.write(
-            `time,` +
+          `time,` +
             `accountId,` +
             `accountName,` +
             `plugin,` +
@@ -54,7 +54,7 @@ export class ActionAuditLogCSV extends ActionAuditLog {
             `resourceId,` +
             `action,` +
             `status,` +
-            `reason\n`
+            `reason\n`,
         );
       }
       for (const e of this.entries) {
@@ -91,8 +91,9 @@ export class ActionAuditLogConsole extends ActionAuditLog {
       `${'ID'.padEnd(40)} ` +
       `${'ACTION'.padEnd(10)} ` +
       `${'STATUS'.padEnd(10)} ` +
-      `${'REASON'}`
-    const lines = this.entries.map((e) =>
+      `${'REASON'}`;
+    const lines = this.entries.map(
+      (e) =>
         `${e.accountId.padEnd(16)} ` +
         `${(this.accountConfig.settings.name || '').padEnd(16)} ` +
         `${e.plugin.padEnd(20)} ` +
@@ -101,7 +102,7 @@ export class ActionAuditLogConsole extends ActionAuditLog {
         `${e.resourceId.padEnd(40)} ` +
         `${e.action.padEnd(10)} ` +
         `${e.status.padEnd(10)} ` +
-        `${e.reason}`
+        `${e.reason}`,
     );
 
     logger.info('Audit log follows');

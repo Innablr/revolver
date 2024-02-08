@@ -46,10 +46,12 @@ class RDSTagger implements Tagger {
         }));
         logger.info(`${xr.resourceType} ${xr.resourceId} will be set tag ${JSON.stringify(safeValues)}`);
         try {
-          return await rds.send(new AddTagsToResourceCommand({
-            ResourceName: xr.resourceArn,
-            Tags: safeValues,
-          }));
+          return await rds.send(
+            new AddTagsToResourceCommand({
+              ResourceName: xr.resourceArn,
+              Tags: safeValues,
+            }),
+          );
         } catch (e) {
           logger.error(`Error settings tags for ${xr.resourceType} ${xr.resourceId}, stack trace will follow`, e);
           return undefined;
@@ -77,10 +79,12 @@ class RDSTagger implements Tagger {
       resources.map(async function (xr) {
         logger.info(`RDS instance ${xr.resourceId} will be unset tags ${action.tags}`);
         try {
-          return await rds.send(new RemoveTagsFromResourceCommand({
-            ResourceName: xr.resourceArn,
-            TagKeys: action.tags.map((xt: TagInterface) => xt.Key),
-          }));
+          return await rds.send(
+            new RemoveTagsFromResourceCommand({
+              ResourceName: xr.resourceArn,
+              TagKeys: action.tags.map((xt: TagInterface) => xt.Key),
+            }),
+          );
         } catch (e) {
           logger.error(`Error unsettings tags for ${xr.resourceType} ${xr.resourceId}, stack trace will follow`, e);
           return undefined;
@@ -115,10 +119,12 @@ class EC2Tagger implements Tagger {
 
     return Promise.all(
       resourceChunks.map((chunk) =>
-        ec2.send(new CreateTagsCommand({
-          Resources: chunk.map((xr) => xr.resourceId),
-          Tags: action.tags,
-        })),
+        ec2.send(
+          new CreateTagsCommand({
+            Resources: chunk.map((xr) => xr.resourceId),
+            Tags: action.tags,
+          }),
+        ),
       ),
     );
   }
@@ -147,10 +153,12 @@ class EC2Tagger implements Tagger {
 
     return Promise.all(
       resourceChunks.map((chunk) =>
-        ec2.send(new DeleteTagsCommand({
-          Resources: chunk.map((xr) => xr.resourceId),
-          Tags: action.tags,
-        })),
+        ec2.send(
+          new DeleteTagsCommand({
+            Resources: chunk.map((xr) => xr.resourceId),
+            Tags: action.tags,
+          }),
+        ),
       ),
     );
   }

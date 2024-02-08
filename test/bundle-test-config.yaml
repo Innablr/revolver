@@ -9,7 +9,7 @@ defaults:
     localResourcesFile: bundle-test-resources.json
     resourceLog:
       console:
-        reportTags: ["Name"]
+        reportTags: ['Name']
     auditLog:
       console:
     excludeResources:
@@ -35,13 +35,13 @@ defaults:
           onlyResourceTypes:
             - ebs
             - snapshot
-          tagNotMatch: [ ]
+          tagNotMatch: []
         - tag: Name
           tagMissing:
             - warn
           onlyResourceTypes:
             - ec2
-          tagNotMatch: [ ]
+          tagNotMatch: []
         - tag: Schedule
           tagMissing:
             - setDefault: 24x7
@@ -49,7 +49,7 @@ defaults:
             - ec2
             - rdsInstance
             - rdsCluster
-          tagNotMatch: [ ]
+          tagNotMatch: []
     powercycle:
       active: true
       configs:
@@ -64,26 +64,26 @@ defaults:
           matchers:
             - name: short format filter
               filter:
-                - accountId: ["123456789012","equals|234567890123"]
+                - accountId: ['123456789012', 'equals|234567890123']
                 - resource: ["InstanceType|\\.\\d{0,2}x?large"]
-                - tag: ["costcenter|1234" ]
+                - tag: ['costcenter|1234']
                 - or:
-                    - tag: "costcenter||startswith|4567"
+                    - tag: 'costcenter||startswith|4567'
                     - tag:
-                        name: "other"
-                        value: "things"
-              schedule: "0x7"
+                        name: 'other'
+                        value: 'things'
+              schedule: '0x7'
               priority: 20
             - name: no large instances
               filter:
                 or:
                   - resource:
-                      path: "InstanceType"
+                      path: 'InstanceType'
                       regexp: "\\.\\d{0,2}x?large"
                   - resource:
-                      path: "InstanceType"
+                      path: 'InstanceType'
                       regexp: "\\.metal\\-\\d{1,2}xl"
-              schedule: "0x7"
+              schedule: '0x7'
               priority: 20
             - name: within australia
               filter:
@@ -96,15 +96,15 @@ defaults:
               filter:
                 and:
                   - tag:
-                      name: "CostCentre"
-                      value: "1234"
+                      name: 'CostCentre'
+                      value: '1234'
                   - type: ec2
               schedule: 24x7
               priority: 1
 
 accounts:
   includeList:
-    - accountId: "123456789012"
+    - accountId: '123456789012'
       settings:
         name: local-aws
 

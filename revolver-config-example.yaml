@@ -8,23 +8,23 @@ defaults:
     revolverRoleName: ssPowerCycle
     resourceLog:
       json:
-        file: "resources.json"
+        file: 'resources.json'
       csv:
-        file: "resources.csv"
-        reportTags: ["Name", "Schedule"]
+        file: 'resources.csv'
+        reportTags: ['Name', 'Schedule']
       console:
-        reportTags: ["Name", "Schedule"]
+        reportTags: ['Name', 'Schedule']
     localResourcesFile: local-resources.json
     auditLog:
       console:
       csv:
-        file: "audit.csv"
+        file: 'audit.csv'
         append: true
     excludeResources:
       - tag:
-          name: "Schedule"
-          contains: "ignore"
-      - region: "us-east-1"
+          name: 'Schedule'
+          contains: 'ignore'
+      - region: 'us-east-1'
 
   drivers:
     - name: ec2
@@ -45,21 +45,21 @@ defaults:
           matchers:
             - name: default tagged schedule
               filter:
-                - tag: ["CostCentre||value|1234", "CostCentre|4567"]
+                - tag: ['CostCentre||value|1234', 'CostCentre|4567']
                 - type: ec2
-                - resource: "Placement.AvailabilityZone||contains|ap-southeast"
+                - resource: 'Placement.AvailabilityZone||contains|ap-southeast'
               schedule: 24x7
               priority: 1
             - name: no large instances
               filter:
                 or:
                   - resource:
-                      path: "InstanceType"
+                      path: 'InstanceType'
                       regexp: "\\.\\d{0,2}x?large"
                   - resource:
-                      path: "InstanceType"
+                      path: 'InstanceType'
                       regexp: "\\.metal\\-\\d{1,2}xl"
-              schedule: "0x7"
+              schedule: '0x7'
               priority: 20
             - name: within australia
               filter:
@@ -99,11 +99,11 @@ defaults:
           tagNotMatch: []
 
 organizations:
-  - accountId: "000000000000"
+  - accountId: '000000000000'
     settings:
       region: ap-southeast-2
       name: eh-global-apse2
-  - accountId: "111111111111"
+  - accountId: '111111111111'
     settings:
       region: eu-west-1
       name: eh-global-euw1

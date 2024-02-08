@@ -1,9 +1,9 @@
 import { Logger } from 'tslog';
 import { logger, RevolverLogObject } from '../lib/logger';
-import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
+import { InstrumentedResource, ToolingInterface } from './instrumentedResource';
 import { RevolverAction } from '../actions/actions';
-import { ActionAuditEntry } from "../actions/audit";
-import { DateTime } from "luxon";
+import { ActionAuditEntry } from '../actions/audit';
+import { DateTime } from 'luxon';
 
 export abstract class DriverInterface {
   protected accountConfig: any;
@@ -34,7 +34,9 @@ export abstract class DriverInterface {
   }
 
   pretendAction(resources: ToolingInterface[], action: RevolverAction) {
-    this.logger.info(`Pretending that ${this.name} resources ${resources.map((xr) => xr.resourceId)} will ${action.present}`);
+    this.logger.info(
+      `Pretending that ${this.name} resources ${resources.map((xr) => xr.resourceId)} will ${action.present}`,
+    );
   }
 
   initialise() {
@@ -92,7 +94,9 @@ export abstract class DriverInterface {
             if (typeof (this as any)[`mask${matchingAction.what}`] === 'function') {
               const reason = (this as any)[`mask${matchingAction.what}`](xxr, matchingAction);
               if (reason !== undefined) {
-                logger.debug(`Resource ${xxr.resourceId} also has action ${matchingAction.present}, but it is masked because ${reason}`);
+                logger.debug(
+                  `Resource ${xxr.resourceId} also has action ${matchingAction.present}, but it is masked because ${reason}`,
+                );
                 matchingAction.done = true;
                 return false;
               }
@@ -106,7 +110,9 @@ export abstract class DriverInterface {
             return null;
           }
 
-          logger.info(`${xa.who.name} will execute ${xa.present} on ${xr.resourceType} ${allWithAction.map((xxr) => xxr.resourceId)}`);
+          logger.info(
+            `${xa.who.name} will execute ${xa.present} on ${xr.resourceType} ${allWithAction.map((xxr) => xxr.resourceId)}`,
+          );
 
           if (this.driverConfig.pretend !== false) {
             this.appendAuditLog(xa, allWithAction, 'pretend');
@@ -117,13 +123,16 @@ export abstract class DriverInterface {
             logger.error(`Driver ${this.name} doesn't implement action ${xa.what}`);
           }
 
-          return (this as any)[xa.what](allWithAction, xa)
+          return (this as any)
+            [xa.what](allWithAction, xa)
             .then(() => {
               this.appendAuditLog(xa, allWithAction, 'success');
             })
             .catch((err: Error) => {
               this.appendAuditLog(xa, allWithAction, err.message);
-              logger.error(`Error in driver ${this.name} processing action [${xa.present}] on resources ${allWithAction.map((xxr) => xxr.resourceId)}, stack trace will follow:`);
+              logger.error(
+                `Error in driver ${this.name} processing action [${xa.present}] on resources ${allWithAction.map((xxr) => xxr.resourceId)}, stack trace will follow:`,
+              );
               logger.error(err);
             });
         });

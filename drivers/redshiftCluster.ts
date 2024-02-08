@@ -1,7 +1,15 @@
 import { DateTime } from 'luxon';
-import { Cluster, CreateTagsCommand, DeleteClusterCommand, DeleteTagsCommand, DescribeClustersCommand, RedshiftClient, Tag } from '@aws-sdk/client-redshift';
+import {
+  Cluster,
+  CreateTagsCommand,
+  DeleteClusterCommand,
+  DeleteTagsCommand,
+  DescribeClustersCommand,
+  RedshiftClient,
+  Tag,
+} from '@aws-sdk/client-redshift';
 import assume from '../lib/assume';
-import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
+import { InstrumentedResource, ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import dateTime from '../lib/dateTime';
@@ -97,18 +105,22 @@ class RedshiftClusterDriver extends DriverInterface {
       })
       .then(function () {
         logger.info(`Redshift cluster ${cluster.resourceId} will now be deleted with snapshot ${snapshotId}`);
-        return redshift.send(new DeleteClusterCommand({
-          ClusterIdentifier: cluster.resourceId,
-          FinalClusterSnapshotIdentifier: snapshotId,
-          SkipFinalClusterSnapshot: false,
-        }));
+        return redshift.send(
+          new DeleteClusterCommand({
+            ClusterIdentifier: cluster.resourceId,
+            FinalClusterSnapshotIdentifier: snapshotId,
+            SkipFinalClusterSnapshot: false,
+          }),
+        );
       })
       .then(function () {
         logger.debug(`Saving cluster ${cluster.resourceId} tags in snapshot ${snapshotId}`);
-        return redshift.send(new CreateTagsCommand({
-          ResourceName: snapshotArn,
-          Tags: preserveTags,
-        }));
+        return redshift.send(
+          new CreateTagsCommand({
+            ResourceName: snapshotArn,
+            Tags: preserveTags,
+          }),
+        );
       })
       .catch(function (err) {
         logger.error(`Error stopping Redshift cluster ${cluster.resourceId}, stack trace will follow`, err);
@@ -142,10 +154,12 @@ class RedshiftClusterDriver extends DriverInterface {
           }));
           logger.info(`Redshift cluster ${xr.resourceId} will be set tags ${safeValues}`);
           return redshift
-            .send(new CreateTagsCommand({
-              ResourceName: xr.resourceArn,
-              Tags: safeValues,
-            }))
+            .send(
+              new CreateTagsCommand({
+                ResourceName: xr.resourceArn,
+                Tags: safeValues,
+              }),
+            )
             .catch(function (err) {
               logger.error(`Error settings tags for Redshift cluster ${xr.resourceId}, stack trace will follow`, err);
             });
@@ -170,10 +184,12 @@ class RedshiftClusterDriver extends DriverInterface {
         resources.map(function (xr) {
           logger.info(`Redshift cluster ${xr.resourceId} will be unset tags ${action.tags.map((xt) => xt.Key)}`);
           return redshift
-            .send(new DeleteTagsCommand({
-              ResourceName: xr.resourceArn,
-              TagKeys: action.tags.map((xt) => xt.Key),
-            }))
+            .send(
+              new DeleteTagsCommand({
+                ResourceName: xr.resourceArn,
+                TagKeys: action.tags.map((xt) => xt.Key),
+              }),
+            )
             .catch(function (err) {
               logger.error(`Error unsettings tags for Redshift cluster ${xr.resourceId}, stack trace will follow`, err);
             });
@@ -212,7 +228,7 @@ class RedshiftClusterDriver extends DriverInterface {
     );
   }
   resource(obj: InstrumentedResource): ToolingInterface {
-    return new InstrumentedRedshiftCluster(obj.resource, obj.resourceArn)
+    return new InstrumentedRedshiftCluster(obj.resource, obj.resourceArn);
   }
 }
 

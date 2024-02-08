@@ -8,27 +8,30 @@ import { paginateAwsCall } from './common';
 import { merge } from 'ts-deepmerge';
 import { getAwsConfig } from './awsConfig';
 import { ConfigSchema } from './config-schema';
-import {ZodError, ZodIssueCode, ZodInvalidUnionIssue, ZodInvalidArgumentsIssue, ZodInvalidReturnTypeIssue} from 'zod';
-
+import { ZodError, ZodIssueCode, ZodInvalidUnionIssue, ZodInvalidArgumentsIssue, ZodInvalidReturnTypeIssue } from 'zod';
 
 function flattenZodErrors(ze: ZodError, depth: number): string[] {
-  let lines: string[] = []
-  for(const zi of ze.errors) {
+  let lines: string[] = [];
+  for (const zi of ze.errors) {
     const code = zi.code;
     const path = zi.path.join('.');
     const msg = zi.message;
 
     lines.push(`${path} [${code}]: ${msg}`);
 
-    switch(zi.code) {
+    switch (zi.code) {
       case ZodIssueCode.invalid_union:
-        lines = lines.concat((zi as ZodInvalidUnionIssue).unionErrors.map((e) => flattenZodErrors(e, depth+1)).reduce((a, s) => a.concat(s), []))
+        lines = lines.concat(
+          (zi as ZodInvalidUnionIssue).unionErrors
+            .map((e) => flattenZodErrors(e, depth + 1))
+            .reduce((a, s) => a.concat(s), []),
+        );
         break;
       case ZodIssueCode.invalid_arguments:
-        lines = lines.concat(flattenZodErrors((zi as ZodInvalidArgumentsIssue).argumentsError, depth+1))
+        lines = lines.concat(flattenZodErrors((zi as ZodInvalidArgumentsIssue).argumentsError, depth + 1));
         break;
       case ZodIssueCode.invalid_return_type:
-        lines = lines.concat(flattenZodErrors((zi as ZodInvalidReturnTypeIssue).returnTypeError, depth+1))
+        lines = lines.concat(flattenZodErrors((zi as ZodInvalidReturnTypeIssue).returnTypeError, depth + 1));
         break;
     }
   }
@@ -41,12 +44,12 @@ export class RevolverConfig {
       const config = ConfigSchema.parse(yaml.load(data));
       logger.debug('Read Revolver config', config);
       return config;
-    } catch(e: any) {
+    } catch (e: any) {
       if (e instanceof ZodError) {
         const ze = e as ZodError;
         throw new Error(`ZodError: Failed to parse\n\t${flattenZodErrors(ze, 0).join('\n\t')}`);
       } else {
-        throw new Error(e)
+        throw new Error(e);
       }
     }
   }

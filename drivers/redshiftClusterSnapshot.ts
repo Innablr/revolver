@@ -1,6 +1,17 @@
 import { DateTime } from 'luxon';
-import { Cluster, CreateTagsCommand, DeleteClusterSnapshotCommand, DeleteTagsCommand, DescribeClusterSnapshotsCommand, DescribeClustersCommand, DescribeTagsCommand, RedshiftClient, RestoreFromClusterSnapshotCommand, Tag } from '@aws-sdk/client-redshift';
-import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
+import {
+  Cluster,
+  CreateTagsCommand,
+  DeleteClusterSnapshotCommand,
+  DeleteTagsCommand,
+  DescribeClusterSnapshotsCommand,
+  DescribeClustersCommand,
+  DescribeTagsCommand,
+  RedshiftClient,
+  RestoreFromClusterSnapshotCommand,
+  Tag,
+} from '@aws-sdk/client-redshift';
+import { InstrumentedResource, ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { getAwsClientForAccount } from '../lib/awsConfig';
@@ -56,12 +67,16 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
 
         if (clusterRestored) {
           if (clusterRestored[0].ClusterStatus === 'available') {
-            logger.info(`Redshift Cluster ${snapshot.resource.ClusterIdentifier} is already running, erasing Redshift snapshot ${snapshot.resourceId}..`);
+            logger.info(
+              `Redshift Cluster ${snapshot.resource.ClusterIdentifier} is already running, erasing Redshift snapshot ${snapshot.resourceId}..`,
+            );
             return redshift.send(new DeleteClusterSnapshotCommand({ SnapshotIdentifier: snapshot.resourceId }));
           }
         }
 
-        logger.info(`Redshift Cluster ${snapshot.resource.ClusterIdentifier} will now be restored from snapshot ${snapshot.resourceId}`);
+        logger.info(
+          `Redshift Cluster ${snapshot.resource.ClusterIdentifier} will now be restored from snapshot ${snapshot.resourceId}`,
+        );
         const sgTag = snapshot.tag('revolver/vpc_security_groups');
         const opts = {
           ClusterIdentifier: snapshot.resource.ClusterIdentifier,
@@ -120,10 +135,12 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
           }));
           logger.info(`Redshift cluster ${xr.resourceId} will be set tags ${safeValues}`);
           return redshift
-            .send(new CreateTagsCommand({
-              ResourceName: xr.resourceArn,
-              Tags: safeValues,
-            }))
+            .send(
+              new CreateTagsCommand({
+                ResourceName: xr.resourceArn,
+                Tags: safeValues,
+              }),
+            )
             .catch(function (err) {
               logger.error(`Error settings tags for Redshift cluster ${xr.resourceId}, stack trace will follow`, err);
             });
@@ -148,12 +165,17 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
         resources.map(function (xs) {
           logger.info(`Redshift snapshot ${xs.resourceId} will be unset tags ${action.tags.map((xt) => xt.Key)}`);
           return redshift
-            .send(new DeleteTagsCommand({
-              ResourceName: xs.resourceArn,
-              TagKeys: action.tags.map((xt) => xt.Key),
-            }))
+            .send(
+              new DeleteTagsCommand({
+                ResourceName: xs.resourceArn,
+                TagKeys: action.tags.map((xt) => xt.Key),
+              }),
+            )
             .catch(function (err) {
-              logger.error(`Error unsettings tags for Redshift snapshot ${xs.resourceId}, stack trace will follow`, err);
+              logger.error(
+                `Error unsettings tags for Redshift snapshot ${xs.resourceId}, stack trace will follow`,
+                err,
+              );
             });
         }),
       );
@@ -211,7 +233,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
     return redshiftClusterSnapshots;
   }
   resource(obj: InstrumentedResource): ToolingInterface {
-    return new InstrumentedRedshiftClusterSnapshot(obj.resource, obj.resourceArn)
+    return new InstrumentedRedshiftClusterSnapshot(obj.resource, obj.resourceArn);
   }
 }
 

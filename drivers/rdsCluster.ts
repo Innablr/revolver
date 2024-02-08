@@ -1,6 +1,13 @@
 import { DateTime } from 'luxon';
-import { DescribeDBClustersCommand, DescribeDBInstancesCommand, RDSClient, StartDBClusterCommand, StopDBClusterCommand, Tag } from '@aws-sdk/client-rds';
-import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
+import {
+  DescribeDBClustersCommand,
+  DescribeDBInstancesCommand,
+  RDSClient,
+  StartDBClusterCommand,
+  StopDBClusterCommand,
+  Tag,
+} from '@aws-sdk/client-rds';
+import { InstrumentedResource, ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { rdsTagger } from './tags';
@@ -132,7 +139,7 @@ class RdsClusterDriver extends DriverInterface {
     return instrumentedClusters;
   }
   resource(obj: InstrumentedResource): ToolingInterface {
-    return new InstrumentedRdsCluster(obj.resource)
+    return new InstrumentedRdsCluster(obj.resource);
   }
 }
 

@@ -20,5 +20,4 @@ export default class FilterBool implements Filter, FilterCtor {
   matches(resource: ToolingInterface): boolean {
     return this.yes;
   }
-
 }

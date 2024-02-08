@@ -78,12 +78,14 @@ export class AccountRevolver {
     if (local !== undefined) {
       this.logger.info(`Loading resources locally from ${local}`);
       const resourcesFilePath = path.resolve(local);
-      const localResourcesStr = await fs.readFile(resourcesFilePath, { encoding: 'utf-8'});
+      const localResourcesStr = await fs.readFile(resourcesFilePath, { encoding: 'utf-8' });
       localResources = JSON.parse(localResourcesStr);
     }
 
     this.logger.info('Loading resources');
-    this.resources = (await Promise.all(this.drivers.map((xd) => {
+    this.resources = (
+      await Promise.all(
+        this.drivers.map((xd) => {
           if (local !== undefined) {
             return localResources
               .filter((res: InstrumentedResource) => res.resourceType === xd.name)
@@ -98,7 +100,7 @@ export class AccountRevolver {
     if (this.config.settings.excludeResources) {
       const excludeFilter = await buildFilter(this.config.settings.excludeResources);
 
-      const excludedIndices = this.resources.map((resource) => excludeFilter.matches(resource))
+      const excludedIndices = this.resources.map((resource) => excludeFilter.matches(resource));
       this.resources = this.resources.filter((_resource, index) => {
         return !excludedIndices[index];
       });
@@ -134,7 +136,7 @@ export class AccountRevolver {
     this.logger.info('Processing action audit log');
     const entries = this.drivers.map((d) => d.getAuditLog()).reduce((a, l) => a.concat(l), []);
 
-    for(const auditFormat of Object.keys(this.config.settings.auditLog)) {
+    for (const auditFormat of Object.keys(this.config.settings.auditLog)) {
       const auditConfig = this.config.settings.auditLog[auditFormat];
       switch (auditFormat.toLowerCase()) {
         case 'csv':
@@ -150,7 +152,7 @@ export class AccountRevolver {
   }
 
   async logResources(): Promise<void> {
-    for(const logFormat of Object.keys(this.config.settings.resourceLog)) {
+    for (const logFormat of Object.keys(this.config.settings.resourceLog)) {
       const resourceLogConfig = this.config.settings.resourceLog[logFormat];
       switch (logFormat.toLowerCase()) {
         case 'json':
@@ -160,7 +162,12 @@ export class AccountRevolver {
           new ResourceLogConsole(this.resources, this.config, resourceLogConfig?.reportTags).process();
           break;
         case 'csv':
-          new ResourceLogCsv(this.resources, this.config, resourceLogConfig?.file, resourceLogConfig?.reportTags).process();
+          new ResourceLogCsv(
+            this.resources,
+            this.config,
+            resourceLogConfig?.file,
+            resourceLogConfig?.reportTags,
+          ).process();
           break;
         default:
           logger.warn(`no implementation for resource log format ${logFormat}`);

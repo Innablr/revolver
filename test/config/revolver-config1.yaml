@@ -11,7 +11,7 @@ defaults:
         file: resources.json
       csv:
         file: resources.csv
-        reportTags: ["Name", "Schedule"]
+        reportTags: ['Name', 'Schedule']
     auditLog:
       csv:
         file: 'audit.csv'
@@ -22,7 +22,6 @@ defaults:
     - name: ec2
       # active: true
       # pretend: false
-
 
   plugins:
     powercycle:
@@ -38,30 +37,30 @@ defaults:
           availabilityTagPriority: 5
           matchers:
             - name: shorthand
-              schedule: "0x7"
+              schedule: '0x7'
               priority: 1
               filter:
-                - accountId: ["554096786507","9876"]
-                - resource: ["InstanceType|\\.\\d{0,2}x?large", "InstanceType|t2.micro"]
-                - tag: ["CostCenter|5678", "category|workload"]
+                - accountId: ['554096786507', '9876']
+                - resource: ["InstanceType|\\.\\d{0,2}x?large", 'InstanceType|t2.micro']
+                - tag: ['CostCenter|5678', 'category|workload']
             - name: longhand
-              schedule: "0x7"
+              schedule: '0x7'
               priority: 20
               filter:
                 and:
                   - or:
-                      - accountId: "1234"
-                      - accountId: "4567"
+                      - accountId: '1234'
+                      - accountId: '4567'
                   - tag:
-                      name: "CostCenter"
-                      value: "1234"
+                      name: 'CostCenter'
+                      value: '1234'
                   - resource:
-                      path: "InstanceType"
+                      path: 'InstanceType'
                       regexp: "\\.\\d{0,2}x?large"
             - name: no large instances
               filter:
                 resource: ["InstanceType||regexp|\\.\\d{0,2}x?large", "InstanceType||regexp|\\.metal\\-\\d{1,2}xl"]
-              schedule: "0x7"
+              schedule: '0x7'
               priority: 20
             - name: within australia
               filter:
@@ -74,27 +73,27 @@ defaults:
               filter:
                 and:
                   - tag:
-                      name: "CostCentre"
-                      value: "1234"
+                      name: 'CostCentre'
+                      value: '1234'
                   - type: ec2
               schedule: 24x7
               priority: 1
 
 organizations:
-  - accountId: "000000000000"
+  - accountId: '000000000000'
     settings:
       name: some-org-name
       stuff: 123 # ignored
       region: whatever # override default
       # revolverRoleName from defaults
-  - accountId: "111111111111"
+  - accountId: '111111111111'
     settings:
       region: eu-west-1
       name: eh-global-euw1
 
 accounts:
   includeList:
-    - accountId: "002222222222"
+    - accountId: '002222222222'
       settings:
         name: whatdev
   # excludeList: []

@@ -1,8 +1,7 @@
-import { ToolingInterface } from "../drivers/instrumentedResource";
-import { logger } from "./logger";
-import { writeFileSync } from "jsonfile";
-import { promises as fs } from "fs";
-
+import { ToolingInterface } from '../drivers/instrumentedResource';
+import { logger } from './logger';
+import { writeFileSync } from 'jsonfile';
+import { promises as fs } from 'fs';
 
 abstract class ResourceLog {
   protected readonly logger;
@@ -31,16 +30,17 @@ export class ResourceLogConsole extends ResourceLog {
       `${'TYPE'.padEnd(20)} ` +
       `${'ID'.padEnd(40)} ` +
       `${'STATE'.padEnd(10)} ` +
-      this.reportTags.map((tagName) => ` TAG:${tagName}`.padEnd(20)).reduce((a,i) => a+i, '')
-    const lines = this.entries.map((r) =>
+      this.reportTags.map((tagName) => ` TAG:${tagName}`.padEnd(20)).reduce((a, i) => a + i, '');
+    const lines = this.entries.map(
+      (r) =>
         `${(r.accountId || '').padEnd(16)} ` +
         `${(this.accountConfig.settings.name || '').padEnd(16)} ` +
         `${(r.region || '').padEnd(20)} ` +
         `${(r.resourceType || '').padEnd(20)} ` +
         `${r.resourceId.padEnd(40)} ` +
         `${r.resourceState.padEnd(10)} ` +
-      this.reportTags.map((tagName) => ` ${r.tag(tagName) || ''}`.padEnd(20)).reduce((a,i) => a+i, '')
-    )
+        this.reportTags.map((tagName) => ` ${r.tag(tagName) || ''}`.padEnd(20)).reduce((a, i) => a + i, ''),
+    );
     this.logger.info('Resources log follows');
     this.logger.info(`\n${[header].concat(lines).join('\n')}\n`);
   }
@@ -74,21 +74,22 @@ export class ResourceLogCsv extends ResourceLog {
       'TYPE,' +
       'ID,' +
       'STATE' +
-      this.reportTags.map((tagName) => `,TAG:${tagName}`).reduce((a,i) => a+i, '')
-    const lines = this.entries.map((r) =>
+      this.reportTags.map((tagName) => `,TAG:${tagName}`).reduce((a, i) => a + i, '');
+    const lines = this.entries.map(
+      (r) =>
         `${r.accountId || ''},` +
         `${this.accountConfig.settings.name || ''},` +
         `${r.region || ''},` +
         `${r.resourceType || ''},` +
         `${r.resourceId},` +
         `${r.resourceState}` +
-      this.reportTags.map((tagName) => `,${r.tag(tagName) || ''}`).reduce((a,i) => a+i, '')
+        this.reportTags.map((tagName) => `,${r.tag(tagName) || ''}`).reduce((a, i) => a + i, ''),
     );
 
     this.logger.info(`Writing resources to ${this.outputFile}`);
     fs.open(this.outputFile, 'w').then(async (f) => {
       await f.write(`${header}\n`);
-      for(const l of lines) {
+      for (const l of lines) {
         await f.write(`${l}\n`);
       }
     });

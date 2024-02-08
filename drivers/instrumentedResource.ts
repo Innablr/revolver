@@ -23,12 +23,16 @@ export abstract class ToolingInterface implements InstrumentedResource {
   addAction(action: RevolverAction) {
     // If we are already doing this action, don't add it again
     if (this.actions.some((xa) => xa.like(action))) {
-      logger.warn(`Not adding action ${action.what} on ${this.resourceType} ${this.resourceId} as there is already an action doing exactly that`);
+      logger.warn(
+        `Not adding action ${action.what} on ${this.resourceType} ${this.resourceId} as there is already an action doing exactly that`,
+      );
       return;
     }
     // If we are doing an action that changes state, don't add any more actions that also change state
     if (action.changesState && this.actions.some((xa) => xa.changesState)) {
-      logger.warn(`Not adding action ${action.what} on ${this.resourceType} ${this.resourceId} as there is already actions changing resource state.`);
+      logger.warn(
+        `Not adding action ${action.what} on ${this.resourceType} ${this.resourceId} as there is already actions changing resource state.`,
+      );
       return;
     }
     // Try and see if we already have an action that can swallow this one

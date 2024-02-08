@@ -31,7 +31,9 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
           break;
         case 'stop':
           if (utcTimeNow.diff(resource.launchTimeUtc, 'minutes') > Duration.fromObject({ minutes: 30 })) {
-            resource.addAction(new StopAction(this, `${resource.resourceType} ${resource.resourceId} tag ${tag} is missing`));
+            resource.addAction(
+              new StopAction(this, `${resource.resourceType} ${resource.resourceId} tag ${tag} is missing`),
+            );
           } else {
             resource.addAction(
               new NoopAction(
@@ -141,7 +143,9 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
           }
           return;
         }
-        this.logger.debug(`${this.name}: ${resource.resourceType} ${resource.resourceId} tag [${xa}] = [${tag}], validation successful, removing warning tag`);
+        this.logger.debug(
+          `${this.name}: ${resource.resourceType} ${resource.resourceId} tag [${xa}] = [${tag}], validation successful, removing warning tag`,
+        );
         resource.addAction(new UnsetTagAction(this, `Warning${xa}`));
       }
     });

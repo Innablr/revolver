@@ -64,21 +64,27 @@ describe('Strict parser handles availability windows', async function () {
       it(`stop at ${timePoints[c]}`, function () {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('STOP');
-        expect(reason).to.equal(`It's ${timePoints[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 all week`);
+        expect(reason).to.equal(
+          `It's ${timePoints[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 all week`,
+        );
       });
     });
     ['monday630', 'monday631', 'monday1330', 'monday1530', 'monday1729'].forEach(function (c) {
       it(`start at ${timePoints[c]}`, function () {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('START');
-        expect(reason).to.equal(`It's ${timePoints[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 all week`);
+        expect(reason).to.equal(
+          `It's ${timePoints[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 all week`,
+        );
       });
     });
     ['monday1730', 'monday1731', 'monday2130', 'tuesday0000', 'tuesday0100', 'tuesday0400'].forEach(function (c) {
       it(`stop at ${timePoints[c]}`, function () {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('STOP');
-        expect(reason).to.equal(`It's ${timePoints[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 all week`);
+        expect(reason).to.equal(
+          `It's ${timePoints[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 all week`,
+        );
       });
     });
   });
@@ -88,21 +94,27 @@ describe('Strict parser handles availability windows', async function () {
       it(`start at ${timePoints[c]}`, function () {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('START');
-        expect(reason).to.equal(`It's ${timePoints[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 all week`);
+        expect(reason).to.equal(
+          `It's ${timePoints[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 all week`,
+        );
       });
     });
     ['monday630', 'monday631', 'monday1330', 'monday1530', 'monday1729'].forEach(function (c) {
       it(`stop at ${timePoints[c]}`, function () {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('STOP');
-        expect(reason).to.equal(`It's ${timePoints[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 all week`);
+        expect(reason).to.equal(
+          `It's ${timePoints[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 all week`,
+        );
       });
     });
     ['monday1730', 'monday1731', 'monday2130', 'tuesday0000', 'tuesday0100', 'tuesday0400'].forEach(function (c) {
       it(`not start at ${timePoints[c]}`, function () {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('START');
-        expect(reason).to.equal(`It's ${timePoints[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 all week`);
+        expect(reason).to.equal(
+          `It's ${timePoints[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 all week`,
+        );
       });
     });
   });
@@ -114,7 +126,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 mon-fri`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 mon-fri`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -123,7 +137,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday start at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('START');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 mon-fri`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 mon-fri`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -132,7 +148,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday start at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('START');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 mon-fri`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 mon-fri`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -141,7 +159,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 mon-fri`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 mon-fri`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -150,7 +170,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekend stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 mon-fri`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 mon-fri`,
+          );
         });
       });
   });
@@ -162,7 +184,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -171,7 +195,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -180,7 +206,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -189,7 +217,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -198,7 +228,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -207,7 +239,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('START');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -216,7 +250,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('START');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -225,7 +261,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 6:30 till 17:30 fri-mon`,
+          );
         });
       });
   });
@@ -237,7 +275,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday start at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('START');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -246,7 +286,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -255,7 +297,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -264,14 +308,18 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday start at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('START');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`,
+          );
         });
       });
     ['saturday100', 'saturday625'].forEach(function (c) {
       it(`weekend start at ${timePointsDays[c]}`, function () {
         const [action, reason] = strictParser(tag, timePointsDays[c]);
         expect(action).to.equal('START');
-        expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`);
+        expect(reason).to.equal(
+          `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`,
+        );
       });
     });
     ['saturday635', 'saturday1725', 'saturday1735', 'sunday100', 'sunday625', 'sunday635', 'sunday1725'].forEach(
@@ -279,7 +327,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekend stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`,
+          );
         });
       },
     );
@@ -287,7 +337,9 @@ describe('Strict parser handles availability windows', async function () {
       it(`weekend start at ${timePointsDays[c]}`, function () {
         const [action, reason] = strictParser(tag, timePointsDays[c]);
         expect(action).to.equal('START');
-        expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`);
+        expect(reason).to.equal(
+          `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 mon-fri`,
+        );
       });
     });
   });
@@ -297,21 +349,27 @@ describe('Strict parser handles availability windows', async function () {
       it(`weekday start at ${timePointsDays[c]}`, function () {
         const [action, reason] = strictParser(tag, timePointsDays[c]);
         expect(action).to.equal('START');
-        expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`);
+        expect(reason).to.equal(
+          `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`,
+        );
       });
     });
     ['monday635', 'monday1725', 'tuesday635', 'tuesday1725'].forEach(function (c) {
       it(`weekday stop at ${timePointsDays[c]}`, function () {
         const [action, reason] = strictParser(tag, timePointsDays[c]);
         expect(action).to.equal('STOP');
-        expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`);
+        expect(reason).to.equal(
+          `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`,
+        );
       });
     });
     ['tuesday2355', 'wednesday100', 'wednesday625'].forEach(function (c) {
       it(`weekend start at ${timePointsDays[c]}`, function () {
         const [action, reason] = strictParser(tag, timePointsDays[c]);
         expect(action).to.equal('START');
-        expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`);
+        expect(reason).to.equal(
+          `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`,
+        );
       });
     });
     ['wednesday635', 'wednesday1725', 'wednesday1735', 'thursday625', 'thursday635', 'thursday1725'].forEach(
@@ -319,7 +377,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekend stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`,
+          );
         });
       },
     );
@@ -327,7 +387,9 @@ describe('Strict parser handles availability windows', async function () {
       it(`weekend start at ${timePointsDays[c]}`, function () {
         const [action, reason] = strictParser(tag, timePointsDays[c]);
         expect(action).to.equal('START');
-        expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`);
+        expect(reason).to.equal(
+          `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`,
+        );
       });
     });
     Object.keys(timePointsDays)
@@ -336,7 +398,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday start at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('START');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -345,7 +409,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -354,7 +420,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday stop at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`,
+          );
         });
       });
     Object.keys(timePointsDays)
@@ -363,7 +431,9 @@ describe('Strict parser handles availability windows', async function () {
         it(`weekday start at ${timePointsDays[c]}`, function () {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('START');
-          expect(reason).to.equal(`It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`);
+          expect(reason).to.equal(
+            `It's ${timePointsDays[c].toFormat(reasonDateFormat)}, availability is from 17:30 till 6:30 fri-tue`,
+          );
         });
       });
   });
