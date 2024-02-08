@@ -7,7 +7,11 @@ defaults:
     organizationRoleName: AWSOrganizationsReadOnly
     revolverRoleName: ssPowerCycle
     resourceLog:
-      json: resources.json
+      json:
+        file: resources.json
+      csv:
+        file: resources.csv
+        reportTags: ["Name", "Schedule"]
     auditLog:
       csv:
         file: 'audit.csv'

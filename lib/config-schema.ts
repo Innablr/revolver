@@ -54,9 +54,16 @@ const Settings = z.object({
     organizationRoleName: z.string(),
     revolverRoleName: z.string(),
     resourceLog: z.object({
-      json: z.string().optional(),
-      csv: z.string().optional(),
-      console: z.null().optional(),
+      json: z.object({
+        file: z.string(),
+      }).optional(),
+      csv: z.object({
+        file: z.string(),
+        reportTags: z.array(z.string()).optional(),
+      }).optional(),
+      console: z.null().or(z.object({
+        reportTags: z.array(z.string()).optional()
+      })).optional(),
     }).optional(),
     localResourcesFile: z.string().optional(),
     auditLog: z.object({

@@ -140,13 +140,13 @@ export class AccountRevolver {
       const resourceLogConfig = this.config.settings.resourceLog[logFormat];
       switch (logFormat.toLowerCase()) {
         case 'json':
-          new ResourceLogJson(this.resources, this.config, resourceLogConfig as string).process();
+          new ResourceLogJson(this.resources, this.config, resourceLogConfig?.file).process();
           break;
         case 'console':
-          new ResourceLogConsole(this.resources, this.config).process();
+          new ResourceLogConsole(this.resources, this.config, resourceLogConfig?.reportTags).process();
           break;
         case 'csv':
-          new ResourceLogCsv(this.resources, this.config, resourceLogConfig as string).process();
+          new ResourceLogCsv(this.resources, this.config, resourceLogConfig?.file, resourceLogConfig?.reportTags).process();
           break;
         default:
           logger.warn(`no implementation for resource log format ${logFormat}`);

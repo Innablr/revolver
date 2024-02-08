@@ -18,8 +18,10 @@ abstract class ResourceLog {
 }
 
 export class ResourceLogConsole extends ResourceLog {
-  constructor(entries: ToolingInterface[], accountConfig: any) {
+  private readonly reportTags: string[];
+  constructor(entries: ToolingInterface[], accountConfig: any, reportTags: string[]) {
     super(entries, accountConfig);
+    this.reportTags = reportTags || [];
   }
   process(): void {
     const header =
@@ -28,14 +30,16 @@ export class ResourceLogConsole extends ResourceLog {
       `${'REGION'.padEnd(20)} ` +
       `${'TYPE'.padEnd(20)} ` +
       `${'ID'.padEnd(40)} ` +
-      `${'STATE'}`;
+      `${'STATE'.padEnd(10)} ` +
+      this.reportTags.map((tagName) => ` TAG:${tagName}`.padEnd(20)).reduce((a,i) => a+i, '')
     const lines = this.entries.map((r) =>
         `${(r.accountId || '').padEnd(16)} ` +
         `${(this.accountConfig.settings.name || '').padEnd(16)} ` +
         `${(r.region || '').padEnd(20)} ` +
         `${(r.resourceType || '').padEnd(20)} ` +
         `${r.resourceId.padEnd(40)} ` +
-        `${r.resourceState}`
+        `${r.resourceState.padEnd(10)} ` +
+      this.reportTags.map((tagName) => ` ${r.tag(tagName) || ''}`.padEnd(20)).reduce((a,i) => a+i, '')
     )
     this.logger.info('Resources log follows');
     this.logger.info(`\n${[header].concat(lines).join('\n')}\n`);
@@ -56,25 +60,29 @@ export class ResourceLogJson extends ResourceLog {
 
 export class ResourceLogCsv extends ResourceLog {
   private readonly outputFile;
-  constructor(entries: ToolingInterface[], accountConfig: any, outputFile: string) {
+  private readonly reportTags: string[];
+  constructor(entries: ToolingInterface[], accountConfig: any, outputFile: string, reportTags: string[]) {
     super(entries, accountConfig);
     this.outputFile = outputFile;
+    this.reportTags = reportTags || [];
   }
   process(): void {
     const header =
       'ACCOUNT_ID,' +
-      'ACCOUNT_NAME' +
+      'ACCOUNT_NAME,' +
       'REGION,' +
       'TYPE,' +
       'ID,' +
-      'STATE';
+      'STATE' +
+      this.reportTags.map((tagName) => `,TAG:${tagName}`).reduce((a,i) => a+i, '')
     const lines = this.entries.map((r) =>
         `${r.accountId || ''},` +
         `${this.accountConfig.settings.name || ''},` +
         `${r.region || ''},` +
         `${r.resourceType || ''},` +
         `${r.resourceId},` +
-        `${r.resourceState}`
+        `${r.resourceState}` +
+      this.reportTags.map((tagName) => `,${r.tag(tagName) || ''}`).reduce((a,i) => a+i, '')
     );
 
     this.logger.info(`Writing resources to ${this.outputFile}`);
