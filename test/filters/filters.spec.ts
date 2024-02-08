@@ -49,6 +49,7 @@ const basicEc2 = {
   tags: {
     Schedule: '24x7',
     CostCenter: 'Primary-1234',
+    Name: 'app-server-1',
   },
   resource: {
     InstanceType: 't2.small',
@@ -148,6 +149,22 @@ const filterTests = [
       { name: 'no match default', filter: { accountId: '999999999999' }, resource: basicRds, matches: false },
       { name: 'no match regexp', filter: { accountId: 'regexp|^\\d{6}$' }, resource: basicRds, matches: false },
       { name: 'no match contains', filter: { accountId: 'contains|999' }, resource: basicRds, matches: false },
+    ],
+  },
+  {
+    name: 'name',
+    tests: [
+      { name: 'match default', filter: { name: 'app-server-1' }, resource: basicEc2, matches: true },
+      { name: 'match equals', filter: { name: 'equals|app-server-1' }, resource: basicEc2, matches: true },
+      { name: 'match contains', filter: { name: 'contains|server' }, resource: basicEc2, matches: true },
+      { name: 'match startswith', filter: { name: 'startswith|app' }, resource: basicEc2, matches: true },
+      { name: 'match endswith', filter: { name: 'endswith|-1' }, resource: basicEc2, matches: true },
+      { name: 'match regexp', filter: { name: 'regexp|^[a-z]+\\-[a-z]+\\-\\d$' }, resource: basicEc2, matches: true },
+      { name: 'no match default', filter: { name: 'db-server-1' }, resource: basicEc2, matches: false },
+      { name: 'no match regexp', filter: { name: 'regexp|\\d{2}$' }, resource: basicEc2, matches: false },
+      { name: 'no match contains', filter: { name: 'contains|db' }, resource: basicEc2, matches: false },
+      { name: 'no match no tag', filter: { name: 'contains|' }, resource: basicRds, matches: false },
+      { name: 'match tag exists', filter: { name: 'contains|' }, resource: basicEc2, matches: true },
     ],
   },
   {
