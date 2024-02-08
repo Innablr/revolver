@@ -323,13 +323,13 @@ If multiple matches filter the same resource, the matcher with the highest prior
 | parser                  | Set schedule interpretation format                                         | `strict`                                 | `strict`   |
 | availabilityTag         | Set tag name for individual resource schedules                             | `string` AWS tag name                    | `Schedule` |
 | availabilityTagPriority | Priority to set individually tagged schedules compared to the matchers.    | `number` >= 0                            | `0`        |
-| matchers                | List of resource filters paired with a schedule to control power behaviour | `Matcher[]` See [Matcher](######Matcher) | `[]`       |
+| matchers                | List of resource filters paired with a schedule to control power behaviour | `Matcher[]` See [Matcher](#####Matcher)  | `[]`       |
 
 ##### Matcher
 | Option   | Description                                                                 | Allowed values                                 | Default |
 |----------|-----------------------------------------------------------------------------|------------------------------------------------|---------|
 | name     | Name of the matcher, used in logging                                        | `string`                                       | -       |
-| filter   | Filter configuration to specify which resources this schedule will apply to | `Filter`. See [Filter](######Filter) section   | -       |
+| filter   | Filter configuration to specify which resources this schedule will apply to | `Filter`. See [Filter](#####Filter) section    | -       |
 | schedule | Resource power schedule, based on the format specified in plugin.parser     | `string`, See [strict](######strict) schedules | -       |
 | priority | How to rank this matcher against others, highest number is highest priority | `number` >= 0                                  | `0`     |
 
