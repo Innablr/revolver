@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { EC2Client, Tag, paginateDescribeInstances, paginateDescribeSnapshots, paginateDescribeVolumes } from '@aws-sdk/client-ec2';
-import { ToolingInterface } from './instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { DriverInterface } from './driverInterface';
 import { RevolverActionWithTags } from '../actions/actions';
 import { paginateAwsCall } from '../lib/common';
@@ -73,14 +73,14 @@ class SnapshotDriver extends DriverInterface {
 
   async collect() {
     const logger = this.logger;
-    logger.debug('Snapshot module collecting account: %j', this.accountConfig.name);
+    logger.debug(`Snapshot module collecting account: ${this.accountConfig.name}`);
 
     const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
     // const allEc2Iinstances = (await paginateAwsV3(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
     const snapshots = await paginateAwsCall(paginateDescribeSnapshots, ec2, 'Snapshots', {
       OwnerIds: [this.accountId],
     });
-    logger.debug('Snapshots %d found', snapshots.length);
+    logger.debug(`Snapshots ${snapshots.length} found`);
 
     const volumes = await paginateAwsCall(paginateDescribeVolumes, ec2, 'Volumes');
     const instances = (await paginateAwsCall(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
@@ -102,6 +102,10 @@ class SnapshotDriver extends DriverInterface {
 
     return snapshots.map((snapshot) => new InstrumentedSnapshot(snapshot));
   }
+  resource(obj: InstrumentedResource): ToolingInterface {
+    return new InstrumentedSnapshot(obj.resource);
+  }
+
 }
 
 export default SnapshotDriver;

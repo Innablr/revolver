@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { DescribeDBInstancesCommand, ListTagsForResourceCommand, RDSClient, StartDBInstanceCommand, StopDBInstanceCommand, Tag } from '@aws-sdk/client-rds';
-import { ToolingInterface } from './instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { rdsTagger } from './tags';
@@ -56,12 +56,11 @@ class RdsInstanceDriver extends DriverInterface {
       .then(function (rds) {
         return Promise.all(
           resources.map(function (xr) {
-            logger.info('RDS instance %s will start', xr.resourceId);
+            logger.info(`RDS instance ${xr.resourceId} will start`);
             return rds
               .send(new StartDBInstanceCommand({ DBInstanceIdentifier: xr.resourceId }))
               .catch(function (err) {
-                logger.error('Error starting RDS instance %s, stack trace will follow:', xr.resourceId);
-                logger.error(err);
+                logger.error(`Error starting RDS instance ${xr.resourceId}, stack trace will follow`, err);
               });
           }),
         );
@@ -99,13 +98,12 @@ class RdsInstanceDriver extends DriverInterface {
       return Promise.all(
         resources.map(function (xr) {
           if (xr.resource.DBInstanceStatus !== 'available') {
-            logger.info("RDS instance %s can't be stopped, status [%s]", xr.resourceId, xr.resource.DBInstanceStatus);
+            logger.info(`RDS instance xr.resourceId can't be stopped, status [${xr.resource.DBInstanceStatus}]`);
             return Promise.resolve();
           }
-          logger.info('RDS instance %s will stop', xr.resourceId);
+          logger.info(`RDS instance ${xr.resourceId} will stop`);
           return rds.send(new StopDBInstanceCommand({ DBInstanceIdentifier: xr.resourceId })).catch(function (err) {
-            logger.error('Error stopping RDS instance %s, stack trace will follow:', xr.resourceId);
-            logger.error(err);
+            logger.error(`Error stopping RDS instance ${xr.resourceId}, stack trace will follow`, err);
           });
         }),
       );
@@ -138,11 +136,7 @@ class RdsInstanceDriver extends DriverInterface {
   }
 
   noop(resources: InstrumentedRdsInstance[], action: RevolverAction) {
-    this.logger.info(
-      'RDS instances %j will noop because: %s',
-      resources.map((xr) => xr.resourceId),
-      action.reason,
-    );
+    this.logger.info(`RDS instances ${resources.map((xr) => xr.resourceId)} will noop because: ${action.reason}`);
     return Promise.resolve();
   }
 
@@ -166,7 +160,7 @@ class RdsInstanceDriver extends DriverInterface {
 
   collect() {
     const logger = this.logger;
-    logger.debug('RDS module collecting account: %j', this.accountConfig.name);
+    logger.debug(`RDS module collecting account: this.accountConfig.name`);
     return getAwsClientForAccount(RDSClient, this.accountConfig)
       .then((rds) => rds.send(new DescribeDBInstancesCommand({})))
       .then((r) => r.DBInstances!.map((xr) => new InstrumentedRdsInstance(xr)))
@@ -183,6 +177,9 @@ class RdsInstanceDriver extends DriverInterface {
           }),
         ),
       );
+  }
+  resource(obj: InstrumentedResource): ToolingInterface {
+    return new InstrumentedRdsInstance(obj.resource)
   }
 }
 

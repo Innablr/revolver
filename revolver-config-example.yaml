@@ -6,26 +6,68 @@ defaults:
     timezoneTag: Timezone
     organizationRoleName: AWSOrganizationsReadOnly
     revolverRoleName: ssPowerCycle
-    saveResources: resources.json
+    resourceLog:
+      json:
+        file: "resources.json"
+      csv:
+        file: "resources.csv"
+        reportTags: ["Name", "Schedule"]
+      console:
+        reportTags: ["Name", "Schedule"]
+    localResourcesFile: local-resources.json
+    auditLog:
+      console:
+      csv:
+        file: "audit.csv"
+        append: true
+    excludeResources:
+      - tag:
+          name: "Schedule"
+          contains: "ignore"
+      - region: "us-east-1"
 
   drivers:
     - name: ec2
       active: true
       pretend: false
     - name: ebs
-      active: true
-      pretend: false
     - name: snapshot
-      active: true
-      pretend: false
     - name: rdsInstance
-      active: true
-      pretend: false
     - name: rdsCluster
-      active: true
-      pretend: false
 
   plugins:
+    powercycleCentral:
+      active: true
+      configs:
+        - parser: strict
+          availabilityTag: Schedule
+          availabilityTagPriority: 5
+          matchers:
+            - name: default tagged schedule
+              filter:
+                - tag: ["CostCentre||value|1234", "CostCentre|4567"]
+                - type: ec2
+                - resource: "Placement.AvailabilityZone||contains|ap-southeast"
+              schedule: 24x7
+              priority: 1
+            - name: no large instances
+              filter:
+                or:
+                  - resource:
+                      path: "InstanceType"
+                      regexp: "\\.\\d{0,2}x?large"
+                  - resource:
+                      path: "InstanceType"
+                      regexp: "\\.metal\\-\\d{1,2}xl"
+              schedule: "0x7"
+              priority: 20
+            - name: within australia
+              filter:
+                resource:
+                  path: "Placement.AvailabilityZone | contains(@, 'ap-southeast')"
+                  value: true
+              schedule: 24x5
+              priority: 10
     powercycle:
       active: true
       configs:
@@ -57,11 +99,11 @@ defaults:
           tagNotMatch: []
 
 organizations:
-  - accountId: 000000000000
+  - accountId: "000000000000"
     settings:
       region: ap-southeast-2
       name: eh-global-apse2
-  - accountId: 111111111111
+  - accountId: "111111111111"
     settings:
       region: eu-west-1
       name: eh-global-euw1
@@ -71,6 +113,7 @@ accounts:
     - accountId: '222222222222'
       settings:
         name: whatdev
+        revolverRoleName: powerCycleRole
   excludeList:
     - accountId: '333333333333'
       settings:

@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { AutoScalingClient, ResumeProcessesCommand, SuspendProcessesCommand, paginateDescribeAutoScalingGroups } from '@aws-sdk/client-auto-scaling';
-import { CreateVolumeCommandOutput, Instance, Tag, EC2Client, StartInstancesCommand, StopInstancesCommand, paginateDescribeInstances } from '@aws-sdk/client-ec2';
-import { ToolingInterface } from './instrumentedResource';
+import { Instance, Tag, EC2Client, StartInstancesCommand, StopInstancesCommand, paginateDescribeInstances } from '@aws-sdk/client-ec2';
+import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { chunkArray, paginateAwsCall } from '../lib/common';
@@ -11,7 +11,7 @@ import { getAwsClientForAccount } from '../lib/awsConfig';
 class InstrumentedEc2 extends ToolingInterface {
   private instanceARN: string;
 
-  constructor(resource: CreateVolumeCommandOutput, instanceARN: string) {
+  constructor(resource: Instance, instanceARN: string) {
     super(resource);
     this.instanceARN = instanceARN;
   }
@@ -84,10 +84,7 @@ class Ec2Driver extends DriverInterface {
 
     await Promise.all(
       resourceChunks.map(async function (chunk) {
-        logger.info(
-          'EC2 instances %j will start',
-          chunk.map((xr) => xr.resourceId),
-        );
+        logger.info(`EC2 instances ${chunk.map((xr) => xr.resourceId)} will start`);
         return ec2.send(new StartInstancesCommand({
           InstanceIds: chunk.map((xr) => xr.resourceId),
         }));
@@ -98,9 +95,9 @@ class Ec2Driver extends DriverInterface {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       await Promise.all(
         asgs.map(function (xa: string) {
-          logger.info('Resuming ASG %s', xa);
+          logger.info(`Resuming ASG ${xa}`);
           return autoscaling.send(new ResumeProcessesCommand({ AutoScalingGroupName: xa })).catch((e) => {
-            logger.error('Autoscaling group %s failed to resume: %s', xa, e);
+            logger.error(`Autoscaling group ${xa} failed to resume`, e);
           });
         }),
       );
@@ -132,19 +129,16 @@ class Ec2Driver extends DriverInterface {
 
     await Promise.all(
       asgs.map(function (xa: string) {
-        logger.info('Pausing ASG %s', xa);
+        logger.info(`Pausing ASG ${xa}`);
         return autoscaling.send(new SuspendProcessesCommand({ AutoScalingGroupName: xa })).catch((e) => {
-          logger.error('Autoscaling group %s failed to resume: %s', xa, e);
+          logger.error(`Autoscaling group ${xa} failed to resume`, e);
         });
       }),
     );
 
     await Promise.all(
       resourceChunks.map(async function (chunk) {
-        logger.info(
-          'EC2 instances %j will stop',
-          chunk.map((xr) => xr.resourceId),
-        );
+        logger.info(`EC2 instances ${chunk.map((xr) => xr.resourceId)} will stop`);
         return ec2.send(new StopInstancesCommand({
           InstanceIds: chunk.map((xr) => xr.resourceId),
         }));
@@ -155,11 +149,7 @@ class Ec2Driver extends DriverInterface {
   }
 
   noop(resources: InstrumentedEc2[], action: RevolverAction) {
-    this.logger.info(
-      'EC2 instances %j will noop because: %s',
-      resources.map((xr) => xr.resourceId),
-      action.reason,
-    );
+    this.logger.info(`EC2 instances ${resources.map((xr) => xr.resourceId)} will noop because: ${action.reason}`);
     return Promise.resolve();
   }
 
@@ -186,7 +176,7 @@ class Ec2Driver extends DriverInterface {
   async collect() {
     const logger = this.logger;
     const inoperableStates = ['terminated', 'shutting-down'];
-    logger.debug('EC2 module collecting account: %j', this.accountConfig.name);
+    logger.debug(`EC2 module collecting account: ${this.accountConfig.name}`);
 
     const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
     const autoscaling = await getAwsClientForAccount(AutoScalingClient, this.accountConfig);
@@ -196,7 +186,7 @@ class Ec2Driver extends DriverInterface {
     );
     const ec2Instances = allEc2Iinstances.filter(function (xi) {
       if (inoperableStates.find((x) => x === xi.State.Name)) {
-        logger.info('EC2 instance %s state %s is inoperable', xi.InstanceId, xi.State.Name);
+        logger.info(`EC2 instance ${xi.InstanceId} state ${xi.State.Name} is inoperable`);
         return false;
       }
       return true;
@@ -218,6 +208,10 @@ class Ec2Driver extends DriverInterface {
       (xi) =>
         new InstrumentedEc2(xi, `arn:aws:ec2:${this.accountConfig.region}:${this.accountId}:volume/${xi.InstanceId}`),
     );
+  }
+
+  resource(obj: InstrumentedResource): ToolingInterface {
+    return new InstrumentedEc2(obj.resource, obj.resourceArn)
   }
 }
 

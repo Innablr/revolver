@@ -52,12 +52,14 @@ Revolver reads some of the low-level configuration from environment variables an
 
 #### Environment variables
 
-| Variable    | Description                               | Default |
-|-------------|-------------------------------------------|---------|
-| S3_BUCKET   | S3 bucket where the config file is stored | -       |
-| S3_KEY      | S3 key of the config file                 | -       |
-| DEBUG_LEVEL | Log level                                 | info    |
-| LOG_FORMAT  | Log format                                | pretty  |
+|Variable|Description|Default|
+|-|-|-|
+|S3_BUCKET|S3 bucket where the config file is stored|-|
+|S3_KEY|S3 key of the config file|-|
+|LOG_LEVEL|Log level|debug|
+|LOG_FORMAT|Log format|pretty|
+|STYLE_PRETTY_LOGS|Defines whether logs should be styled and colorized|true|
+|PRETTY_LOG_TIME_ZONE|Set timezone of pretty log messages to either UTC (default) or local (based on your server/browser configuration)|-|
 
 In addition to that you can use:
 
@@ -70,15 +72,22 @@ Main Revolver configuration is done in YAML. First line in the config file must 
 
 1. Section `defaults` defines default behavior for all accounts. Settings in this section can be overriden in the accounts section
 
-    | Option name            | Description                                                                                | Default  |
-    |------------------------|--------------------------------------------------------------------------------------------|----------|
-    | region                 | Specifies the default AWS region                                                           | -        |
-    | timezone               | Specifies the default time zone                                                            | -        |
-    | timezoneTag            | Revolver will read this tag on individual resources to override account-wide timezone      | Timezone |
-    | organization_role_name | Role to be assumed on the main account from organizations to get the accounts list from it | -        |
-    | revolver_role_name     | Revolver role name to be assumed on each client account                                    | -        |
-    | drivers                | List of enabled drivers and their options (see Drivers)                                    | -        |
-    | plugins                | List of enabled plugins with their options (see Plugins)                                   | -        |
+
+  | Option name          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Default  |
+  |----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+  | region               | Specifies the default AWS region                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | -        |
+  | timezone             | Specifies the default time zone                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | utc      |
+  | timezoneTag          | Revolver will read this tag on individual resources to override account-wide timezone                                                                                                                                                                                                                                                                                                                                                                                                                   | Timezone |
+  | organizationRoleName | Role to be assumed on the main account from organizations to get the accounts list from it. Set to `none` to disable for offline testing.                                                                                                                                                                                                                                                                                                                                                               | -        |
+  | revolverRoleName     | Revolver role name to be assumed on each client account. Set to `none` to disable for offline testing.                                                                                                                                                                                                                                                                                                                                                                                                  | -        |
+  | resourceLog          | Output discovered resources to file or console. Accepts a map of enabled resource log types. `json` requires a field `file` and will write a complete JSON of all discovered resources with all fields. `csv` requires field `file` and will write a CSV of discovered resources with a much smaller field set. `console` will write output similar to the CSV but in the logger. Both `csv` and `console` support the optional field `reportTags` as an array of resource tags to report in the output | -        |
+  | localResourcesFile   | Read resources from a JSON file generated by `resourceLog.json`. Good for offline testing of configuration.                                                                                                                                                                                                                                                                                                                                                                                             | -        |
+  | auditLog             | Configure an audit log of actions performed on resources. `auditLog` accepts a map of enabled audit types. These include <br/>> `console` to print a log to the logger, no configuration accepted<br>> `csv` to write an audit log to a csv. Configuration for `csv` requires `file` field specifying the output file and an optional boolean `append` field to instead append to the file rather than overwriting.                                                                                     | -        |
+  | excludeResources     | Filter to match resources that should be completely excluded from processing (see [Filter](#####Filter)])                                                                                                                                                                                                                                                                                                                                                                                               | -        |
+  | drivers              | List of enabled drivers and their options (see Drivers)                                                                                                                                                                                                                                                                                                                                                                                                                                                 | -        |
+  | plugins              | List of enabled plugins with their options (see Plugins)                                                                                                                                                                                                                                                                                                                                                                                                                                                | -        |
+
+
 
     Example `defaults` section:
 
@@ -87,8 +96,21 @@ Main Revolver configuration is done in YAML. First line in the config file must 
       region: ap-southeast-2
       timezone: Australia/Melbourne
       timezoneTag: Timezone
-      organization_role_name: AWSOrganizationsReadOnly
-      revolver_role_name: ssPowerCycle
+      organizationRoleNme: AWSOrganizationsReadOnly
+      revolverRoleName: ssPowerCycle
+      resourceLog:
+        json:
+          file: resources.json
+        console:
+          reportTags: ["Name", "Schedule"]
+        csv:
+          file: resources.csv
+          reportTags: ["Name", "Schedule"]
+      auditLog:
+        console:
+        csv:
+          file: "audit.csv"
+          append: true
       drivers:
         - name: ec2
           active: true
@@ -167,7 +189,7 @@ Main Revolver configuration is done in YAML. First line in the config file must 
 
     Supported options are the same as `defaults`
 
-#### Drivers
+### Drivers
 
 Drivers define how to operate a particular type of AWS resource, how to stop or start it or set a tag.
 
@@ -190,7 +212,7 @@ Supported drivers:
 | rdsInstance | RDS instances                            |
 | rdsCluster  | RDS Aurora clusters                      |
 
-#### Plugins
+### Plugins
 
 Plugins define what needs to be done on AWS resources. Some plugins support only some types of AWS resources but not the others.
 
@@ -198,7 +220,7 @@ For every AWS resource plugins will be executed in the order they are listed in 
 
 `plugins` section in the config file is a dict where keys are plugin names. Every plugin can have a list of configs, every config is a dict with plugin-specific options.
 
-##### powercycle plugin
+#### powercycle plugin
 
 Starts AWS resources in the worktime and stops them after hours based on their tagging. Supports pluggable tagging formats.
 
@@ -224,7 +246,7 @@ plugins:
 
 Powercycle plugin supports the following tagging standards:
 
-###### strict
+##### strict
 
 Schedule is set as a string like `Start=8:00|mon-fri;Stop=16:30|mon-fri;Override=Off`. Start= specifies the startup time, Stop= is the stop time, both in 24h format.
 
@@ -242,7 +264,7 @@ There is also special values for the schedule tag:
 
 For RDS `|` and `;` must be replaces with `_` and '/' respectively as RDS does not support these characters in tags: `Start=08:00_mon-sat/Stop=17:55/Override=off`.
 
-##### validateTags plugin
+#### validateTags plugin
 
 This plugin will validate that a certain tag exist on AWS resources and optionally match the provided regular expression. If the tag is missing or does not match, the resource can be optionally shut down or set a warning tag or set the tag with a specified default value, or any combination of these actions.
 
@@ -285,4 +307,137 @@ This plugin will validate that a certain tag exist on AWS resources and optional
             - rdsInstance
             - rdsCluster
           tagNotMatch: []
+```
+
+#### powercycleCentral plugin
+_Incompatible with the powercycle plugin, do not run both at the same time_
+
+Controls the power cycle of resources matching configured filters within the configuration. Matchers are added in the configuration that specify
+a generic filter to match specific resources and what power schedule those resources should be on. Resources won't be tagged.
+
+If multiple matches filter the same resource, the matcher with the highest priority will be applied.
+
+##### Plugin config
+| Option                  | Description                                                                | Allowed values                           | Default    |
+|-------------------------|----------------------------------------------------------------------------|------------------------------------------|------------|
+| parser                  | Set schedule interpretation format                                         | `strict`                                 | `strict`   |
+| availabilityTag         | Set tag name for individual resource schedules                             | `string` AWS tag name                    | `Schedule` |
+| availabilityTagPriority | Priority to set individually tagged schedules compared to the matchers.    | `number` >= 0                            | `0`        |
+| matchers                | List of resource filters paired with a schedule to control power behaviour | `Matcher[]` See [Matcher](######Matcher) | `[]`       |
+
+##### Matcher
+| Option   | Description                                                                 | Allowed values                                 | Default |
+|----------|-----------------------------------------------------------------------------|------------------------------------------------|---------|
+| name     | Name of the matcher, used in logging                                        | `string`                                       | -       |
+| filter   | Filter configuration to specify which resources this schedule will apply to | `Filter`. See [Filter](######Filter) section   | -       |
+| schedule | Resource power schedule, based on the format specified in plugin.parser     | `string`, See [strict](######strict) schedules | -       |
+| priority | How to rank this matcher against others, highest number is highest priority | `number` >= 0                                  | `0`     |
+
+##### Filter
+Filters specify a set of criteria for a resource to match against. They are comprised of several filter objects than can be joined together with `AND` or `OR` operations.
+
+Filters can be specified as objects or as string arrays, utilizing the shorthand string format if the filter has more than one parameter.
+String values for filters can be put in an array to imply an `OR` operation over them.
+If the top level value is an array, an implicit `AND` is applied over all filters in the array.
+
+e.g. The following filters are identical.
+
+*Shorthand form*
+```yaml
+filter:
+  - type: ['ec2', 'rds']
+  - tag: 'CostCenter||contains|things'
+  - accountId: ['111111111111', '222222222222']
+```
+
+*Object form*
+```yaml
+filter:
+  and:
+    - or:
+        - type: 'ec2'
+        - type: 'rds'
+    - tag:
+        name: 'CostCenter'
+        contains: 'things'
+    - or:
+      - accountId: '111111111111'
+      - accountId: '222222222222'
+
+```
+
+
+| Filter Name | Value                                                            | Shorthand Examples                                                                                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                            |
+|-------------|------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| id          | `string`                                                         |                                                                                                                                                             | Matches resource ID exactly  (e.g i-1234..)                                                                                                                                                                                                                                                                                                                                                                                            |
+| state       | `string`                                                         |                                                                                                                                                             | Matches resource state exactly (running,stopped,...)                                                                                                                                                                                                                                                                                                                                                                                   |
+| tag         | `{ name string, value string \| contains string}`                | `TagName\|string`<br/>`TagName\|\|value\|string`<br/>`TagName\|\|contains\|string`                                                                          | Matches resource tag name exactly. Tag value either needs to exactly match `value` if set, or case-insensitively contain `contains` if it's set instead. Default shorthand setting is `value` if not specified.                                                                                                                                                                                                                        |
+| type        | `string`                                                         |                                                                                                                                                             | Matches resource type exactly  (ec2,rds,...)                                                                                                                                                                                                                                                                                                                                                                                           |
+| region      | `string`                                                         |                                                                                                                                                             | Matches resource region exactly  (ap-southeast-2, us-east-1,...)                                                                                                                                                                                                                                                                                                                                                                       |
+| accountId   | `string`                                                         |                                                                                                                                                             | Matches resource accountId exactly  (123456789012,...)                                                                                                                                                                                                                                                                                                                                                                                 |
+| resource    | `{ path string, value any \| regexp string \| contains string }` | `jmes.path.value\|string`<br/>`jmes.path.value\|\|value\|string`<br/>`jmes.path.value\|\|contains\|string`<br/> `jmes.path.value\|\|regexp\|some.\\d.regex` | Matches extra resource properties, specific to the resource type.`path` is a [jmespath](https://jmespath.org/ ), the value returned by jmespath either needs to match `value` exactly, match the regular expression in `regexp` or case-insensitively contain `contains` (non strings will be converted to strings for `contains`). Remember to escape backslashes for `regexp`. Default shorthand setting is `value` if not specified |
+| and         | `Filter[]`                                                       |                                                                                                                                                             | Matches when _all_ the filters within it match                                                                                                                                                                                                                                                                                                                                                                                         |
+| or          | `Filter[]`                                                       |                                                                                                                                                             | Matches when _any_ of the filters within match                                                                                                                                                                                                                                                                                                                                                                                         |
+| not         | `Filter`                                                         |                                                                                                                                                             | Matches when the filter within _doesn't_ match                                                                                                                                                                                                                                                                                                                                                                                         |
+| bool        | `true` or `false`                                                |                                                                                                                                                             | Matches when set to `true`, doesn't match otherwise                                                                                                                                                                                                                                                                                                                                                                                    |
+
+###### JMESPath
+[JMESPath](https://jmespath.org/) is a JSON path query language. It's used in revolver to query against detailed resource properties for filtering using the `resource` filter.
+
+To build out a JMESPath, enable the `resourceLog.json` configuration [in the configuration](####Config file) and run revolver with the drivers on `pretend` (to avoid state changes).
+This will generate a JSON of all resources. Use this json with `jmespathTester.cjs` to try out different JMESPath queries against your resources.
+
+The tester script will print out each resource ID and the value that JMESPath returned for that resource.
+This can be used to determine both the `path` needed for your filter as well as what the `value` or `regexp` shoud be.
+e.g.
+```
+node jmespathTester.cjs resources.json "Placement.AvailabilityZone"
+i-09e1c1230e028b62c
+"ap-southeast-2c"
+i-0bca8d130f9e74ec9
+"ap-southeast-2c"
+...
+```
+
+Notes
+* JMESPath uses single quotes for strings
+* numbers, booleans and strings can be outputted
+
+
+##### Example configuration
+```yaml
+   plugins:
+     powercycleCentral:
+       active: true
+       configs:
+         - parser: strict
+           availabilityTag: Schedule
+           availabilityTagPriority: 5
+           matchers:
+             - name: default tagged schedule
+               filter:
+                 - tag: ["CostCentre||value|1234", "CostCentre|4567"]
+                 - type: ec2
+                 - resource: "Placement.AvailabilityZone||contains|ap-southeast"
+               schedule: 24x7
+               priority: 1
+             - name: no large instances
+               filter:
+                 or:
+                   - resource:
+                       path: "InstanceType"
+                       regexp: "\\.\\d{0,2}x?large"
+                   - resource:
+                       path: "InstanceType"
+                       regexp: "\\.metal\\-\\d{1,2}xl"
+               schedule: "0x7"
+               priority: 20
+             - name: within australia
+               filter:
+                 resource:
+                   path: "Placement.AvailabilityZone | contains(@, 'ap-southeast')"
+                   value: true
+               schedule: 24x5
+               priority: 10
+
 ```

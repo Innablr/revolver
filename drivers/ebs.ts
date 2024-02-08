@@ -1,7 +1,7 @@
 import { CreateVolumeCommandOutput, EC2Client, Tag, paginateDescribeVolumes, paginateDescribeInstances } from '@aws-sdk/client-ec2';
 import { DateTime } from 'luxon';
 import { paginateAwsCall } from '../lib/common';
-import { ToolingInterface } from './instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { ec2Tagger } from './tags';
@@ -81,17 +81,13 @@ class EBSDriver extends DriverInterface {
   }
 
   noop(resources: InstrumentedEBS[], action: RevolverAction) {
-    this.logger.info(
-      'EBS volumes %j will noop because: %s',
-      resources.map((xr) => xr.resourceId),
-      action.reason,
-    );
+    this.logger.info(`EBS volumes ${resources.map((xr) => xr.resourceId)} will noop because: ${action.reason}`);
     return Promise.resolve();
   }
 
   async collect() {
     const logger = this.logger;
-    logger.debug('EBS module collecting account: %j', this.accountConfig.name);
+    logger.debug(`EBS module collecting account: ${this.accountConfig.name}`);
 
     const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
 
@@ -100,7 +96,7 @@ class EBSDriver extends DriverInterface {
       (xr) => xr.Instances,
     );
 
-    logger.debug('Found %d ebs volumes', ebsVolumes.length);
+    logger.debug(`Found ${ebsVolumes.length} ebs volumes`);
 
     for (const volume of ebsVolumes) {
       if (volume.State === 'in-use') {
@@ -113,6 +109,9 @@ class EBSDriver extends DriverInterface {
       (xe) =>
         new InstrumentedEBS(xe, `arn:aws:ec2:${this.accountConfig.region}:${this.accountId}:volume/${xe.VolumeId}`),
     );
+  }
+  resource(obj: InstrumentedResource): ToolingInterface {
+    return new InstrumentedEBS(obj.resource, obj.resourceArn)
   }
 }
 

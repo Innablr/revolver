@@ -1,13 +1,17 @@
 import { Logger } from 'tslog';
 import { logger, RevolverLogObject } from '../lib/logger';
-import { ToolingInterface } from './instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { RevolverAction } from '../actions/actions';
+import { ActionAuditEntry } from "../actions/audit";
+import { DateTime } from "luxon";
 
 export abstract class DriverInterface {
   protected accountConfig: any;
   protected driverConfig: any;
   protected accountId: string;
   protected logger: Logger<RevolverLogObject>;
+
+  protected actionAuditLog: ActionAuditEntry[];
 
   constructor(accountConfig: any, driverConfig: any) {
     this.accountConfig = accountConfig.settings;
@@ -18,6 +22,7 @@ export abstract class DriverInterface {
       { accountId: this.accountId, accountName: this.accountConfig.name, driverName: this.name },
     );
     this.logger.debug(`Initialising driver ${this.name} for account ${this.accountConfig.name}`);
+    this.actionAuditLog = [];
   }
 
   get name() {
@@ -29,17 +34,44 @@ export abstract class DriverInterface {
   }
 
   pretendAction(resources: ToolingInterface[], action: RevolverAction) {
-    this.logger.info(
-      'Pretending that %s resources %j will %s',
-      this.name,
-      resources.map((xr) => xr.resourceId),
-      action.present,
-    );
+    this.logger.info(`Pretending that ${this.name} resources ${resources.map((xr) => xr.resourceId)} will ${action.present}`);
   }
 
   initialise() {
     this.logger.info(`Driver ${this.name} is initialising...`);
     return Promise.resolve(this);
+  }
+
+  getAuditLog(): ActionAuditEntry[] {
+    return this.actionAuditLog;
+  }
+
+  private appendAuditLog(xa: RevolverAction, allWithAction: ToolingInterface[], status: string): void {
+    for (const ti of allWithAction) {
+      let plugin: string = xa.who.name;
+      let action: string = xa.what;
+      let reason: string = xa.reason;
+
+      // Find the specfic action for this resource as the plugin and reason may differ from xa
+      const ownAction = ti.actions.find((a) => xa.like(a) && a.done);
+      if (ownAction !== undefined) {
+        plugin = ownAction.who.name;
+        action = ownAction.what;
+        reason = ownAction.reason;
+      }
+
+      this.actionAuditLog.push({
+        accountId: ti.accountId || '',
+        time: DateTime.now(),
+        plugin: plugin,
+        driver: this.name,
+        resourceType: ti.awsResourceType || '',
+        resourceId: ti.resourceId,
+        action: action,
+        reason: reason,
+        status: status,
+      });
+    }
   }
 
   processActions(resources: ToolingInterface[]): Promise<any> {
@@ -60,17 +92,12 @@ export abstract class DriverInterface {
             if (typeof (this as any)[`mask${matchingAction.what}`] === 'function') {
               const reason = (this as any)[`mask${matchingAction.what}`](xxr, matchingAction);
               if (reason !== undefined) {
-                logger.debug(
-                  'Resource %s also has action %s, but it is masked because %s',
-                  xxr.resourceId,
-                  matchingAction.present,
-                  reason,
-                );
+                logger.debug(`Resource ${xxr.resourceId} also has action ${matchingAction.present}, but it is masked because ${reason}`);
                 matchingAction.done = true;
                 return false;
               }
             }
-            logger.debug('Resource %s also has action %s', xxr.resourceId, matchingAction.present);
+            logger.debug(`Resource ${xxr.resourceId} also has action ${matchingAction.present}`);
             matchingAction.done = true;
             return true;
           });
@@ -79,33 +106,26 @@ export abstract class DriverInterface {
             return null;
           }
 
+          logger.info(`${xa.who.name} will execute ${xa.present} on ${xr.resourceType} ${allWithAction.map((xxr) => xxr.resourceId)}`);
+
           if (this.driverConfig.pretend !== false) {
-            logger.info(
-              'Pretending that %s will execute %s on %s %j',
-              xa.who.name,
-              xa.present,
-              xr.resourceType,
-              allWithAction.map((xxr) => xxr.resourceId),
-            );
+            this.appendAuditLog(xa, allWithAction, 'pretend');
             return this.pretendAction(allWithAction, xa);
           }
 
-          logger.info(
-            '%s will execute %s on %s %j',
-            xa.who.name,
-            xa.present,
-            xr.resourceType,
-            allWithAction.map((xxr) => xxr.resourceId),
-          );
-          return (this as any)[xa.what](allWithAction, xa).catch((err: Error) => {
-            logger.error(
-              'Error in driver %s processing action [%s] on resources %j, stack trace will follow:',
-              this.name,
-              xa.present,
-              allWithAction.map((xxr) => xxr.resourceId),
-            );
-            logger.error(err);
-          });
+          if ((this as any)[xa.what] === undefined) {
+            logger.error(`Driver ${this.name} doesn't implement action ${xa.what}`);
+          }
+
+          return (this as any)[xa.what](allWithAction, xa)
+            .then(() => {
+              this.appendAuditLog(xa, allWithAction, 'success');
+            })
+            .catch((err: Error) => {
+              this.appendAuditLog(xa, allWithAction, err.message);
+              logger.error(`Error in driver ${this.name} processing action [${xa.present}] on resources ${allWithAction.map((xxr) => xxr.resourceId)}, stack trace will follow:`);
+              logger.error(err);
+            });
         });
         return o.concat(a.filter((xa) => xa));
       }, []),
@@ -113,4 +133,6 @@ export abstract class DriverInterface {
   }
 
   abstract collect(): Promise<ToolingInterface[]>;
+
+  abstract resource(obj: InstrumentedResource): ToolingInterface;
 }

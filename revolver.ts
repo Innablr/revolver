@@ -9,7 +9,7 @@ import assume from './lib/assume';
 
 export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Scheduled Event', ScheduledEvent>) => {
   const configMethods = new RevolverConfig();
-  logger.info('Starting revolver, got event %j', event);
+  logger.info('Starting revolver, got event', event);
 
   dateTime.freezeTime(event.time);
   logger.info(`Got time ${dateTime.getTime()}`);
@@ -25,7 +25,7 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   // Assume-role on each org (if any listed) and get the list of accounts from it
   const organisationCreds = await Promise.all(
     config.organizations.flatMap((xa: any) => {
-      logger.info('Getting list of accounts from %s organization..', xa.settings.name);
+      logger.info(`Getting list of accounts from ${xa.settings.name} organization..`);
       return assume
         .connectTo(`arn:aws:iam::${xa.accountId}:role/${xa.settings.organizationRoleName}`)
         .then((cred: any) => {
@@ -58,11 +58,7 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
     throw new Error('No accounts selected to run Revolver');
   }
 
-  logger.info(
-    'Revolver will run on %d account(s): %j',
-    authenticatedAccounts.length,
-    authenticatedAccounts.map((xa: any) => `${xa.settings.name}(${xa.account_id})`),
-  );
+  logger.info(`Revolver will run on ${authenticatedAccounts.length} account(s): ${authenticatedAccounts.map((xa: any) => `${xa.settings.name}(${xa.account_id})`)}`);
 
   const revolvers = authenticatedAccounts.map((account: any) => new AccountRevolver(account));
 

@@ -1,9 +1,13 @@
 import { DriverInterface } from '../drivers/driverInterface';
-import { ToolingInterface } from '../drivers/instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from '../drivers/instrumentedResource';
 import { RevolverPlugin } from '../plugins/pluginInterface';
 import { logger } from './logger';
-import * as path from 'path';
 import { writeFileSync } from 'jsonfile';
+import path from 'node:path';
+import { promises as fs } from 'fs';
+import { ActionAuditLogConsole, ActionAuditLogCSV } from '../actions/audit';
+import { ResourceLogJson, ResourceLogCsv, ResourceLogConsole } from './resourceLog';
+import { buildFilter } from '../plugins/filters/index';
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -15,7 +19,7 @@ export class AccountRevolver {
     'redshiftCluster',
     'redshiftClusterSnapshot',
   ];
-  readonly supportedPlugins = ['powercycle', 'validateTags', 'restoreRdsSg'];
+  readonly supportedPlugins = ['powercycle', 'powercycleCentral', 'validateTags', 'restoreRdsSg'];
 
   readonly config;
   readonly logger;
@@ -44,7 +48,7 @@ export class AccountRevolver {
       activePlugins.flatMap((xs: string) => {
         this.logger.info(`Configuring plugin ${xs}...`);
         return this.config.plugins[xs].configs.map(async (xp: any) => {
-          const PluginModule = await import(path.join('..', 'plugins', xs));
+          const PluginModule = await require(`../plugins/${xs}`);
           return new PluginModule['default'](this.config, xs, xp);
         });
       }),
@@ -55,7 +59,8 @@ export class AccountRevolver {
       this.config.drivers
         .filter((xd: any) => this.supportedDrivers.indexOf(xd.name) > -1)
         .map(async (xd: any) => {
-          const DriverModule = await import(path.join('..', 'drivers', xd.name));
+          this.logger.info(`Configuring driver ${xd.name}...`);
+          const DriverModule = await require(`../drivers/${xd.name}`);
           return new DriverModule.default(this.config, xd);
         }),
     );
@@ -68,8 +73,40 @@ export class AccountRevolver {
   }
 
   async loadResources(): Promise<void> {
+    const local = this.config.settings.localResourcesFile;
+    let localResources: InstrumentedResource[];
+    if (local !== undefined) {
+      this.logger.info(`Loading resources locally from ${local}`);
+      const resourcesFilePath = path.resolve(local);
+      const localResourcesStr = await fs.readFile(resourcesFilePath, { encoding: 'utf-8'});
+      localResources = JSON.parse(localResourcesStr);
+    }
+
     this.logger.info('Loading resources');
-    this.resources = (await Promise.all(this.drivers.map((xd) => xd.collect()))).flatMap((xr) => xr);
+    this.resources = (await Promise.all(this.drivers.map((xd) => {
+          if (local !== undefined) {
+            return localResources
+              .filter((res: InstrumentedResource) => res.resourceType === xd.name)
+              .map((res: InstrumentedResource) => xd.resource(res));
+          } else {
+            return xd.collect();
+          }
+        }),
+      )
+    ).flatMap((xr) => xr);
+
+    if (this.config.settings.excludeResources) {
+      const excludeFilter = await buildFilter(this.config.settings.excludeResources);
+
+      const excludedIndices = this.resources.map((resource) => excludeFilter.matches(resource))
+      this.resources = this.resources.filter((_resource, index) => {
+        return !excludedIndices[index];
+      });
+
+      if (excludedIndices.length - this.resources.length > 0) {
+        this.logger.info(`Excluding ${excludedIndices.length - this.resources.length} resources from processing`);
+      }
+    }
   }
 
   async saveResources(filename: string) {
@@ -93,14 +130,55 @@ export class AccountRevolver {
     );
   }
 
+  async logAudit(): Promise<void> {
+    this.logger.info('Processing action audit log');
+    const entries = this.drivers.map((d) => d.getAuditLog()).reduce((a, l) => a.concat(l), []);
+
+    for(const auditFormat of Object.keys(this.config.settings.auditLog)) {
+      const auditConfig = this.config.settings.auditLog[auditFormat];
+      switch (auditFormat.toLowerCase()) {
+        case 'csv':
+          new ActionAuditLogCSV(entries, this.config, path.resolve(auditConfig.file), auditConfig.append).process();
+          break;
+        case 'console':
+          new ActionAuditLogConsole(entries, this.config).process();
+          break;
+        default:
+          logger.warn(`no implementation for audit log format ${auditFormat}`);
+      }
+    }
+  }
+
+  async logResources(): Promise<void> {
+    for(const logFormat of Object.keys(this.config.settings.resourceLog)) {
+      const resourceLogConfig = this.config.settings.resourceLog[logFormat];
+      switch (logFormat.toLowerCase()) {
+        case 'json':
+          new ResourceLogJson(this.resources, this.config, resourceLogConfig?.file).process();
+          break;
+        case 'console':
+          new ResourceLogConsole(this.resources, this.config, resourceLogConfig?.reportTags).process();
+          break;
+        case 'csv':
+          new ResourceLogCsv(this.resources, this.config, resourceLogConfig?.file, resourceLogConfig?.reportTags).process();
+          break;
+        default:
+          logger.warn(`no implementation for resource log format ${logFormat}`);
+      }
+    }
+  }
+
   async revolve(): Promise<void> {
     try {
       await this.loadResources();
-      if (this.config.settings.saveResources) {
-        this.saveResources(this.config.settings.saveResources);
+      if (this.config.settings.resourceLog) {
+        await this.logResources();
       }
       await this.runPlugins();
       await this.runActions();
+      if (this.config.settings.auditLog) {
+        await this.logAudit();
+      }
     } catch (err) {
       this.logger.error(`Error processing account ${this.config.settings.name}, stack trace will follow:`);
       this.logger.error(err);

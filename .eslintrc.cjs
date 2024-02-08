@@ -14,7 +14,7 @@ module.exports = {
     'import/no-commonjs': 'warn',
     'import/no-amd': 'error',
     'import/no-absolute-path': 'error',
-    'prettier/prettier': ['error', { endOfLine: 'auto' }],
+    'prettier/prettier': ['warn', { endOfLine: 'auto' }],
     '@typescript-eslint/no-explicit-any': 'warn',
   },
   settings: {

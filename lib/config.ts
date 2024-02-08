@@ -5,29 +5,50 @@ import yaml from 'js-yaml';
 import { Organizations, paginateListAccounts } from '@aws-sdk/client-organizations';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { paginateAwsCall } from './common';
-import merge from 'ts-deepmerge';
+import { merge } from 'ts-deepmerge';
 import { getAwsConfig } from './awsConfig';
+import { ConfigSchema } from './config-schema';
+import {ZodError, ZodIssueCode, ZodInvalidUnionIssue, ZodInvalidArgumentsIssue, ZodInvalidReturnTypeIssue} from 'zod';
+
+
+function flattenZodErrors(ze: ZodError, depth: number): string[] {
+  let lines: string[] = []
+  for(const zi of ze.errors) {
+    const code = zi.code;
+    const path = zi.path.join('.');
+    const msg = zi.message;
+
+    lines.push(`${path} [${code}]: ${msg}`);
+
+    switch(zi.code) {
+      case ZodIssueCode.invalid_union:
+        lines = lines.concat((zi as ZodInvalidUnionIssue).unionErrors.map((e) => flattenZodErrors(e, depth+1)).reduce((a, s) => a.concat(s), []))
+        break;
+      case ZodIssueCode.invalid_arguments:
+        lines = lines.concat(flattenZodErrors((zi as ZodInvalidArgumentsIssue).argumentsError, depth+1))
+        break;
+      case ZodIssueCode.invalid_return_type:
+        lines = lines.concat(flattenZodErrors((zi as ZodInvalidReturnTypeIssue).returnTypeError, depth+1))
+        break;
+    }
+  }
+  return lines;
+}
 
 export class RevolverConfig {
   validateConfig(data: string) {
-    const config: any = yaml.load(data);
-    if (!Array.isArray(config.accounts.includeList)) {
-      throw new Error('Invalid configuration: "includeList" key is either missing or not an array');
+    try {
+      const config = ConfigSchema.parse(yaml.load(data));
+      logger.debug('Read Revolver config', config);
+      return config;
+    } catch(e: any) {
+      if (e instanceof ZodError) {
+        const ze = e as ZodError;
+        throw new Error(`ZodError: Failed to parse\n\t${flattenZodErrors(ze, 0).join('\n\t')}`);
+      } else {
+        throw new Error(e)
+      }
     }
-    if (!Array.isArray(config.accounts.excludeList)) {
-      throw new Error('Invalid configuration: "excludeList" key is either missing or not an array');
-    }
-    // merge default settings and extract some info
-    config.organizations.forEach((org: any) => {
-      org.settings = Object.assign({}, config.defaults.settings, org.settings);
-    });
-
-    config.accounts.includeList.forEach((account: any) => {
-      account.settings = Object.assign({}, config.defaults.settings, account.settings);
-    });
-
-    logger.debug('Read Revolver config: %j', config);
-    return config;
   }
 
   async readConfigFromFile(configFile: string) {
@@ -36,7 +57,7 @@ export class RevolverConfig {
     return this.validateConfig(await fs.readFile(fullPath, { encoding: 'utf8' }));
   }
 
-  async readConfigFromS3(configBucket: string, configKey: string): Promise<string> {
+  async readConfigFromS3(configBucket: string, configKey: string) {
     const config = getAwsConfig();
     const s3 = new S3Client(config);
     logger.debug(`Fetching config from bucket [${configBucket}] key [${configKey}]`);
@@ -68,7 +89,7 @@ export class RevolverConfig {
       }),
     );
     const flatAccounts = allAccounts.flat();
-    logger.info('%d Accounts found on the Organizations listed', flatAccounts.length);
+    logger.info(`${flatAccounts.length} Accounts found on the Organizations listed`);
     return flatAccounts;
   }
 

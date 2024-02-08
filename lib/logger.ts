@@ -21,6 +21,8 @@ export interface RevolverLogObject {
 export const logger = new Logger<RevolverLogObject>({
   name: 'revolver',
   type: environ.logFormat,
+  stylePrettyLogs: environ.stylePrettyLogs,
+  prettyLogTimeZone: environ.prettyLogTimeZone,
   minLevel: logLevels[environ.logLevel],
   hideLogPositionForProduction: logLevels[environ.logLevel] > 2,
 });

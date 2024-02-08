@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { Cluster, CreateTagsCommand, DeleteClusterSnapshotCommand, DeleteTagsCommand, DescribeClusterSnapshotsCommand, DescribeClustersCommand, DescribeTagsCommand, RedshiftClient, RestoreFromClusterSnapshotCommand, Tag } from '@aws-sdk/client-redshift';
-import { ToolingInterface } from './instrumentedResource';
+import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { getAwsClientForAccount } from '../lib/awsConfig';
@@ -49,23 +49,19 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
         redshift = r;
       })
       .then(async function () {
-        logger.info('Checking if Redshift Cluster %s have been restored before..', snapshot.resource.ClusterIdentifier);
+        logger.info(`Checking if Redshift Cluster ${snapshot.resource.ClusterIdentifier} have been restored before..`);
         const clusterRestored: Array<Cluster> = await redshift
           .send(new DescribeClustersCommand({ ClusterIdentifier: snapshot.resource.ClusterIdentifier }))
           .then((r) => r.Clusters!);
 
         if (clusterRestored) {
           if (clusterRestored[0].ClusterStatus === 'available') {
-            logger.info('Redshift Cluster %s is already running, erasing Redshift snapshot %s ..', snapshot.resourceId);
+            logger.info(`Redshift Cluster ${snapshot.resource.ClusterIdentifier} is already running, erasing Redshift snapshot ${snapshot.resourceId}..`);
             return redshift.send(new DeleteClusterSnapshotCommand({ SnapshotIdentifier: snapshot.resourceId }));
           }
         }
 
-        logger.info(
-          'Redshift Cluster %s will now be restored from snapshot %s',
-          snapshot.resource.ClusterIdentifier,
-          snapshot.resourceId,
-        );
+        logger.info(`Redshift Cluster ${snapshot.resource.ClusterIdentifier} will now be restored from snapshot ${snapshot.resourceId}`);
         const sgTag = snapshot.tag('revolver/vpc_security_groups');
         const opts = {
           ClusterIdentifier: snapshot.resource.ClusterIdentifier,
@@ -81,8 +77,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
         return redshift.send(new RestoreFromClusterSnapshotCommand(opts));
       })
       .catch(function (err) {
-        logger.error('Error restoring Redshift snapshot %s, stack trace will follow:', snapshot.resourceId);
-        logger.error(err);
+        logger.error(`Error restoring Redshift snapshot ${snapshot.resourceId}, stack trace will follow`, err);
       });
   }
 
@@ -110,11 +105,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
   }
 
   noop(resources: InstrumentedRedshiftClusterSnapshot[], action: RevolverAction) {
-    this.logger.info(
-      'Redshift snapshots %j will noop because: %s',
-      resources.map((xs) => xs.resourceId),
-      action.reason,
-    );
+    this.logger.info(`Redshift snapshots ${resources.map((xs) => xs.resourceId)} will noop because: ${action.reason}`);
     return Promise.resolve();
   }
 
@@ -127,15 +118,14 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
             Key: xt.Key,
             Value: xt.Value.replace(/[^A-Za-z0-9 _.:/=+\-@]/g, '_'),
           }));
-          logger.info('Redshift cluster %s will be set tags %j', xr.resourceId, safeValues);
+          logger.info(`Redshift cluster ${xr.resourceId} will be set tags ${safeValues}`);
           return redshift
             .send(new CreateTagsCommand({
               ResourceName: xr.resourceArn,
               Tags: safeValues,
             }))
             .catch(function (err) {
-              logger.error('Error settings tags for Redshift cluster %s, stack trace will follow:', xr.resourceId);
-              logger.error(err);
+              logger.error(`Error settings tags for Redshift cluster ${xr.resourceId}, stack trace will follow`, err);
             });
         }),
       );
@@ -156,19 +146,14 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
     return getAwsClientForAccount(RedshiftClient, this.accountConfig).then(function (redshift) {
       return Promise.all(
         resources.map(function (xs) {
-          logger.info(
-            'Redshift snapshot %s will be unset tags %s',
-            xs.resourceId,
-            action.tags.map((xt) => xt.Key),
-          );
+          logger.info(`Redshift snapshot ${xs.resourceId} will be unset tags ${action.tags.map((xt) => xt.Key)}`);
           return redshift
             .send(new DeleteTagsCommand({
               ResourceName: xs.resourceArn,
               TagKeys: action.tags.map((xt) => xt.Key),
             }))
             .catch(function (err) {
-              logger.error('Error unsettings tags for Redshift snapshot %s, stack trace will follow:', xs.resourceId);
-              logger.error(err);
+              logger.error(`Error unsettings tags for Redshift snapshot ${xs.resourceId}, stack trace will follow`, err);
             });
         }),
       );
@@ -186,7 +171,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
 
   async collect() {
     const logger = this.logger;
-    logger.debug('Redshift Cluster Snapshot module collecting account: %j', this.accountConfig.name);
+    logger.debug(`Redshift Cluster Snapshot module collecting account: ${this.accountConfig.name}`);
 
     const redshift = await getAwsClientForAccount(RedshiftClient, this.accountConfig);
 
@@ -195,7 +180,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
       .then((c) =>
         c.Snapshots!.filter((ss) => {
           if (!/^revolver-cluster-/.test(ss.SnapshotIdentifier || '')) {
-            logger.info('Redshift snapshot %s is not created by Revolver, skipping', ss.SnapshotIdentifier);
+            logger.info(`Redshift snapshot ${ss.SnapshotIdentifier} is not created by Revolver, skipping`);
             return false;
           }
           return true;
@@ -224,6 +209,9 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
       );
 
     return redshiftClusterSnapshots;
+  }
+  resource(obj: InstrumentedResource): ToolingInterface {
+    return new InstrumentedRedshiftClusterSnapshot(obj.resource, obj.resourceArn)
   }
 }
 

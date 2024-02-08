@@ -1,0 +1,103 @@
+---
+defaults:
+  settings:
+    region: ap-southeast-2
+    # timezone: Australia/Melbourne
+    # timezoneTag: Timezone
+    organizationRoleName: AWSOrganizationsReadOnly
+    revolverRoleName: ssPowerCycle
+    resourceLog:
+      json:
+        file: resources.json
+      csv:
+        file: resources.csv
+        reportTags: ["Name", "Schedule"]
+    auditLog:
+      csv:
+        file: 'audit.csv'
+    excludeResources:
+      - tag: 'Schedule|ignore'
+
+  drivers:
+    - name: ec2
+      # active: true
+      # pretend: false
+
+
+  plugins:
+    powercycle:
+      active: true
+      configs:
+        - tagging: strict
+          availabilityTag: Schedule
+    powercycleCentral:
+      active: true
+      configs:
+        - parser: strict
+          availabilityTag: Schedule
+          availabilityTagPriority: 5
+          matchers:
+            - name: shorthand
+              schedule: "0x7"
+              priority: 1
+              filter:
+                - accountId: ["554096786507","9876"]
+                - resource: ["InstanceType|\\.\\d{0,2}x?large", "InstanceType|t2.micro"]
+                - tag: ["CostCenter|5678", "category|workload"]
+            - name: longhand
+              schedule: "0x7"
+              priority: 20
+              filter:
+                and:
+                  - or:
+                      - accountId: "1234"
+                      - accountId: "4567"
+                  - tag:
+                      name: "CostCenter"
+                      value: "1234"
+                  - resource:
+                      path: "InstanceType"
+                      regexp: "\\.\\d{0,2}x?large"
+            - name: no large instances
+              filter:
+                resource: ["InstanceType||regexp|\\.\\d{0,2}x?large", "InstanceType||regexp|\\.metal\\-\\d{1,2}xl"]
+              schedule: "0x7"
+              priority: 20
+            - name: within australia
+              filter:
+                - resource:
+                    path: "Placement.AvailabilityZone | contains(@, 'ap-southeast')"
+                    value: true
+              schedule: 24x5
+              priority: 10
+            - name: default tagged schedule
+              filter:
+                and:
+                  - tag:
+                      name: "CostCentre"
+                      value: "1234"
+                  - type: ec2
+              schedule: 24x7
+              priority: 1
+
+organizations:
+  - accountId: "000000000000"
+    settings:
+      name: some-org-name
+      stuff: 123 # ignored
+      region: whatever # override default
+      # revolverRoleName from defaults
+  - accountId: "111111111111"
+    settings:
+      region: eu-west-1
+      name: eh-global-euw1
+
+accounts:
+  includeList:
+    - accountId: "002222222222"
+      settings:
+        name: whatdev
+  # excludeList: []
+#     - accountId: "333333333333"
+#       settings:
+#         name: whatprod

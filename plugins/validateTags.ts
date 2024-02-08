@@ -13,6 +13,7 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
     'rdsMultiAz',
     'rdsCluster',
     'redshiftCluster',
+    'local',
   ];
 
   private setActions(resource: any, actionsDef: string[], tag: string, message: string) {
@@ -30,7 +31,7 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
           break;
         case 'stop':
           if (utcTimeNow.diff(resource.launchTimeUtc, 'minutes') > Duration.fromObject({ minutes: 30 })) {
-            resource.addAction(new StopAction(this));
+            resource.addAction(new StopAction(this, `${resource.resourceType} ${resource.resourceId} tag ${tag} is missing`));
           } else {
             resource.addAction(
               new NoopAction(
@@ -41,7 +42,7 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
           }
           break;
         default:
-          logger.error('Action %s is not supported by %s', xa, this.name);
+          logger.error(`Action ${xa} is not supported by ${this.name}`);
       }
     });
   }
@@ -140,14 +141,7 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
           }
           return;
         }
-        this.logger.debug(
-          '%s: %s %s tag [%s] = [%s], validation successful, removing warning tag',
-          this.name,
-          resource.resourceType,
-          resource.resourceId,
-          xa,
-          tag,
-        );
+        this.logger.debug(`${this.name}: ${resource.resourceType} ${resource.resourceId} tag [${xa}] = [${tag}], validation successful, removing warning tag`);
         resource.addAction(new UnsetTagAction(this, `Warning${xa}`));
       }
     });
