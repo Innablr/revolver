@@ -1,5 +1,6 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack')
 
 module.exports = {
   mode: 'production',
@@ -29,6 +30,9 @@ module.exports = {
       patterns: [
         { from: 'LICENSE', to: 'revolver.js.LICENSE.txt' },
       ],
+    }),
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1,
     }),
   ],
 };
