@@ -132,38 +132,48 @@ export class AccountRevolver {
     const entries = this.drivers.map((d) => d.getAuditLog()).reduce((a, l) => a.concat(l), []);
 
     for(const auditFormat of Object.keys(this.config.settings.auditLog)) {
-      const auditConfig = this.config.settings.auditLog[auditFormat];
-      switch (auditFormat.toLowerCase()) {
-        case 'json':
-          await new ObjectLogJson(entries, auditConfig).process();
-          break;
-        case 'csv':
-          await new ObjectLogCsv(new ActionAuditTable(this.config, entries, true), auditConfig, auditConfig['append'] || false).process();
-          break;
-        case 'console':
-          await new ObjectLogConsole(new ActionAuditTable(this.config, entries, false)).process();
-          break;
-        default:
-          logger.warn(`no implementation for audit log format ${auditFormat}`);
+      try {
+        const auditConfig = this.config.settings.auditLog[auditFormat];
+        switch (auditFormat.toLowerCase()) {
+          case 'json':
+            await new ObjectLogJson(entries, auditConfig).process();
+            break;
+          case 'csv':
+            await new ObjectLogCsv(new ActionAuditTable(this.config, entries, true), auditConfig, auditConfig['append'] || false).process();
+            break;
+          case 'console':
+            await new ObjectLogConsole(new ActionAuditTable(this.config, entries, false)).process();
+            break;
+          default:
+            logger.warn(`no implementation for audit log format ${auditFormat}`);
+        }
+      }
+      catch (e: any) {
+        logger.error(`failed to write auditLog ${auditFormat}: ${e.message}`);
       }
     }
   }
 
   async logResources(): Promise<void> {
     for(const logFormat of Object.keys(this.config.settings.resourceLog)) {
-      const resourceLogConfig = this.config.settings.resourceLog[logFormat];
-      switch (logFormat.toLowerCase()) {
-        case 'json':
-          await new ObjectLogJson(this.resources, resourceLogConfig).process();
-          break;
-        case 'console':
-          await new ObjectLogConsole(new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags)).process();
-          break;
-        case 'csv':
-          await new ObjectLogCsv(new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags), resourceLogConfig, resourceLogConfig['append'] || false).process()
-          break;
-        default:
-          logger.warn(`no implementation for resource log format ${logFormat}`);
+      try {
+        const resourceLogConfig = this.config.settings.resourceLog[logFormat];
+        switch (logFormat.toLowerCase()) {
+          case 'json':
+            await new ObjectLogJson(this.resources, resourceLogConfig).process();
+            break;
+          case 'console':
+            await new ObjectLogConsole(new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags)).process();
+            break;
+          case 'csv':
+            await new ObjectLogCsv(new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags), resourceLogConfig, resourceLogConfig['append'] || false).process()
+            break;
+          default:
+            logger.warn(`no implementation for resource log format ${logFormat}`);
+        }
+      }
+      catch (e: any) {
+        logger.error(`failed to write resourcesLog ${logFormat}: ${e.message}`);
       }
     }
   }
