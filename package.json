@@ -22,7 +22,7 @@
   "author": "Alex Bukharov",
   "license": "MIT",
   "dependencies": {
-    "@aws-sdk/client-auto-scaling": "^3.507.0",
+    "@aws-sdk/client-auto-scaling": "^3.511.0",
     "@aws-sdk/client-ec2": "^3.507.0",
     "@aws-sdk/client-organizations": "^3.507.0",
     "@aws-sdk/client-rds": "^3.507.0",
