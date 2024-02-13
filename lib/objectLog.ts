@@ -107,12 +107,14 @@ export class ObjectLogCsv extends ObjectLog {
   }
 
   process(): any {
+    const promises = [];
     if (this.options.file) {
-      return this.writeCsv();
+      promises.push(this.writeCsv());
     }
     if (this.options.s3) {
-      return this.writeS3();
+      promises.push(this.writeS3());
     }
+    return Promise.all(promises);
   }
 }
 
@@ -145,12 +147,14 @@ export class ObjectLogJson extends ObjectLog {
   }
 
   process(): any {
+    const promises = [];
     if (this.options.file) {
-      return this.writeFile();
+      promises.push(this.writeFile());
     }
     if (this.options.s3) {
-      return this.writeS3();
+      promises.push(this.writeS3());
     }
+    return Promise.all(promises);
   }
 }
 
