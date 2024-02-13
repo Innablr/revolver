@@ -1,7 +1,19 @@
 import { DateTime } from 'luxon';
-import { AutoScalingClient, ResumeProcessesCommand, SuspendProcessesCommand, paginateDescribeAutoScalingGroups } from '@aws-sdk/client-auto-scaling';
-import { Instance, Tag, EC2Client, StartInstancesCommand, StopInstancesCommand, paginateDescribeInstances } from '@aws-sdk/client-ec2';
-import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
+import {
+  AutoScalingClient,
+  ResumeProcessesCommand,
+  SuspendProcessesCommand,
+  paginateDescribeAutoScalingGroups,
+} from '@aws-sdk/client-auto-scaling';
+import {
+  Instance,
+  Tag,
+  EC2Client,
+  StartInstancesCommand,
+  StopInstancesCommand,
+  paginateDescribeInstances,
+} from '@aws-sdk/client-ec2';
+import { InstrumentedResource, ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { chunkArray, paginateAwsCall } from '../lib/common';
@@ -85,9 +97,11 @@ class Ec2Driver extends DriverInterface {
     await Promise.all(
       resourceChunks.map(async function (chunk) {
         logger.info(`EC2 instances ${chunk.map((xr) => xr.resourceId)} will start`);
-        return ec2.send(new StartInstancesCommand({
-          InstanceIds: chunk.map((xr) => xr.resourceId),
-        }));
+        return ec2.send(
+          new StartInstancesCommand({
+            InstanceIds: chunk.map((xr) => xr.resourceId),
+          }),
+        );
       }),
     );
 
@@ -139,9 +153,11 @@ class Ec2Driver extends DriverInterface {
     await Promise.all(
       resourceChunks.map(async function (chunk) {
         logger.info(`EC2 instances ${chunk.map((xr) => xr.resourceId)} will stop`);
-        return ec2.send(new StopInstancesCommand({
-          InstanceIds: chunk.map((xr) => xr.resourceId),
-        }));
+        return ec2.send(
+          new StopInstancesCommand({
+            InstanceIds: chunk.map((xr) => xr.resourceId),
+          }),
+        );
       }),
     );
 
@@ -192,7 +208,11 @@ class Ec2Driver extends DriverInterface {
       return true;
     });
 
-    const autoscalingGroups = await paginateAwsCall(paginateDescribeAutoScalingGroups, autoscaling, 'AutoScalingGroups');
+    const autoscalingGroups = await paginateAwsCall(
+      paginateDescribeAutoScalingGroups,
+      autoscaling,
+      'AutoScalingGroups',
+    );
 
     for (const xi of ec2Instances) {
       const asg = autoscalingGroups.find(

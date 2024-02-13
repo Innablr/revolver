@@ -2,7 +2,7 @@ import { RevolverPlugin } from './pluginInterface';
 import dateTime from '../lib/dateTime';
 import { NoopAction, StartAction, StopAction } from '../actions/actions';
 import { Filter, buildFilter } from './filters';
-import getParser from "./parsers/index";
+import getParser from './parsers/index';
 
 interface Matcher {
   name: string;
@@ -92,7 +92,6 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
         return false;
       }
     });
-
 
     const taggedSchedule = resource.tag(this.scheduleTagName);
     // use the tagged schedule if it's a higher priority or there's no existing match

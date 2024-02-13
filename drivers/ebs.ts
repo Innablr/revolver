@@ -1,7 +1,13 @@
-import { CreateVolumeCommandOutput, EC2Client, Tag, paginateDescribeVolumes, paginateDescribeInstances } from '@aws-sdk/client-ec2';
+import {
+  CreateVolumeCommandOutput,
+  EC2Client,
+  Tag,
+  paginateDescribeVolumes,
+  paginateDescribeInstances,
+} from '@aws-sdk/client-ec2';
 import { DateTime } from 'luxon';
 import { paginateAwsCall } from '../lib/common';
-import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
+import { InstrumentedResource, ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { ec2Tagger } from './tags';

@@ -19,7 +19,6 @@ export interface FilterCtor {
   ready(): Promise<Filter>;
 }
 
-
 /**
  * Create filter based on a generic config map. keys match up against file names for filters.
  * @param config
@@ -51,8 +50,7 @@ export async function arrayToOr(filterName: string, config: any): Promise<Filter
 
 // filter user only. Controls the string value interpretation of all filters to facilite several comparison options
 export class StringCompareOptions {
-
-  static defaultCompare: string = 'equals'
+  static defaultCompare: string = 'equals';
 
   equals: string | undefined;
   iequals: string | undefined;
@@ -76,28 +74,23 @@ export class StringCompareOptions {
 
   // order matters here if several options are specified. only one will be tested
   compare(value: string | undefined): boolean {
-    if(value === undefined) {
+    if (value === undefined) {
       return false;
     }
-    if(this.equals !== undefined) {
+    if (this.equals !== undefined) {
       return value === this.equals;
     }
-    if(this.iequals !== undefined) {
+    if (this.iequals !== undefined) {
       return value.toLowerCase() === this.iequals.toLowerCase();
-    }
-    else if (this.regexp !== undefined) {
+    } else if (this.regexp !== undefined) {
       return this.regexp.exec(value) !== null;
-    }
-    else if (this.contains !== undefined) {
+    } else if (this.contains !== undefined) {
       return value.toLowerCase().includes(this.contains.toLowerCase());
-    }
-    else if (this.startswith !== undefined) {
+    } else if (this.startswith !== undefined) {
       return value.toLowerCase().startsWith(this.startswith.toLowerCase());
-    }
-    else if (this.endswith !== undefined) {
+    } else if (this.endswith !== undefined) {
       return value.toLowerCase().endsWith(this.endswith.toLowerCase());
-    }
-    else return false
+    } else return false;
   }
 
   // convert `key|value` or `key||option|value` to configuration for ctor
@@ -112,15 +105,20 @@ export class StringCompareOptions {
     if (tokens[1] === '' && tokens.length > 3) {
       // an |option| is specified
       // tokens[1] is an empty string due to ||
-      return [key, {
-        [tokens[2]]: tokens.slice(3).join('|'),
-      }];
-    }
-    else {
+      return [
+        key,
+        {
+          [tokens[2]]: tokens.slice(3).join('|'),
+        },
+      ];
+    } else {
       // default option case
-      return [key,{
-        [this.defaultCompare]: tokens.slice(1).join('|'),
-      }];
+      return [
+        key,
+        {
+          [this.defaultCompare]: tokens.slice(1).join('|'),
+        },
+      ];
     }
   }
 
@@ -133,7 +131,7 @@ export class StringCompareOptions {
         [this.defaultCompare]: tokens[0],
       };
     }
-    return{
+    return {
       [tokens[0]]: tokens.slice(1).join('|'),
     };
   }

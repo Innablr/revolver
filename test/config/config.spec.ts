@@ -12,9 +12,7 @@ describe('Validate example config', function () {
   });
 });
 
-
 describe('Validate test config', function () {
-
   it('Check simple parsing', async function () {
     const config = await new RevolverConfig().readConfigFromFile(SAMPLE_CONFIG_1);
 
@@ -23,12 +21,11 @@ describe('Validate test config', function () {
     expect(config.defaults.settings.timezone).to.equal('utc');
     expect(config.defaults.settings.timezoneTag).to.equal('Timezone');
     expect(config.accounts.includeList).to.have.lengthOf(1);
-    expect(config.accounts.includeList[0].accountId).to.equal("002222222222");
+    expect(config.accounts.includeList[0].accountId).to.equal('002222222222');
     expect(config.accounts.excludeList).to.deep.equal([]);
     expect(config.defaults.settings.resourceLog?.json?.file).to.equal('resources.json');
-    expect(config.defaults.settings.resourceLog?.csv?.reportTags).to.contain.all.members(["Name", "Schedule"]);
+    expect(config.defaults.settings.resourceLog?.csv?.reportTags).to.contain.all.members(['Name', 'Schedule']);
     expect(config.defaults.settings.auditLog?.csv?.file).to.equal('audit.csv');
-
 
     // driver settings
     expect(config.defaults.drivers[0].name).to.equal('ec2');
@@ -46,7 +43,8 @@ describe('Validate test config', function () {
     expect(config.defaults.plugins.powercycleCentral?.configs[0].matchers.length).to.equal(6);
     expect(config.defaults.plugins.powercycleCentral?.configs[0].availabilityTagPriority).to.equal(5);
     expect((config.defaults.plugins.powercycleCentral?.configs[0].matchers[0].filter as any[]).length).to.equal(3);
-    expect(Object.keys(config.defaults.plugins.powercycleCentral?.configs[0].matchers[2].filter as object)[0]).to.equal('resource');
-
+    expect(Object.keys(config.defaults.plugins.powercycleCentral?.configs[0].matchers[2].filter as object)[0]).to.equal(
+      'resource',
+    );
   });
 });

@@ -1,6 +1,6 @@
 import { DateTime, Interval } from 'luxon';
 
-const zeroPad = (num:number, places:number) => String(num).padStart(places, '0')
+const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
 export const reasonDateFormat = 'ccc HH:MM Z';
 
 class ParsedComponent {
@@ -31,7 +31,7 @@ class ParsedComponent {
   }
 
   get time() {
-    return `${this.timeHour}:${zeroPad(this.timeMinute,2)}`;
+    return `${this.timeHour}:${zeroPad(this.timeMinute, 2)}`;
   }
 
   get days() {

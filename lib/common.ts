@@ -3,7 +3,7 @@ async function paginateAwsCall(paginatorRef: any, client: any, what: string, par
   //   paginatorRef = f(PaginationConfiguration, request)
   //   client = Client
   const parameters = params || {};
-  const paginator = paginatorRef({client: client}, parameters)
+  const paginator = paginatorRef({ client: client }, parameters);
   const entityList: any[] = [];
   for await (const page of paginator) {
     entityList.push(...page[what]);
