@@ -39,7 +39,7 @@ export class ObjectLogConsole extends ObjectLog {
     const lines = [header]
       .concat(data)
       .reduce((a, row) => a.concat(row.map((d, i) => (d || '').padEnd(columnSizes[i])).join('')), []);
-    this.logger.info(`${this.constructor.name} log follows`);
+    // this.logger.info(`${this.constructor.name} log follows`);
     this.logger.info(`\n${lines.join('\n')}\n`);
   }
 }
