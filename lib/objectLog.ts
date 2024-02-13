@@ -19,6 +19,9 @@ export interface DataTable {
   data(): string[][];
 }
 
+/**
+ * A class that can write a {@link DataTable} to the console as a table.
+ */
 export class ObjectLogConsole extends ObjectLog {
   private readonly padding: number = 4;
   private readonly dataTable: DataTable;
@@ -54,6 +57,9 @@ type ObjectLogWriteOptions = {
   };
 };
 
+/**
+ * A class that can write a {@link DataTable} to a file or S3 bucket as a CSV.
+ */
 export class ObjectLogCsv extends ObjectLog {
   private readonly options: ObjectLogWriteOptions;
   private readonly dataTable: DataTable;
@@ -103,6 +109,9 @@ export class ObjectLogCsv extends ObjectLog {
   }
 }
 
+/**
+ * A class that can write arbitrary data to a file or S3 bucket as a JSON object.
+ */
 export class ObjectLogJson extends ObjectLog {
   private readonly data: any;
   private readonly options: ObjectLogWriteOptions;
@@ -136,6 +145,9 @@ export class ObjectLogJson extends ObjectLog {
   }
 }
 
+/**
+ * A {@link DataTable} corresponding to a list of resources {@link ToolingInterface} discovered by Revolver.
+ */
 export class ResourceTable implements DataTable {
   private readonly reportTags: string[];
   private readonly entries: ToolingInterface[];
@@ -165,6 +177,9 @@ export class ResourceTable implements DataTable {
   }
 }
 
+/**
+ * A {@link DataTable} corresponding to a list of actions performed by Revolver.
+ */
 export class ActionAuditTable implements DataTable {
   private readonly entries: ActionAuditEntry[];
   private readonly accountConfig: any;
