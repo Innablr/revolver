@@ -2,12 +2,14 @@ import { DriverInterface } from '../drivers/driverInterface';
 import { InstrumentedResource, ToolingInterface } from '../drivers/instrumentedResource';
 import { RevolverPlugin } from '../plugins/pluginInterface';
 import { logger } from './logger';
-import { writeFileSync } from 'jsonfile';
 import path from 'node:path';
 import { promises as fs } from 'fs';
-import { ActionAuditLogConsole, ActionAuditLogCSV } from '../actions/audit';
-import { ResourceLogJson, ResourceLogCsv, ResourceLogConsole } from './resourceLog';
 import { buildFilter } from '../plugins/filters/index';
+import {
+  ActionAuditTable,
+  ObjectLogConsole, ObjectLogCsv, ObjectLogJson,
+  ResourceTable
+} from "./objectLog";
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -109,11 +111,6 @@ export class AccountRevolver {
     }
   }
 
-  async saveResources(filename: string) {
-    this.logger.info(`Writing resources to ${filename}`);
-    writeFileSync(filename, this.resources, { spaces: 2 });
-  }
-
   async runPlugins(): Promise<void> {
     this.logger.info('Plugins will process resources');
     await Promise.all(
@@ -138,11 +135,14 @@ export class AccountRevolver {
       try {
         const auditConfig = this.config.settings.auditLog[auditFormat];
         switch (auditFormat.toLowerCase()) {
+          case 'json':
+            await new ObjectLogJson(entries, auditConfig).process();
+            break;
           case 'csv':
-            new ActionAuditLogCSV(entries, this.config, path.resolve(auditConfig.file), auditConfig.append).process();
+            await new ObjectLogCsv(new ActionAuditTable(this.config, entries, true), auditConfig, auditConfig['append'] || false).process();
             break;
           case 'console':
-            new ActionAuditLogConsole(entries, this.config).process();
+            await new ObjectLogConsole(new ActionAuditTable(this.config, entries, false), "Audit Log").process();
             break;
           default:
             logger.warn(`no implementation for audit log format ${auditFormat}`);
@@ -160,13 +160,13 @@ export class AccountRevolver {
         const resourceLogConfig = this.config.settings.resourceLog[logFormat];
         switch (logFormat.toLowerCase()) {
           case 'json':
-            new ResourceLogJson(this.resources, this.config, resourceLogConfig?.file).process();
+            await new ObjectLogJson(this.resources, resourceLogConfig).process();
             break;
           case 'console':
-            new ResourceLogConsole(this.resources, this.config, resourceLogConfig?.reportTags).process();
+            await new ObjectLogConsole(new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags), "Object Log").process();
             break;
           case 'csv':
-            new ResourceLogCsv(this.resources, this.config, resourceLogConfig?.file, resourceLogConfig?.reportTags).process();
+            await new ObjectLogCsv(new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags), resourceLogConfig, resourceLogConfig['append'] || false).process()
             break;
           default:
             logger.warn(`no implementation for resource log format ${logFormat}`);
