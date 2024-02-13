@@ -105,7 +105,6 @@ class SnapshotDriver extends DriverInterface {
   resource(obj: InstrumentedResource): ToolingInterface {
     return new InstrumentedSnapshot(obj.resource);
   }
-
 }
 
 export default SnapshotDriver;

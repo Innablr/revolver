@@ -111,7 +111,7 @@ class EBSDriver extends DriverInterface {
     );
   }
   resource(obj: InstrumentedResource): ToolingInterface {
-    return new InstrumentedEBS(obj.resource, obj.resourceArn)
+    return new InstrumentedEBS(obj.resource, obj.resourceArn);
   }
 }
 

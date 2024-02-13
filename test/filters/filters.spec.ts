@@ -58,7 +58,7 @@ const basicEc2 = {
       Tenancy: 'default',
     },
   }
-}
+};
 
 const basicRds = {
   resourceId: 'revolver-test',
@@ -79,7 +79,7 @@ const basicRds = {
       VpcId: 'vpc-12345678',
     }
   }
-}
+};
 
 
 const filterTests = [

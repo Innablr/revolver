@@ -6,7 +6,7 @@ async function paginateAwsCall(paginatorRef: any, client: any, what: string, par
   const paginator = paginatorRef({client: client}, parameters)
   const entityList: any[] = [];
   for await (const page of paginator) {
-    entityList.push(...page[what])
+    entityList.push(...page[what]);
   }
   return entityList;
 }

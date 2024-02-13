@@ -91,7 +91,7 @@ export class ActionAuditLogConsole extends ActionAuditLog {
       `${'ID'.padEnd(40)} ` +
       `${'ACTION'.padEnd(10)} ` +
       `${'STATUS'.padEnd(10)} ` +
-      `${'REASON'}`
+      `${'REASON'}`;
     const lines = this.entries.map((e) =>
         `${e.accountId.padEnd(16)} ` +
         `${(this.accountConfig.settings.name || '').padEnd(16)} ` +

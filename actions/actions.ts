@@ -55,7 +55,7 @@ export class SetTagAction extends RevolverActionWithTags {
 
   constructor(who: RevolverPlugin, tag: string, value: string) {
     super(who, 'setTag');
-    this.reason = `${tag}:${value}`
+    this.reason = `${tag}:${value}`;
     this.tags = [
       {
         Key: tag,

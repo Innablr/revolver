@@ -212,7 +212,7 @@ class RedshiftClusterDriver extends DriverInterface {
     );
   }
   resource(obj: InstrumentedResource): ToolingInterface {
-    return new InstrumentedRedshiftCluster(obj.resource, obj.resourceArn)
+    return new InstrumentedRedshiftCluster(obj.resource, obj.resourceArn);
   }
 }
 

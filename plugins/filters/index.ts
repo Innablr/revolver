@@ -107,7 +107,7 @@ export class StringCompareOptions {
     const key = tokens[0];
     if (tokens.length < 2) {
       // not valid
-      return [key, {}]
+      return [key, {}];
     }
     if (tokens[1] === '' && tokens.length > 3) {
       // an |option| is specified

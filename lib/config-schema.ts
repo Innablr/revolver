@@ -12,7 +12,7 @@ const StringCompareOptions = z.object({
   startswith: z.string().optional(),
   endswith: z.string().optional(),
   regexp: z.string().optional(),
-})
+});
 
 
 const BaseFilters = z.object({

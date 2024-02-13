@@ -211,7 +211,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
     return redshiftClusterSnapshots;
   }
   resource(obj: InstrumentedResource): ToolingInterface {
-    return new InstrumentedRedshiftClusterSnapshot(obj.resource, obj.resourceArn)
+    return new InstrumentedRedshiftClusterSnapshot(obj.resource, obj.resourceArn);
   }
 }
 

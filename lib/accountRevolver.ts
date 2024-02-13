@@ -98,7 +98,7 @@ export class AccountRevolver {
     if (this.config.settings.excludeResources) {
       const excludeFilter = await buildFilter(this.config.settings.excludeResources);
 
-      const excludedIndices = this.resources.map((resource) => excludeFilter.matches(resource))
+      const excludedIndices = this.resources.map((resource) => excludeFilter.matches(resource));
       this.resources = this.resources.filter((_resource, index) => {
         return !excludedIndices[index];
       });

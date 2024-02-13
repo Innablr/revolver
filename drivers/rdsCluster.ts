@@ -132,7 +132,7 @@ class RdsClusterDriver extends DriverInterface {
     return instrumentedClusters;
   }
   resource(obj: InstrumentedResource): ToolingInterface {
-    return new InstrumentedRdsCluster(obj.resource)
+    return new InstrumentedRdsCluster(obj.resource);
   }
 }
 

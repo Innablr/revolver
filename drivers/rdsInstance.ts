@@ -179,7 +179,7 @@ class RdsInstanceDriver extends DriverInterface {
       );
   }
   resource(obj: InstrumentedResource): ToolingInterface {
-    return new InstrumentedRdsInstance(obj.resource)
+    return new InstrumentedRdsInstance(obj.resource);
   }
 }
 

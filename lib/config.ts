@@ -12,7 +12,7 @@ import {ZodError, ZodIssueCode, ZodInvalidUnionIssue, ZodInvalidArgumentsIssue, 
 
 
 function flattenZodErrors(ze: ZodError, depth: number): string[] {
-  let lines: string[] = []
+  let lines: string[] = [];
   for(const zi of ze.errors) {
     const code = zi.code;
     const path = zi.path.join('.');
@@ -46,7 +46,7 @@ export class RevolverConfig {
         const ze = e as ZodError;
         throw new Error(`ZodError: Failed to parse\n\t${flattenZodErrors(ze, 0).join('\n\t')}`);
       } else {
-        throw new Error(e)
+        throw new Error(e);
       }
     }
   }

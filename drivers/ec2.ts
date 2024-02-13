@@ -211,7 +211,7 @@ class Ec2Driver extends DriverInterface {
   }
 
   resource(obj: InstrumentedResource): ToolingInterface {
-    return new InstrumentedEc2(obj.resource, obj.resourceArn)
+    return new InstrumentedEc2(obj.resource, obj.resourceArn);
   }
 }
 
