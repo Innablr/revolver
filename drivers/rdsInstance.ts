@@ -1,6 +1,13 @@
 import { DateTime } from 'luxon';
-import { DescribeDBInstancesCommand, ListTagsForResourceCommand, RDSClient, StartDBInstanceCommand, StopDBInstanceCommand, Tag } from '@aws-sdk/client-rds';
-import { InstrumentedResource, ToolingInterface } from "./instrumentedResource";
+import {
+  DescribeDBInstancesCommand,
+  ListTagsForResourceCommand,
+  RDSClient,
+  StartDBInstanceCommand,
+  StopDBInstanceCommand,
+  Tag,
+} from '@aws-sdk/client-rds';
+import { InstrumentedResource, ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { rdsTagger } from './tags';
@@ -52,19 +59,16 @@ class InstrumentedRdsInstance extends ToolingInterface {
 class RdsInstanceDriver extends DriverInterface {
   start(resources: InstrumentedRdsInstance[]) {
     const logger = this.logger;
-    return getAwsClientForAccount(RDSClient, this.accountConfig)
-      .then(function (rds) {
-        return Promise.all(
-          resources.map(function (xr) {
-            logger.info(`RDS instance ${xr.resourceId} will start`);
-            return rds
-              .send(new StartDBInstanceCommand({ DBInstanceIdentifier: xr.resourceId }))
-              .catch(function (err) {
-                logger.error(`Error starting RDS instance ${xr.resourceId}, stack trace will follow`, err);
-              });
-          }),
-        );
-      });
+    return getAwsClientForAccount(RDSClient, this.accountConfig).then(function (rds) {
+      return Promise.all(
+        resources.map(function (xr) {
+          logger.info(`RDS instance ${xr.resourceId} will start`);
+          return rds.send(new StartDBInstanceCommand({ DBInstanceIdentifier: xr.resourceId })).catch(function (err) {
+            logger.error(`Error starting RDS instance ${xr.resourceId}, stack trace will follow`, err);
+          });
+        }),
+      );
+    });
   }
 
   maskstart(resource: InstrumentedRdsInstance) {
@@ -179,7 +183,7 @@ class RdsInstanceDriver extends DriverInterface {
       );
   }
   resource(obj: InstrumentedResource): ToolingInterface {
-    return new InstrumentedRdsInstance(obj.resource)
+    return new InstrumentedRdsInstance(obj.resource);
   }
 }
 

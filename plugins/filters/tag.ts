@@ -16,34 +16,32 @@ export default class FilterTag implements Filter, FilterCtor {
       if (Array.isArray(config)) {
         const elements = config.map((elem) => {
           if (typeof elem === 'string') {
-            const [key, opts] = StringCompareOptions.keyValueStringToOptions(elem)
+            const [key, opts] = StringCompareOptions.keyValueStringToOptions(elem);
             return {
               name: key,
               ...opts,
-            }
+            };
           } else {
             return elem;
           }
         });
         resolve(arrayToOr(FilterTag.FILTER_NAME, elements));
-        return
+        return;
       }
 
       let appliedConfig = config;
       if (typeof config === 'string') {
-        const [key, opts] = StringCompareOptions.keyValueStringToOptions(config)
+        const [key, opts] = StringCompareOptions.keyValueStringToOptions(config);
         appliedConfig = {
           name: key,
           ...opts,
-        }
+        };
       }
       this.tagName = appliedConfig['name'];
       this.compareOptions = new StringCompareOptions(appliedConfig);
       resolve(this);
     });
   }
-
-
 
   matches(resource: ToolingInterface): boolean {
     const t = resource.tag(this.tagName);

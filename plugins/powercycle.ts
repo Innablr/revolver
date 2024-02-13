@@ -1,7 +1,7 @@
 import { RevolverPlugin } from './pluginInterface';
 import dateTime from '../lib/dateTime';
 import { NoopAction, SetTagAction, StartAction, StopAction } from '../actions/actions';
-import getParser from "./parsers/index";
+import getParser from './parsers/index';
 
 export default class PowerCyclePlugin extends RevolverPlugin {
   private parser: any;

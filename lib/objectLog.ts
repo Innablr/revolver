@@ -93,10 +93,17 @@ export class ObjectLogCsv extends ObjectLog {
   private writeS3() {
     const config = getAwsConfig();
     const s3 = new S3Client(config);
-    const fullData = [this.dataTable.header()].concat(this.dataTable.data()).map((row) => this.sanitizeRow(row)).join('\n')
+    const fullData = [this.dataTable.header()]
+      .concat(this.dataTable.data())
+      .map((row) => this.sanitizeRow(row))
+      .join('\n');
 
-    this.logger.info(`Writing ${this.dataTable.constructor.name} log to s3://${this.options.s3?.bucket}/${this.options.s3?.path}`);
-    return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: this.options.s3?.path, Body: fullData }));
+    this.logger.info(
+      `Writing ${this.dataTable.constructor.name} log to s3://${this.options.s3?.bucket}/${this.options.s3?.path}`,
+    );
+    return s3.send(
+      new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: this.options.s3?.path, Body: fullData }),
+    );
   }
 
   process(): any {
@@ -122,17 +129,19 @@ export class ObjectLogJson extends ObjectLog {
   }
 
   private async writeFile() {
-    const f = await fs.open(this.options.file || '', 'w')
+    const f = await fs.open(this.options.file || '', 'w');
     return f.write(JSON.stringify(this.data, null, 2));
   }
 
   private writeS3() {
     const config = getAwsConfig();
     const s3 = new S3Client(config);
-    const fullData = JSON.stringify(this.data, null, 2)
+    const fullData = JSON.stringify(this.data, null, 2);
 
     this.logger.info(`Writing data to s3://${this.options.s3?.bucket}/${this.options.s3?.path}`);
-    return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: this.options.s3?.path, Body: fullData }));
+    return s3.send(
+      new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: this.options.s3?.path, Body: fullData }),
+    );
   }
 
   process(): any {
@@ -192,7 +201,17 @@ export class ActionAuditTable implements DataTable {
   }
 
   header(): string[] {
-    return (this.includeTime ? ['TIME'] : []).concat(['ACCOUNT_ID', 'ACCOUNT_NAME', 'PLUGIN', 'DRIVER', 'TYPE', 'ID', 'ACTION', 'STATUS', 'REASON']);
+    return (this.includeTime ? ['TIME'] : []).concat([
+      'ACCOUNT_ID',
+      'ACCOUNT_NAME',
+      'PLUGIN',
+      'DRIVER',
+      'TYPE',
+      'ID',
+      'ACTION',
+      'STATUS',
+      'REASON',
+    ]);
   }
   data(): string[][] {
     return this.entries.map((e) =>
@@ -206,6 +225,7 @@ export class ActionAuditTable implements DataTable {
         e.action,
         e.status,
         e.reason,
-    ]));
+      ]),
+    );
   }
 }

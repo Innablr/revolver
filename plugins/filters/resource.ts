@@ -22,7 +22,7 @@ export default class FilterResource implements Filter, FilterCtor {
             return {
               path: key,
               ...opts,
-            }
+            };
           } else {
             return elem;
           }
@@ -37,7 +37,7 @@ export default class FilterResource implements Filter, FilterCtor {
         appliedConfig = {
           path: key,
           ...opts,
-        }
+        };
       }
 
       // can't validate path as it depends on the input

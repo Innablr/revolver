@@ -5,11 +5,7 @@ import { logger } from './logger';
 import path from 'node:path';
 import { promises as fs } from 'fs';
 import { buildFilter } from '../plugins/filters/index';
-import {
-  ActionAuditTable,
-  ObjectLogConsole, ObjectLogCsv, ObjectLogJson,
-  ResourceTable
-} from "./objectLog";
+import { ActionAuditTable, ObjectLogConsole, ObjectLogCsv, ObjectLogJson, ResourceTable } from './objectLog';
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -80,12 +76,14 @@ export class AccountRevolver {
     if (local !== undefined) {
       this.logger.info(`Loading resources locally from ${local}`);
       const resourcesFilePath = path.resolve(local);
-      const localResourcesStr = await fs.readFile(resourcesFilePath, { encoding: 'utf-8'});
+      const localResourcesStr = await fs.readFile(resourcesFilePath, { encoding: 'utf-8' });
       localResources = JSON.parse(localResourcesStr);
     }
 
     this.logger.info('Loading resources');
-    this.resources = (await Promise.all(this.drivers.map((xd) => {
+    this.resources = (
+      await Promise.all(
+        this.drivers.map((xd) => {
           if (local !== undefined) {
             return localResources
               .filter((res: InstrumentedResource) => res.resourceType === xd.name)
@@ -100,7 +98,7 @@ export class AccountRevolver {
     if (this.config.settings.excludeResources) {
       const excludeFilter = await buildFilter(this.config.settings.excludeResources);
 
-      const excludedIndices = this.resources.map((resource) => excludeFilter.matches(resource))
+      const excludedIndices = this.resources.map((resource) => excludeFilter.matches(resource));
       this.resources = this.resources.filter((_resource, index) => {
         return !excludedIndices[index];
       });
@@ -131,7 +129,7 @@ export class AccountRevolver {
     this.logger.info('Processing action audit log');
     const entries = this.drivers.map((d) => d.getAuditLog()).reduce((a, l) => a.concat(l), []);
 
-    for(const auditFormat of Object.keys(this.config.settings.auditLog)) {
+    for (const auditFormat of Object.keys(this.config.settings.auditLog)) {
       try {
         const auditConfig = this.config.settings.auditLog[auditFormat];
         switch (auditFormat.toLowerCase()) {
@@ -139,23 +137,26 @@ export class AccountRevolver {
             await new ObjectLogJson(entries, auditConfig).process();
             break;
           case 'csv':
-            await new ObjectLogCsv(new ActionAuditTable(this.config, entries, true), auditConfig, auditConfig['append'] || false).process();
+            await new ObjectLogCsv(
+              new ActionAuditTable(this.config, entries, true),
+              auditConfig,
+              auditConfig['append'] || false,
+            ).process();
             break;
           case 'console':
-            await new ObjectLogConsole(new ActionAuditTable(this.config, entries, false), "Audit Log").process();
+            await new ObjectLogConsole(new ActionAuditTable(this.config, entries, false), 'Audit Log').process();
             break;
           default:
             logger.warn(`no implementation for audit log format ${auditFormat}`);
         }
-      }
-      catch (e: any) {
+      } catch (e: any) {
         logger.error(`failed to write auditLog ${auditFormat}: ${e.message}`);
       }
     }
   }
 
   async logResources(): Promise<void> {
-    for(const logFormat of Object.keys(this.config.settings.resourceLog)) {
+    for (const logFormat of Object.keys(this.config.settings.resourceLog)) {
       try {
         const resourceLogConfig = this.config.settings.resourceLog[logFormat];
         switch (logFormat.toLowerCase()) {
@@ -163,16 +164,22 @@ export class AccountRevolver {
             await new ObjectLogJson(this.resources, resourceLogConfig).process();
             break;
           case 'console':
-            await new ObjectLogConsole(new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags), "Object Log").process();
+            await new ObjectLogConsole(
+              new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags),
+              'Object Log',
+            ).process();
             break;
           case 'csv':
-            await new ObjectLogCsv(new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags), resourceLogConfig, resourceLogConfig['append'] || false).process()
+            await new ObjectLogCsv(
+              new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags),
+              resourceLogConfig,
+              resourceLogConfig['append'] || false,
+            ).process();
             break;
           default:
             logger.warn(`no implementation for resource log format ${logFormat}`);
         }
-      }
-      catch (e: any) {
+      } catch (e: any) {
         logger.error(`failed to write resourcesLog ${logFormat}: ${e.message}`);
       }
     }
