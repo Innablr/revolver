@@ -142,7 +142,7 @@ export class AccountRevolver {
             await new ObjectLogCsv(new ActionAuditTable(this.config, entries, true), auditConfig, auditConfig['append'] || false).process();
             break;
           case 'console':
-            await new ObjectLogConsole(new ActionAuditTable(this.config, entries, false)).process();
+            await new ObjectLogConsole(new ActionAuditTable(this.config, entries, false), "Audit Log").process();
             break;
           default:
             logger.warn(`no implementation for audit log format ${auditFormat}`);
@@ -163,7 +163,7 @@ export class AccountRevolver {
             await new ObjectLogJson(this.resources, resourceLogConfig).process();
             break;
           case 'console':
-            await new ObjectLogConsole(new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags)).process();
+            await new ObjectLogConsole(new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags), "Object Log").process();
             break;
           case 'csv':
             await new ObjectLogCsv(new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags), resourceLogConfig, resourceLogConfig['append'] || false).process()

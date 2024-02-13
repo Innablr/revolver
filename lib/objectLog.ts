@@ -22,9 +22,11 @@ export interface DataTable {
 export class ObjectLogConsole extends ObjectLog {
   private readonly padding: number = 4;
   private readonly dataTable: DataTable;
-  constructor(dataTable: DataTable) {
+  private readonly title: string;
+  constructor(dataTable: DataTable, title: string) {
     super();
     this.dataTable = dataTable;
+    this.title = title;
   }
 
   process(): void {
@@ -40,7 +42,7 @@ export class ObjectLogConsole extends ObjectLog {
       .concat(data)
       .reduce((a, row) => a.concat(row.map((d, i) => (d || '').padEnd(columnSizes[i])).join('')), []);
     // this.logger.info(`${this.constructor.name} log follows`);
-    this.logger.info(`\n${lines.join('\n')}\n`);
+    this.logger.info(`${this.title}:\n${lines.join('\n')}\n`);
   }
 }
 
