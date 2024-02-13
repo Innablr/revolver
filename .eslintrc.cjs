@@ -15,7 +15,7 @@ module.exports = {
     'import/no-amd': 'error',
     'import/no-absolute-path': 'error',
     'prettier/prettier': ['warn', { endOfLine: 'auto' }],
-    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
   settings: {
     'import/resolver': {
