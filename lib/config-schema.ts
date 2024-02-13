@@ -52,6 +52,14 @@ const Filters: z.ZodType<FilterT> = BaseFilters.extend({
   and: z.lazy(() => Filters.array()).optional(),
 }).strict();
 
+const ObjectLogOptions = z.object({
+  file: z.string().optional(),
+  s3: z.object({
+      bucket: z.string(),
+      path: z.string(),
+    }).optional()
+});
+
 
 // Used for defaults, and a partial used for org/account overrides
 const Settings = z.object({
@@ -61,13 +69,10 @@ const Settings = z.object({
     organizationRoleName: z.string(),
     revolverRoleName: z.string(),
     resourceLog: z.object({
-      json: z.object({
-        file: z.string(),
-      }).optional(),
+      json: ObjectLogOptions.optional(),
       csv: z.object({
-        file: z.string(),
         reportTags: z.array(z.string()).optional(),
-      }).optional(),
+      }).merge(ObjectLogOptions).optional(),
       console: z.null().or(z.object({
         reportTags: z.array(z.string()).optional()
       })).optional(),
@@ -76,9 +81,11 @@ const Settings = z.object({
     auditLog: z.object({
         console: z.null().optional(),
         csv: z.object({
-            file: z.string(),
-            append: z.boolean().default(false),
-        }).optional()
+          append: z.boolean().default(false),
+        }).merge(ObjectLogOptions).optional(),
+        json: z.object({
+          file: z.string(),
+        }).merge(ObjectLogOptions).optional(),
     }).optional(),
     excludeResources: z.union([z.array(Filters), Filters]).optional(),
 });
