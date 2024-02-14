@@ -53,6 +53,7 @@ type ObjectLogWriteOptions = {
   file?: string;
   s3?: {
     bucket: string;
+    region: string;
     path: string;
   };
 };
@@ -91,7 +92,7 @@ export class ObjectLogCsv extends ObjectLog {
   }
 
   private writeS3() {
-    const config = getAwsConfig();
+    const config = getAwsConfig(this.options.s3?.region);
     const s3 = new S3Client(config);
     const fullData = [this.dataTable.header()]
       .concat(this.dataTable.data())
@@ -107,12 +108,14 @@ export class ObjectLogCsv extends ObjectLog {
   }
 
   process(): any {
+    const promises = [];
     if (this.options.file) {
-      return this.writeCsv();
+      promises.push(this.writeCsv());
     }
     if (this.options.s3) {
-      return this.writeS3();
+      promises.push(this.writeS3());
     }
+    return Promise.all(promises);
   }
 }
 
@@ -134,7 +137,7 @@ export class ObjectLogJson extends ObjectLog {
   }
 
   private writeS3() {
-    const config = getAwsConfig();
+    const config = getAwsConfig(this.options.s3?.region);
     const s3 = new S3Client(config);
     const fullData = JSON.stringify(this.data, null, 2);
 
@@ -145,12 +148,14 @@ export class ObjectLogJson extends ObjectLog {
   }
 
   process(): any {
+    const promises = [];
     if (this.options.file) {
-      return this.writeFile();
+      promises.push(this.writeFile());
     }
     if (this.options.s3) {
-      return this.writeS3();
+      promises.push(this.writeS3());
     }
+    return Promise.all(promises);
   }
 }
 
