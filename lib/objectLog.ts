@@ -53,6 +53,7 @@ type ObjectLogWriteOptions = {
   file?: string;
   s3?: {
     bucket: string;
+    region: string;
     path: string;
   };
 };
@@ -91,7 +92,7 @@ export class ObjectLogCsv extends ObjectLog {
   }
 
   private writeS3() {
-    const config = getAwsConfig();
+    const config = getAwsConfig(this.options.s3?.region);
     const s3 = new S3Client(config);
     const fullData = [this.dataTable.header()]
       .concat(this.dataTable.data())
@@ -136,7 +137,7 @@ export class ObjectLogJson extends ObjectLog {
   }
 
   private writeS3() {
-    const config = getAwsConfig();
+    const config = getAwsConfig(this.options.s3?.region);
     const s3 = new S3Client(config);
     const fullData = JSON.stringify(this.data, null, 2);
 

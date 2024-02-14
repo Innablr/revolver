@@ -67,6 +67,7 @@ const ObjectLogOptions = z.object({
   s3: z
     .object({
       bucket: z.string(),
+      region: z.string(),
       path: z.string(),
     })
     .optional(),

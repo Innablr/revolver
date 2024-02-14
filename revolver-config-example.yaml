@@ -15,6 +15,11 @@ defaults:
       json:
         # Note the JSON format includes all possible data available for the resource
         file: "resources.json"
+        # Optional S3 configuration to write the resources file to
+        s3:
+          bucket: revolver-bucket
+          region: ap-southeast-2
+          path: output/resources.json
       csv:
         file: "resources.csv"
         # reportTags specifies what resource tags should also be logged out
