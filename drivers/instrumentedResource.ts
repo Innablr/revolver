@@ -9,11 +9,13 @@ export interface InstrumentedResource {
   launchTimeUtc: DateTime;
   resourceState: string;
   resource: any;
+  metadata: any;
 }
 
 export abstract class ToolingInterface implements InstrumentedResource {
   public resource: any;
   public actions: RevolverAction[];
+  public metadata: any;
 
   constructor(awsResource: any) {
     this.resource = awsResource;
@@ -52,6 +54,7 @@ export abstract class ToolingInterface implements InstrumentedResource {
       launchTimeUtc: this.launchTimeUtc,
       resourceState: this.resourceState,
       resource: this.resource,
+      metadata: this.metadata,
     };
   }
 
