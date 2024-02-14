@@ -1,5 +1,6 @@
 import { Logger } from 'tslog';
 import { logger } from '../lib/logger';
+import { ToolingInterface } from '../drivers/instrumentedResource';
 
 export abstract class RevolverPlugin {
   protected accountConfig: any;
@@ -29,9 +30,9 @@ export abstract class RevolverPlugin {
     return Promise.resolve(this);
   }
 
-  isApplicable(resource: any) {
+  isApplicable(resource: ToolingInterface) {
     return this.supportedResources.find((xs) => xs === resource.resourceType) !== undefined;
   }
 
-  abstract generateActions(resource: any): Promise<any>;
+  abstract generateActions(resource: ToolingInterface): Promise<any>;
 }

@@ -2,6 +2,7 @@ import { RevolverPlugin } from './pluginInterface';
 import dateTime from '../lib/dateTime';
 import { NoopAction, SetTagAction, StartAction, StopAction } from '../actions/actions';
 import getParser from './parsers/index';
+import { ToolingInterface } from '../drivers/instrumentedResource';
 
 export default class PowerCyclePlugin extends RevolverPlugin {
   private parser: any;
@@ -32,7 +33,7 @@ export default class PowerCyclePlugin extends RevolverPlugin {
     return Promise.resolve(this);
   }
 
-  generateActions(resource: any): Promise<any> {
+  generateActions(resource: ToolingInterface): Promise<any> {
     const logger = this.logger;
     const scheduleTag = resource.tag(this.scheduleTagName);
     const tz = resource.tag(this.timezoneTagName) || this.accountConfig.timezone;

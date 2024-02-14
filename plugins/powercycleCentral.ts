@@ -3,6 +3,7 @@ import dateTime from '../lib/dateTime';
 import { NoopAction, StartAction, StopAction } from '../actions/actions';
 import { Filter, buildFilter } from './filters';
 import getParser from './parsers/index';
+import { ToolingInterface } from '../drivers/instrumentedResource';
 
 interface Matcher {
   name: string;
@@ -75,7 +76,7 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
     return Promise.resolve(this);
   }
 
-  generateActions(resource: any): Promise<any> {
+  generateActions(resource: ToolingInterface): Promise<any> {
     const logger = this.logger;
     const tz = resource.tag(this.timezoneTagName) || this.accountConfig.timezone || 'utc';
     const localTimeNow = dateTime.getTime(tz);

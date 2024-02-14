@@ -73,7 +73,7 @@ See `plugins/powercycle.ts` for an example.
 To add a plugin:
 * Extend `RevolverPlugin` from `plugins/pluginInterface.ts`. Important things to implement
   * `initialise(): Promise<PluginClass>`: Called by revolver during startup. Use for config parsing, setup, etc.
-  * `generateActions(resource: any): Promise<any>`: Main plugin interface. Plugin needs to interpret all the resources
+  * `generateActions(resource: ToolingInterface): Promise<any>`: Main plugin interface. Plugin needs to interpret all the resources
   passed and return a list of actions to perform on those resources.
   * `supportedResources`: List of `drivers` that this plugin supports.
 * Add the plugin name to `supportedPlugins` in `lib/accountRevolver.ts`

@@ -104,7 +104,7 @@ export default class ValidateTagsPlugin extends RevolverPlugin {
     return actions.filter((xi: any) => !xi.setDefault);
   }
 
-  generateActions(resource: any): Promise<any> {
+  generateActions(resource: ToolingInterface): Promise<any> {
     const tagsSplit = Array.isArray(this.pluginConfig.tag) ? this.pluginConfig.tag : this.pluginConfig.tag.split(',');
     const tags = tagsSplit.filter((xi: string) => xi);
 
