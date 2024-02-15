@@ -47,10 +47,12 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
     this.matchers = await Promise.all(
       this.matchers.map(async (matcher) => {
         const filter = await buildFilter(matcher.filter);
+        type ObjectKey = keyof typeof this.pluginConfig.predefinedSchedules;
+        const resolvedSchedule = this.pluginConfig.predefinedSchedules[matcher.schedule as ObjectKey];
         return {
           name: matcher.name,
           filter: filter,
-          schedule: matcher.schedule,
+          schedule: resolvedSchedule ? resolvedSchedule : matcher.schedule,
           priority: matcher.priority,
         };
       }),
