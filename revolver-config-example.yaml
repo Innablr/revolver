@@ -65,7 +65,7 @@ defaults:
           # Look for this tag on resources to see if they have an explicit schedule set
           availabilityTag: Schedule
           # List of "shorthand" schedules that can be referenced in the matchers
-          schedules:
+          predefinedSchedules:
             BusinessHours: 'Start=08:00|mon-fri;Stop=18:00|mon-fri'
             EarlyStartBusinessHours: 'Start=05:00|mon-fri;Stop=18:00|mon-fri'
           # Treat that tagged schedule as this priority when determining what schedule to use with the matchers

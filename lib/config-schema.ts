@@ -149,12 +149,12 @@ const ConfigSchema = z
           powercycleCentral: z
             .object({
               active: z.boolean(),
-              schedules: z.record(z.string(), z.string()).default({}),
               configs: z.array(
                 z.object({
                   parser: z.string().default('strict'),
                   availabilityTag: z.string().default('Schedule'),
                   availabilityTagPriority: z.number().default(0),
+                  predefinedSchedules: z.record(z.string(), z.string()).default({}),
                   matchers: z.array(
                     z.object({
                       name: z.string(),

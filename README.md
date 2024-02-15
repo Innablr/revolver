@@ -323,7 +323,7 @@ If multiple matches filter the same resource, the matcher with the highest prior
 | parser                  | Set schedule interpretation format                                         | `strict`                                                   | `strict`   |
 | availabilityTag         | Set tag name for individual resource schedules                             | `string` AWS tag name                                      | `Schedule` |
 | availabilityTagPriority | Priority to set individually tagged schedules compared to the matchers.    | `number` >= 0                                              | `0`        |
-| schedules               | List of "shorthand" schedules that can be referenced in the matchers       | list of name:schedule See [strict](######strict) schedules | `[]`       |
+| predefinedSchedules     | List of "shorthand" schedules that can be referenced in the matchers       | list of name:schedule See [strict](######strict) schedules | `[]`       |
 | matchers                | List of resource filters paired with a schedule to control power behaviour | `Matcher[]` See [Matcher](######Matcher)                   | `[]`       |
 
 ##### Matcher
@@ -544,7 +544,7 @@ Notes
          - parser: strict
            availabilityTag: Schedule
            availabilityTagPriority: 5
-           schedules:
+           predefinedSchedules:
              BusinessHours: 'Start=08:00|mon-fri;Stop=18:00|mon-fri'
              EarlyStartBusinessHours: 'Start=05:00|mon-fri;Stop=18:00|mon-fri'
            matchers:

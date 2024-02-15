@@ -19,7 +19,6 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
   private readonly scheduleTagName: string;
   private readonly timezoneTagName: string;
   private readonly scheduleTagPriority: number;
-  private readonly predefinedSchedules: object;
 
   private matchers: Matcher[];
 
@@ -31,7 +30,6 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
     this.scheduleTagName = this.pluginConfig.availabilityTag || 'Schedule';
     this.timezoneTagName = this.accountConfig.timezoneTag || 'Timezone';
     this.scheduleTagPriority = this.pluginConfig.availabilityTagPriority || 0;
-    this.predefinedSchedules = accountConfig.plugins[pluginName].schedules; // it's in a slightly strange place
 
     // todo explicit type conversion
     this.matchers = pluginConfig.matchers.sort((a: Matcher, b: Matcher) => {
@@ -49,8 +47,8 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
     this.matchers = await Promise.all(
       this.matchers.map(async (matcher) => {
         const filter = await buildFilter(matcher.filter);
-        type ObjectKey = keyof typeof this.predefinedSchedules;
-        const resolvedSchedule = this.predefinedSchedules[matcher.schedule as ObjectKey];
+        type ObjectKey = keyof typeof this.pluginConfig.predefinedSchedules;
+        const resolvedSchedule = this.pluginConfig.predefinedSchedules[matcher.schedule as ObjectKey];
         return {
           name: matcher.name,
           filter: filter,
