@@ -36,6 +36,9 @@ defaults:
         - parser: strict
           availabilityTag: Schedule
           availabilityTagPriority: 5
+          predefinedSchedules:
+            BusinessHours: 'Start=08:00|mon-fri;Stop=18:00|mon-fri'
+            EarlyStartBusinessHours: 'Start=05:00|mon-fri;Stop=18:00|mon-fri'
           matchers:
             - name: shorthand
               schedule: "0x7"
