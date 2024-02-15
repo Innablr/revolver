@@ -46,7 +46,8 @@ describe('Validate test config', function () {
     expect(Object.keys(config.defaults.plugins.powercycleCentral?.configs[0].matchers[2].filter as object)[0]).to.equal(
       'resource',
     );
-    
-    expect(config.defaults.plugins.powercycleCentral?.configs[0].predefinedSchedules.BusinessHours).to.equal('Start=08:00|mon-fri;Stop=18:00|mon-fri')
+
+    const predefinedSchedules = config.defaults.plugins.powercycleCentral?.configs[0].predefinedSchedules;
+    expect(predefinedSchedules?.BusinessHours).to.equal('Start=08:00|mon-fri;Stop=18:00|mon-fri');
   });
 });
