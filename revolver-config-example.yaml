@@ -64,11 +64,21 @@ defaults:
         - parser: strict
           # Look for this tag on resources to see if they have an explicit schedule set
           availabilityTag: Schedule
+          # List of "shorthand" schedules that can be referenced in the matchers
+          schedules:
+            BusinessHours: 'Start=08:00|mon-fri;Stop=18:00|mon-fri'
+            EarlyStartBusinessHours: 'Start=05:00|mon-fri;Stop=18:00|mon-fri'
           # Treat that tagged schedule as this priority when determining what schedule to use with the matchers
           availabilityTagPriority: 5
           # List of filter<>schedule pairs to apply schedules to resources matching particular filters.
           matchers:
             # name is used for audit logging and for a human description
+            - name: Start fairly important VMs a bit early
+              filter:
+                - tag: 'Importance|fairly'
+                - type: ec2
+              schedule: EarlyStartBusinessHours
+              priority: 5
             - name: default tagged schedule
               filter:
                 - tag: ["CostCentre||equals|1234", "CostCentre|4567"]

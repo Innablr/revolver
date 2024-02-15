@@ -318,12 +318,13 @@ a generic filter to match specific resources and what power schedule those resou
 If multiple matches filter the same resource, the matcher with the highest priority will be applied (largest number).
 
 ##### Plugin config
-| Option                  | Description                                                                | Allowed values                           | Default    |
-|-------------------------|----------------------------------------------------------------------------|------------------------------------------|------------|
-| parser                  | Set schedule interpretation format                                         | `strict`                                 | `strict`   |
-| availabilityTag         | Set tag name for individual resource schedules                             | `string` AWS tag name                    | `Schedule` |
-| availabilityTagPriority | Priority to set individually tagged schedules compared to the matchers.    | `number` >= 0                            | `0`        |
-| matchers                | List of resource filters paired with a schedule to control power behaviour | `Matcher[]` See [Matcher](######Matcher) | `[]`       |
+| Option                  | Description                                                                | Allowed values                                             | Default    |
+| ----------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------- |
+| parser                  | Set schedule interpretation format                                         | `strict`                                                   | `strict`   |
+| availabilityTag         | Set tag name for individual resource schedules                             | `string` AWS tag name                                      | `Schedule` |
+| availabilityTagPriority | Priority to set individually tagged schedules compared to the matchers.    | `number` >= 0                                              | `0`        |
+| schedules               | List of "shorthand" schedules that can be referenced in the matchers       | list of name:schedule See [strict](######strict) schedules | `[]`       |
+| matchers                | List of resource filters paired with a schedule to control power behaviour | `Matcher[]` See [Matcher](######Matcher)                   | `[]`       |
 
 ##### Matcher
 | Option   | Description                                                                 | Allowed values                                 | Default |
@@ -543,6 +544,9 @@ Notes
          - parser: strict
            availabilityTag: Schedule
            availabilityTagPriority: 5
+           schedules:
+             BusinessHours: 'Start=08:00|mon-fri;Stop=18:00|mon-fri'
+             EarlyStartBusinessHours: 'Start=05:00|mon-fri;Stop=18:00|mon-fri'
            matchers:
              - name: default tagged schedule
                filter:
