@@ -4,6 +4,7 @@ import { promises as fs } from 'fs';
 import { getAwsConfig } from './awsConfig';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ActionAuditEntry } from '../actions/audit';
+import dateTime from './dateTime';
 
 abstract class ObjectLog {
   protected readonly logger;
@@ -81,8 +82,9 @@ export class ObjectLogCsv extends ObjectLog {
     let mode = 'w';
     if (this.append) mode = 'a';
 
-    const f = await fs.open(this.options.file as string, mode);
-    this.logger.info(`Writing ${this.dataTable.constructor.name} log to ${this.options.file}`);
+    const filename = dateTime.resolveFilename(this.options.file);
+    const f = await fs.open(filename, mode);
+    this.logger.info(`Writing ${this.dataTable.constructor.name} log to ${filename}`);
     if (!this.append) {
       await f.write(this.dataTable.header().join(',') + '\n');
     }
@@ -99,11 +101,12 @@ export class ObjectLogCsv extends ObjectLog {
       .map((row) => this.sanitizeRow(row))
       .join('\n');
 
-    this.logger.info(
-      `Writing ${this.dataTable.constructor.name} log to s3://${this.options.s3?.bucket}/${this.options.s3?.path}`,
+      const path = dateTime.resolveFilename(this.options.s3?.path);
+      this.logger.info(
+      `Writing ${this.dataTable.constructor.name} log to s3://${this.options.s3?.bucket}/${path}`,
     );
     return s3.send(
-      new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: this.options.s3?.path, Body: fullData }),
+      new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: fullData }),
     );
   }
 
@@ -132,7 +135,8 @@ export class ObjectLogJson extends ObjectLog {
   }
 
   private async writeFile() {
-    const f = await fs.open(this.options.file || '', 'w');
+    const filename = dateTime.resolveFilename(this.options.file);
+    const f = await fs.open(filename || '', 'w');
     return f.write(JSON.stringify(this.data, null, 2));
   }
 
@@ -140,10 +144,11 @@ export class ObjectLogJson extends ObjectLog {
     const config = getAwsConfig(this.options.s3?.region);
     const s3 = new S3Client(config);
     const fullData = JSON.stringify(this.data, null, 2);
+    const path = dateTime.resolveFilename(this.options.s3?.path);
 
-    this.logger.info(`Writing data to s3://${this.options.s3?.bucket}/${this.options.s3?.path}`);
+    this.logger.info(`Writing data to s3://${this.options.s3?.bucket}/${path}`);
     return s3.send(
-      new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: this.options.s3?.path, Body: fullData }),
+      new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: fullData }),
     );
   }
 
