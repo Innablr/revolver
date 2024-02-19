@@ -87,11 +87,11 @@ Main Revolver configuration is done in YAML. First line in the config file must 
   | drivers              | List of enabled drivers and their options (see Drivers)                                                                                                                                                                                                                                                                                                                                                                                                                                                       | -        |
   | plugins              | List of enabled plugins with their options (see Plugins)                                                                                                                                                                                                                                                                                                                                                                                                                                                      | -        |
 
-Note: if any of the `file` elements in `resourceLog` or `auditLog` contain tokens of the format: `%xxxx%` these will be replaced by datetime tokens per https://moment.github.io/luxon/#/formatting?id=table-of-tokens. In this way, output files can be named uniquely based on the current datetime.  For example:
+Note: if any of the `file` elements in `resourceLog` or `auditLog` contain tokens of the format: `%xxxx` these will be replaced by datetime tokens per https://moment.github.io/luxon/#/formatting?id=table-of-tokens. In this way, output files can be named uniquely based on the current datetime.  For example:
 
 ```yaml
       csv:
-        file: 'resources.%yyyy%%LL%%dd%.csv'
+        file: 'resources.%yyyy%LL%dd.csv'
 ```
 
 
