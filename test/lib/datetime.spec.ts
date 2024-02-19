@@ -8,6 +8,5 @@ describe('Validate filename tokens', function () {
   expect(dateTime.resolveFilename('file.txt')).to.equal('file.txt');
   expect(dateTime.resolveFilename('file.%cccc.txt')).to.equal('file.Monday.txt');
   expect(dateTime.resolveFilename('file.%LLLL.txt')).to.equal('file.February.txt');
-  expect(dateTime.resolveFilename('file.%cccc.txt')).to.equal('file.Monday.txt');
   expect(dateTime.resolveFilename('file.%yyyy%LL%dd.txt')).to.equal('file.20240219.txt');
 });
