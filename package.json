@@ -16,8 +16,8 @@
     "bundleTestRun": "cd dist; CONFIG_FILE=bundle-test-config.yaml node invoke.js",
     "bundleTest": "npm run bundle; npm run bundleTestPrep; npm run bundleTestRun",
     "cleanIntermediate": "rimraf -g 'plugins/**/**.d.ts' 'plugins/**/*.js' 'drivers/**/*.d.ts' 'drivers/**/*.js' 'lib/**/*.d.ts' 'lib/**/*.js' invoke.d.ts invoke.js revolver.d.ts revolver.js",
-    "clean": "npm run cleanIntermediate; tsc --build ./tsconfig.json --clean && rimraf revolver.zip dist;",
-    "start": "CONFIG_FILE=revolver-config.yaml PRETTY_LOG_TIME_ZONE=local node invoke.js"
+    "clean": "npm run cleanIntermediate && tsc --build ./tsconfig.json --clean && rimraf revolver.zip dist",
+    "start": "cross-env CONFIG_FILE=revolver-config.yaml PRETTY_LOG_TIME_ZONE=local node invoke.js"
   },
   "author": "Alex Bukharov",
   "license": "MIT",
@@ -56,6 +56,7 @@
     "chai": "^4.4.1",
     "chai-as-promised": "^7.1.1",
     "copy-webpack-plugin": "^12.0.2",
+    "cross-env": "^7.0.3",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
