@@ -23,7 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-auto-scaling": "^3.511.0",
-    "@aws-sdk/client-ec2": "^3.511.0",
+    "@aws-sdk/client-ec2": "^3.515.0",
     "@aws-sdk/client-organizations": "^3.511.0",
     "@aws-sdk/client-rds": "^3.511.0",
     "@aws-sdk/client-redshift": "^3.511.0",
