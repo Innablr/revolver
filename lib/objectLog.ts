@@ -101,13 +101,9 @@ export class ObjectLogCsv extends ObjectLog {
       .map((row) => this.sanitizeRow(row))
       .join('\n');
 
-      const path = dateTime.resolveFilename(this.options.s3?.path);
-      this.logger.info(
-      `Writing ${this.dataTable.constructor.name} log to s3://${this.options.s3?.bucket}/${path}`,
-    );
-    return s3.send(
-      new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: fullData }),
-    );
+    const path = dateTime.resolveFilename(this.options.s3?.path);
+    this.logger.info(`Writing ${this.dataTable.constructor.name} log to s3://${this.options.s3?.bucket}/${path}`);
+    return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: fullData }));
   }
 
   process(): any {
@@ -147,9 +143,7 @@ export class ObjectLogJson extends ObjectLog {
     const path = dateTime.resolveFilename(this.options.s3?.path);
 
     this.logger.info(`Writing data to s3://${this.options.s3?.bucket}/${path}`);
-    return s3.send(
-      new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: fullData }),
-    );
+    return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: fullData }));
   }
 
   process(): any {
