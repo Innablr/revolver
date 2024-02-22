@@ -185,7 +185,7 @@ export class ResourceTable implements DataTable {
         e.resourceType,
         e.resourceId,
         e.resourceState,
-        (e?.metadata?.actionNames || []).join(','),
+        (e?.metadata?.actionNames || []).join('|'),
       ].concat(this.reportTags.map((t) => e.tag(t) || ''));
     });
   }
