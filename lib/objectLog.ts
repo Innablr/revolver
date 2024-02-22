@@ -172,7 +172,7 @@ export class ResourceTable implements DataTable {
   }
 
   header(): string[] {
-    return ['ACCOUNT_ID', 'ACCOUNT_NAME', 'REGION', 'TYPE', 'ID', 'STATE'].concat(
+    return ['ACCOUNT_ID', 'ACCOUNT_NAME', 'REGION', 'TYPE', 'ID', 'STATE', 'ACTIONS'].concat(
       this.reportTags.map((t) => `TAG:${t}`),
     );
   }
@@ -185,6 +185,7 @@ export class ResourceTable implements DataTable {
         e.resourceType,
         e.resourceId,
         e.resourceState,
+        (e?.metadata?.actionNames || []).join('|'),
       ].concat(this.reportTags.map((t) => e.tag(t) || ''));
     });
   }
