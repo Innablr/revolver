@@ -114,6 +114,11 @@ export abstract class DriverInterface {
             `${xa.who.name} will execute ${xa.present} on ${xr.resourceType} ${allWithAction.map((xxr) => xxr.resourceId)}`,
           );
 
+          // push the list of actions actually run into the resource
+          allWithAction.forEach((xxr) => {
+            (xxr.metadata.actionNames ??= []).push(xa.constructor.name);
+          });
+
           if (this.driverConfig.pretend !== false) {
             this.appendAuditLog(xa, allWithAction, 'pretend');
             return this.pretendAction(allWithAction, xa);
