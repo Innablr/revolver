@@ -8,7 +8,7 @@ import * as fs from 'fs';
 
 const LOCAL_CONFIG = path.join(__dirname, 'test-revolver-config.powercycleCentral.yaml');
 // const RESOURCES_FILE = path.join(__dirname, 'resources.json'); // in config YAML
-// const OUTPUT_AUDIT_CSV_FILE = path.join(__dirname, 'audit.csv');
+const OUTPUT_AUDIT_CSV_FILE = path.join(__dirname, 'audit.csv');
 // const OUTPUT_RESOURCES_CSV_FILE = path.join(__dirname, 'resources.csv');
 const OUTPUT_RESOURCES_JSON_FILE = path.join(__dirname, 'resources.json');
 
@@ -48,16 +48,22 @@ describe('XXX Run full cycle', function () {
     const r = revolverHandle(event, context, () => {});
     if (r instanceof Promise) {
       r.then(() => {
-        // TODO: validate audit.csv
+        // validate audit.csv
+        logger.info(`TEST validating ${OUTPUT_AUDIT_CSV_FILE}`);
+        const auditCsvText = fs.readFileSync(OUTPUT_AUDIT_CSV_FILE, 'utf-8');
+        expect((auditCsvText.match(/2024-02-/g) || []).length).to.equal(4); // number of rows
+        expect(auditCsvText).to.include(',ec2,ec2,i-0c688d35209d7f436,stop,');
+        expect(auditCsvText).to.include(',ec2,ec2,i-031635db539857721,stop,');
+        expect(auditCsvText).to.not.include(',ec2,ec2,i-05b6baf37fc8f9454,stop,');
 
         // TODO: validate resources.csv
 
-        // TODO: validate matches and actions in resources.json
+        // validate matches and actions in resources.json
         logger.info(`TEST validating ${OUTPUT_RESOURCES_JSON_FILE}`);
         const rawData = fs.readFileSync(OUTPUT_RESOURCES_JSON_FILE, 'utf-8');
         const resourceList = JSON.parse(rawData);
         const resources = Object.fromEntries(resourceList.map((r: any) => [r.resourceId, r]));
-        expect(resourceList.length).to.equal(10);
+        expect(resourceList.length).to.equal(10); // number of resources
 
         expect(resources['i-0c688d35209d7f436'].resourceState).to.equal('running');
         expect(resources['i-0c688d35209d7f436'].metadata.matches.length).to.equal(1);
