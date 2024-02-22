@@ -43,6 +43,10 @@ describe('XXX Run full cycle', function () {
     succeed: () => {},
   };
 
+  // delete output files before run
+  if (fs.existsSync(OUTPUT_AUDIT_CSV_FILE)) fs.unlinkSync(OUTPUT_AUDIT_CSV_FILE);
+  if (fs.existsSync(OUTPUT_RESOURCES_JSON_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_JSON_FILE);
+
   environ.configPath = LOCAL_CONFIG;
   it('resolves', (done) => {
     const r = revolverHandle(event, context, () => {});
