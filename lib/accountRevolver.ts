@@ -189,10 +189,10 @@ export class AccountRevolver {
     try {
       await this.loadResources();
       await this.runPlugins();
+      await this.runActions();
       if (this.config.settings.resourceLog) {
         await this.logResources();
       }
-      await this.runActions();
       if (this.config.settings.auditLog) {
         await this.logAudit();
       }
