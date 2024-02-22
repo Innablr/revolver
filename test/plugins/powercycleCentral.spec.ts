@@ -8,8 +8,8 @@ import * as fs from 'fs';
 
 const LOCAL_CONFIG = path.join(__dirname, 'test-revolver-config.powercycleCentral.yaml');
 // const RESOURCES_FILE = path.join(__dirname, 'resources.json'); // in config YAML
-const OUTPUT_AUDIT_CSV_FILE = path.join(__dirname, 'audit.csv');
-const OUTPUT_RESOURCES_CSV_FILE = path.join(__dirname, 'resources.csv');
+// const OUTPUT_AUDIT_CSV_FILE = path.join(__dirname, 'audit.csv');
+// const OUTPUT_RESOURCES_CSV_FILE = path.join(__dirname, 'resources.csv');
 const OUTPUT_RESOURCES_JSON_FILE = path.join(__dirname, 'resources.json');
 
 describe('XXX Run full cycle', function () {
@@ -47,7 +47,7 @@ describe('XXX Run full cycle', function () {
   it('resolves', (done) => {
     const r = revolverHandle(event, context, () => {});
     if (r instanceof Promise) {
-      r.then((result) => {
+      r.then(() => {
         // TODO: validate audit.csv
 
         // TODO: validate resources.csv
@@ -56,13 +56,7 @@ describe('XXX Run full cycle', function () {
         logger.info(`TEST validating ${OUTPUT_RESOURCES_JSON_FILE}`);
         const rawData = fs.readFileSync(OUTPUT_RESOURCES_JSON_FILE, 'utf-8');
         const resourceList = JSON.parse(rawData);
-        const resources = resourceList.reduce(
-          (lookup: any, resource: { resourceId: any }) => ({
-            ...lookup,
-            [resource.resourceId]: resource,
-          }),
-          {},
-        );
+        const resources = Object.fromEntries(resourceList.map((r: any) => [r.resourceId, r]));
         expect(resourceList.length).to.equal(10);
 
         expect(resources['i-0c688d35209d7f436'].resourceState).to.equal('running');
