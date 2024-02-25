@@ -83,6 +83,7 @@ const Settings = z.object({
   resourceLog: z
     .object({
       json: ObjectLogOptions.optional(),
+      template: ObjectLogOptions.optional(),
       csv: z
         .object({
           reportTags: z.array(z.string()).optional(),
