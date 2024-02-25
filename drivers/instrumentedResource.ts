@@ -20,6 +20,7 @@ export abstract class ToolingInterface implements InstrumentedResource {
   constructor(awsResource: any) {
     this.resource = awsResource;
     this.actions = [];
+    this.metadata = {};
   }
 
   addAction(action: RevolverAction) {
