@@ -12,42 +12,41 @@ const OUTPUT_AUDIT_CSV_FILE = path.join(__dirname, 'audit.csv');
 // const OUTPUT_RESOURCES_CSV_FILE = path.join(__dirname, 'resources.csv');
 const OUTPUT_RESOURCES_JSON_FILE = path.join(__dirname, 'resources.json');
 
+const timeStamp = '2024-02-22T23:45:19.521Z';
+
+const event: EventBridgeEvent<'Scheduled Event', 'test-event'> = {
+  id: '0',
+  'detail-type': 'Scheduled Event',
+  version: '0',
+  account: '0',
+  time: timeStamp,
+  region: 'ap-southeast-2',
+  source: 'revolver',
+  resources: [],
+  detail: 'test-event',
+};
+
+const context: Context = {
+  callbackWaitsForEmptyEventLoop: false,
+  functionName: 'revolver',
+  functionVersion: '0',
+  invokedFunctionArn: 'arn:aws:lambda:ap-southeast-2:0:function:revolver',
+  memoryLimitInMB: '512',
+  awsRequestId: '0',
+  logGroupName: 'revolver',
+  logStreamName: '0',
+  getRemainingTimeInMillis: () => 0,
+  done: () => {},
+  fail: () => {},
+  succeed: () => {},
+};
+
 describe('XXX Run full cycle', function () {
-  // const timeStamp = process.env['CURRENT_TIME'] || new Date().toISOString();
-  const timeStamp = '2024-02-22T23:45:19.521Z';
-
-  const event: EventBridgeEvent<'Scheduled Event', 'test-event'> = {
-    id: '0',
-    'detail-type': 'Scheduled Event',
-    version: '0',
-    account: '0',
-    time: timeStamp,
-    region: 'ap-southeast-2',
-    source: 'revolver',
-    resources: [],
-    detail: 'test-event',
-  };
-
-  const context: Context = {
-    callbackWaitsForEmptyEventLoop: false,
-    functionName: 'revolver',
-    functionVersion: '0',
-    invokedFunctionArn: 'arn:aws:lambda:ap-southeast-2:0:function:revolver',
-    memoryLimitInMB: '512',
-    awsRequestId: '0',
-    logGroupName: 'revolver',
-    logStreamName: '0',
-    getRemainingTimeInMillis: () => 0,
-    done: () => {},
-    fail: () => {},
-    succeed: () => {},
-  };
-
   // delete output files before run
   if (fs.existsSync(OUTPUT_AUDIT_CSV_FILE)) fs.unlinkSync(OUTPUT_AUDIT_CSV_FILE);
   if (fs.existsSync(OUTPUT_RESOURCES_JSON_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_JSON_FILE);
-
   environ.configPath = LOCAL_CONFIG;
+
   it('resolves', (done) => {
     const r = revolverHandle(event, context, () => {});
     if (r instanceof Promise) {
