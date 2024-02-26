@@ -41,7 +41,7 @@ const context: Context = {
 };
 
 describe('Run powercycleCentral full cycle', function () {
-  beforeEach(function() {
+  beforeEach(function () {
     // delete output files before run
     if (fs.existsSync(OUTPUT_AUDIT_CSV_FILE)) fs.unlinkSync(OUTPUT_AUDIT_CSV_FILE);
     if (fs.existsSync(OUTPUT_RESOURCES_JSON_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_JSON_FILE);
@@ -63,6 +63,7 @@ describe('Run powercycleCentral full cycle', function () {
         // TODO: validate resources.csv
         logger.info(`TEST validating ${OUTPUT_RESOURCES_CSV_FILE}`);
         const resourcesCsvText = fs.readFileSync(OUTPUT_RESOURCES_CSV_FILE, 'utf-8');
+        expect(resourcesCsvText).to.include(',TAG:Name,TAG:Schedule');
 
         // validate matches and actions in resources.json
         logger.info(`TEST validating ${OUTPUT_RESOURCES_JSON_FILE}`);
