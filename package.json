@@ -9,6 +9,7 @@
   "scripts": {
     "lint": "eslint . --ext .ts",
     "test": "mocha --require ts-node/register --require source-map-support/register --recursive --exit test",
+    "coverage": "nyc npm run test; rimraf .nyc_output",
     "build": "tsc --build ./tsconfig.json",
     "watch": "tsc --build ./tsconfig.json --watch",
     "bundle": "npm run clean; webpack; npm run build; zip -9rqj revolver.zip dist",
@@ -65,6 +66,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "mocha": "^10.3.0",
+    "nyc": "^15.1.0",
     "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
     "source-map-support": "^0.5.21",
