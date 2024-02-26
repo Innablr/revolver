@@ -15,12 +15,12 @@ export interface InstrumentedResource {
 export abstract class ToolingInterface implements InstrumentedResource {
   public resource: any;
   public actions: RevolverAction[];
-  public metadata: any;
+  private meta: any;
 
   constructor(awsResource: any) {
     this.resource = awsResource;
     this.actions = [];
-    this.metadata = {};
+    this.meta = {};
   }
 
   addAction(action: RevolverAction) {
@@ -57,6 +57,11 @@ export abstract class ToolingInterface implements InstrumentedResource {
       resource: this.resource,
       metadata: this.metadata,
     };
+  }
+
+  // Hide set metadata() so plugins can't delete data set by other plugins.
+  get metadata(): any {
+    return this.meta;
   }
 
   get region() {

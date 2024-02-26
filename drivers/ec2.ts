@@ -96,7 +96,7 @@ class Ec2Driver extends DriverInterface {
 
     await Promise.all(
       resourceChunks.map(async function (chunk) {
-        logger.info(`EC2 instances ${chunk.map((xr) => xr.resourceId)} will start`);
+        logger.info(`EC2 instances ${DriverInterface.toLimitedString(chunk)} will start`);
         return ec2.send(
           new StartInstancesCommand({
             InstanceIds: chunk.map((xr) => xr.resourceId),
@@ -152,7 +152,7 @@ class Ec2Driver extends DriverInterface {
 
     await Promise.all(
       resourceChunks.map(async function (chunk) {
-        logger.info(`EC2 instances ${chunk.map((xr) => xr.resourceId)} will stop`);
+        logger.info(`EC2 instances ${DriverInterface.toLimitedString(chunk)} will stop`);
         return ec2.send(
           new StopInstancesCommand({
             InstanceIds: chunk.map((xr) => xr.resourceId),
@@ -165,7 +165,7 @@ class Ec2Driver extends DriverInterface {
   }
 
   noop(resources: InstrumentedEc2[], action: RevolverAction) {
-    this.logger.info(`EC2 instances ${resources.map((xr) => xr.resourceId)} will noop because: ${action.reason}`);
+    this.logger.info(`EC2 instances ${DriverInterface.toLimitedString(resources)} will noop because: ${action.reason}`);
     return Promise.resolve();
   }
 

@@ -97,15 +97,13 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
     });
 
     // Add list of all the matched Matchers to the resource metadata
-    resource.metadata = {
-      matches: allMatches.map((matcher: Matcher) => {
-        return {
-          name: matcher.name,
-          schedule: matcher.schedule,
-          priority: matcher.priority,
-        };
-      }),
-    };
+    resource.metadata.matches = allMatches.map((matcher: Matcher) => {
+      return {
+        name: matcher.name,
+        schedule: matcher.schedule,
+        priority: matcher.priority,
+      };
+    });
 
     let highestMatch = allMatches[0]; // undefined if no matches
     const taggedSchedule = resource.tag(this.scheduleTagName);

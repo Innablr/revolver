@@ -35,7 +35,7 @@ export abstract class DriverInterface {
 
   pretendAction(resources: ToolingInterface[], action: RevolverAction) {
     this.logger.info(
-      `Pretending that ${this.name} resources ${resources.map((xr) => xr.resourceId)} will ${action.present}`,
+      `Pretending that ${this.name} resources ${DriverInterface.toLimitedString(resources)} will ${action.present}`,
     );
   }
 
@@ -76,6 +76,15 @@ export abstract class DriverInterface {
     }
   }
 
+  // Print items in a list up to a limit to not spam the console
+  protected static toLimitedString(resources: InstrumentedResource[]): string {
+    const limit = 6;
+    return `[${resources
+      .slice(0, limit + 1)
+      .map((xxr, i) => (i !== limit ? xxr.resourceId : '...'))
+      .join(', ')}](${resources.length})`;
+  }
+
   processActions(resources: ToolingInterface[]): Promise<any> {
     const logger = this.logger;
     logger.info(`Driver ${this.name} is processing actions...`);
@@ -111,7 +120,7 @@ export abstract class DriverInterface {
           }
 
           logger.info(
-            `${xa.who.name} will execute ${xa.present} on ${xr.resourceType} ${allWithAction.map((xxr) => xxr.resourceId)}`,
+            `${xa.who.name} will execute ${xa.present} on ${xr.resourceType} ${DriverInterface.toLimitedString(allWithAction)}`,
           );
 
           // push the list of actions actually run into the resource
@@ -134,11 +143,17 @@ export abstract class DriverInterface {
               this.appendAuditLog(xa, allWithAction, 'success');
             })
             .catch((err: Error) => {
-              this.appendAuditLog(xa, allWithAction, err.message);
+              // Remove encoded auth failure message if present as it's verbose and not useful.
+              let msg = err.message;
+              if (err.name === 'UnauthorizedOperation') {
+                const i = err.message.indexOf('Encoded authorization failure message');
+                msg = err.message.substring(0, i > 0 ? i : err.message.length);
+              }
+
+              this.appendAuditLog(xa, allWithAction, msg);
               logger.error(
-                `Error in driver ${this.name} processing action [${xa.present}] on resources ${allWithAction.map((xxr) => xxr.resourceId)}, stack trace will follow:`,
+                `Error in driver ${this.name} processing action [${xa.present}] on resources ${DriverInterface.toLimitedString(allWithAction)}: ${msg}`,
               );
-              logger.error(err);
             });
         });
         return o.concat(a.filter((xa) => xa));
