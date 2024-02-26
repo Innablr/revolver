@@ -99,5 +99,7 @@ describe('Validate ObjectLog', function () {
     await new ObjectLogTemplate(TEST_RESOURCES, RESOURCE_LOG_CONFIG.template).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.template.file)).to.be.true;
     // TODO: check the contents of RESOURCE_LOG_CONFIG.template.file
+    const output = fs.readFileSync(RESOURCE_LOG_CONFIG.template.file, 'utf-8');
+    expect(output).to.include('lord-farquaad');
   });
 });
