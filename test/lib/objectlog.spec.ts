@@ -9,10 +9,12 @@ import * as fs from 'fs';
 class FakeResource extends ToolingInterface {
   private myResourceId: string;
   private myResourceType: string;
-  constructor(resource: any, resourceId: string, resourceType: string) {
+  private myResourceState: string;
+  constructor(resourceId: string, resourceType: string, resourceState: string, resource: any) {
     super(resource);
     this.myResourceId = resourceId;
     this.myResourceType = resourceType;
+    this.myResourceState = resourceState;
   }
 
   get resourceId(): string {
@@ -28,7 +30,7 @@ class FakeResource extends ToolingInterface {
     return DateTime.fromISO('2024-02-13T22:43:49.000Z').setZone('utc');
   }
   get resourceState(): string {
-    return randomBytes(20).toString('hex');
+    return this.myResourceState;
   }
   tag(key: string): string | undefined {
     return `value:${key}`;
@@ -41,6 +43,7 @@ const RESOURCE_LOG_CONFIG = {
   },
   template: {
     file: 'out.template.html',
+    templateName: 'template1.njk',
   },
   csv: {
     file: 'out.csv',
@@ -52,8 +55,10 @@ const RESOURCE_LOG_CONFIG = {
 };
 
 const TEST_RESOURCES = [
-  new FakeResource({ colour: 'gray' }, 'donkey', 'donkey'),
-  new FakeResource({ colour: 'green' }, 'shrek', 'ogre'),
+  new FakeResource('donkey1', 'donkey', 'running', { colour: 'gray' }),
+  new FakeResource('shrek', 'ogre', 'running', { colour: 'green' }, ),
+  new FakeResource('fiona', 'ogre', 'running', { colour: 'green' }),
+  new FakeResource('lord-farquaad', 'baddie', 'dead', { colour: 'red' }),
 ];
 
 const ACCOUNT_CONFIG = {

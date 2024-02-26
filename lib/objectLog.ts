@@ -61,6 +61,10 @@ type ObjectLogWriteOptions = {
   };
 };
 
+type TemplateObjectLogWriteOptions = ObjectLogWriteOptions & {
+  templateName: string;
+};
+
 /**
  * A class that can write a {@link DataTable} to a file or S3 bucket as a CSV.
  */
@@ -176,16 +180,18 @@ export class ObjectLogJson extends AbstractObjectLog {
  * TODO: allow custom templates etc
  */
 export class ObjectLogTemplate extends AbstractObjectLog {
+  protected readonly templateName: string;
+  constructor(data: any, options: TemplateObjectLogWriteOptions) {
+    super(data, options);
+    this.templateName = options.templateName;
+  }
+
   getOutput(): string {
-    const templateFile = path.join(__dirname, 'templates', 'template1.njk');
+    const templateFile = path.join(__dirname, 'templates', this.templateName);
     const env = nunjucks_configure({ autoescape: true });
     const s = env.render(templateFile, {
-      title: 'Some Title',
-      items: {
-        one: 123,
-        two: 456,
-      },
       data: this.data,
+      options: this.options,
     });
 
     return s;
