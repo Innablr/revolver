@@ -6,7 +6,7 @@ import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ActionAuditEntry } from '../actions/audit';
 import dateTime from './dateTime';
 import path from 'path';
-import nunjucks from 'nunjucks';
+import { configure as nunjucks_configure } from 'nunjucks';
 
 abstract class ObjectLog {
   protected readonly logger;
@@ -178,13 +178,14 @@ export class ObjectLogJson extends AbstractObjectLog {
 export class ObjectLogTemplate extends AbstractObjectLog {
   getOutput(): string {
     const templateFile = path.join(__dirname, 'templates', 'template1.njk');
-    nunjucks.configure({ autoescape: true });
-    const s = nunjucks.render(templateFile, {
+    const env = nunjucks_configure({ autoescape: true });
+    const s = env.render(templateFile, {
       title: 'Some Title',
       items: {
         one: 123,
         two: 456,
       },
+      data: this.data,
     });
 
     return s;
