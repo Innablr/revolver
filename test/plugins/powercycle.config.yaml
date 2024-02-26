@@ -6,13 +6,13 @@ defaults:
     timezoneTag: Timezone
     organizationRoleName: none
     revolverRoleName: none
-    localResourcesFile: ./test/plugins/test-resources.json
-    resourceLog:
-      json:
-        file: ./test/plugins/resources.json
-      csv:
-        file: ./test/plugins/resources.csv
-        reportTags: ["Name", "Schedule"]
+    localResourcesFile: ./test/plugins/powercycle.resources.json
+    # resourceLog:
+    #   json:
+    #     file: ./test/plugins/resources.json
+    #   csv:
+    #     file: ./test/plugins/resources.csv
+    #     reportTags: ["Name", "Schedule"]
     auditLog:
       csv:
         file: ./test/plugins/audit.csv
