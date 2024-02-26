@@ -6,7 +6,7 @@ defaults:
     timezoneTag: Timezone
     organizationRoleName: none
     revolverRoleName: none
-    localResourcesFile: ./test/plugins/test-resources.json
+    localResourcesFile: ./test/plugins/powercycleCentral.resources.json
     resourceLog:
       json:
         file: ./test/plugins/resources.json
