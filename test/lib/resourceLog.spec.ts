@@ -40,14 +40,14 @@ class FakeResource extends ToolingInterface {
 
 const RESOURCE_LOG_CONFIG = {
   json: {
-    file: 'out.json',
+    file: 'resourcelog-out.json',
   },
   template: {
-    file: 'out.template.html',
+    file: 'resourcelog-out.template.html',
     templateName: 'template1.njk',
   },
   csv: {
-    file: 'out.csv',
+    file: 'resourcelog-out.csv',
     reportTags: ['F1', 'F2'],
   },
   console: {
@@ -68,8 +68,7 @@ const ACCOUNT_CONFIG = {
   },
 };
 
-describe('Validate ObjectLog', function () {
-  // TODO: ObjectLogConsole
+describe('Validate ResourceLog', function () {
   it('Check ObjectLogConsole', async function () {
     await new ObjectLogConsole(
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags),

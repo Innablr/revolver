@@ -32,7 +32,7 @@ class FakeActionAuditEntry implements ActionAuditEntry {
 const AUDIT_LOG_CONFIG = {
   // cost mostly already tested by RESOURCE_LOG_CONFIG
   csv: {
-    file: 'out.csv',
+    file: 'auditlog-out.csv',
     reportTags: ['F1', 'F2'],
   },
 };
@@ -43,7 +43,7 @@ const ACCOUNT_CONFIG = {
   },
 };
 
-describe('Validate ObjectLog', function () {
+describe('Validate auditLog', function () {
   it('Check ObjectLogCsv', async function () {
     const entries = [
       new FakeActionAuditEntry('red', 'dosomething', 'just because'),
