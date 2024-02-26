@@ -112,10 +112,6 @@
           "Value": "accurate"
         },
         {
-          "Key": "blueprint_name",
-          "Value": "xxx-aws-ec2-instance"
-        },
-        {
           "Key": "confidentiality",
           "Value": "internal"
         },
@@ -124,32 +120,8 @@
           "Value": "junk-vm-2-on"
         },
         {
-          "Key": "certification_version",
-          "Value": "3.0.0"
-        },
-        {
-          "Key": "backupplan",
-          "Value": "no_backup"
-        },
-        {
           "Key": "category",
           "Value": "workload"
-        },
-        {
-          "Key": "blueprint_version",
-          "Value": "3.0.0"
-        },
-        {
-          "Key": "control_id_list",
-          "Value": "SEC.CM002.S4 SEC.IP001.S1 SEC.IP002.S1 SEC.IP002.S3 SEC.NS001.S1 SEC.NS001.S4 SEC.SO001.S1 TOC.CB009.S1"
-        },
-        {
-          "Key": "appservice-number",
-          "Value": "123456"
-        },
-        {
-          "Key": "apm-number",
-          "Value": "apm0003472"
         },
         {
           "Key": "trustlevel",
@@ -305,28 +277,12 @@
           "Value": "junk-asg-2-on"
         },
         {
-          "Key": "backupplan",
-          "Value": "no_backup"
-        },
-        {
-          "Key": "apm-number",
-          "Value": "apm0003472"
-        },
-        {
           "Key": "confidentiality",
           "Value": "internal"
         },
         {
           "Key": "integrity",
           "Value": "accurate"
-        },
-        {
-          "Key": "appservice-number",
-          "Value": "123456"
-        },
-        {
-          "Key": "certification_version",
-          "Value": "3.0.0"
         },
         {
           "Key": "aws:ec2launchtemplate:version",
@@ -337,24 +293,12 @@
           "Value": "medium"
         },
         {
-          "Key": "blueprint_name",
-          "Value": "xxx-aws-autoscaling-group"
-        },
-        {
           "Key": "category",
           "Value": "workload"
         },
         {
           "Key": "aws:autoscaling:groupName",
           "Value": "junk-asg-2-on"
-        },
-        {
-          "Key": "control_id_list",
-          "Value": "SEC.CM002.S4 SEC.IP001.S1 SEC.SO001.S1"
-        },
-        {
-          "Key": "blueprint_version",
-          "Value": "3.0.0"
         },
         {
           "Key": "aws:ec2launchtemplate:id",
@@ -507,16 +451,8 @@
       "SourceDestCheck": false,
       "Tags": [
         {
-          "Key": "appservice-number",
-          "Value": "123456"
-        },
-        {
           "Key": "trustlevel",
           "Value": "medium"
-        },
-        {
-          "Key": "apm-number",
-          "Value": "apm0003472"
         },
         {
           "Key": "category",
@@ -527,28 +463,12 @@
           "Value": "internal"
         },
         {
-          "Key": "blueprint_name",
-          "Value": "xxx-aws-ec2-instance"
-        },
-        {
           "Key": "integrity",
           "Value": "accurate"
         },
         {
           "Key": "Name",
           "Value": "junk-vm-3-days"
-        },
-        {
-          "Key": "blueprint_version",
-          "Value": "3.0.0"
-        },
-        {
-          "Key": "control_id_list",
-          "Value": "SEC.CM002.S4 SEC.IP001.S1 SEC.IP002.S1 SEC.IP002.S3 SEC.NS001.S1 SEC.NS001.S4 SEC.SO001.S1 TOC.CB009.S1"
-        },
-        {
-          "Key": "backupplan",
-          "Value": "no_backup"
         },
         {
           "Key": "certification_version",
@@ -700,14 +620,6 @@
       "SourceDestCheck": true,
       "Tags": [
         {
-          "Key": "appservice-number",
-          "Value": "123456"
-        },
-        {
-          "Key": "certification_version",
-          "Value": "3.0.0"
-        },
-        {
           "Key": "confidentiality",
           "Value": "internal"
         },
@@ -724,24 +636,8 @@
           "Value": "junk-asg-3-day"
         },
         {
-          "Key": "apm-number",
-          "Value": "apm0003472"
-        },
-        {
           "Key": "aws:ec2launchtemplate:version",
           "Value": "1"
-        },
-        {
-          "Key": "blueprint_name",
-          "Value": "xxx-aws-autoscaling-group"
-        },
-        {
-          "Key": "backupplan",
-          "Value": "no_backup"
-        },
-        {
-          "Key": "blueprint_version",
-          "Value": "3.0.0"
         },
         {
           "Key": "category",
@@ -754,10 +650,6 @@
         {
           "Key": "trustlevel",
           "Value": "medium"
-        },
-        {
-          "Key": "control_id_list",
-          "Value": "SEC.CM002.S4 SEC.IP001.S1 SEC.SO001.S1"
         }
       ],
       "VirtualizationType": "hvm",
@@ -906,10 +798,6 @@
       "SourceDestCheck": true,
       "Tags": [
         {
-          "Key": "backupplan",
-          "Value": "no_backup"
-        },
-        {
           "Key": "Name",
           "Value": "junk-asg-3-day"
         },
@@ -918,40 +806,20 @@
           "Value": "internal"
         },
         {
-          "Key": "apm-number",
-          "Value": "apm0003472"
-        },
-        {
           "Key": "trustlevel",
           "Value": "medium"
-        },
-        {
-          "Key": "appservice-number",
-          "Value": "123456"
         },
         {
           "Key": "aws:ec2launchtemplate:id",
           "Value": "lt-0a1c6124dae946af3"
         },
         {
-          "Key": "control_id_list",
-          "Value": "SEC.CM002.S4 SEC.IP001.S1 SEC.SO001.S1"
-        },
-        {
           "Key": "integrity",
           "Value": "accurate"
         },
         {
-          "Key": "blueprint_name",
-          "Value": "xxx-aws-autoscaling-group"
-        },
-        {
           "Key": "category",
           "Value": "workload"
-        },
-        {
-          "Key": "blueprint_version",
-          "Value": "3.0.0"
         },
         {
           "Key": "aws:autoscaling:groupName",
@@ -1112,24 +980,8 @@
       "SourceDestCheck": true,
       "Tags": [
         {
-          "Key": "appservice-number",
-          "Value": "123456"
-        },
-        {
-          "Key": "certification_version",
-          "Value": "3.0.0"
-        },
-        {
-          "Key": "control_id_list",
-          "Value": "SEC.CM002.S4 SEC.IP001.S1 SEC.SO001.S1"
-        },
-        {
           "Key": "aws:ec2launchtemplate:id",
           "Value": "lt-0a1c6124dae946af3"
-        },
-        {
-          "Key": "blueprint_version",
-          "Value": "3.0.0"
         },
         {
           "Key": "Name",
@@ -1148,20 +1000,8 @@
           "Value": "junk-asg-3-day"
         },
         {
-          "Key": "backupplan",
-          "Value": "no_backup"
-        },
-        {
-          "Key": "blueprint_name",
-          "Value": "xxx-aws-autoscaling-group"
-        },
-        {
           "Key": "confidentiality",
           "Value": "internal"
-        },
-        {
-          "Key": "apm-number",
-          "Value": "apm0003472"
         },
         {
           "Key": "category",
@@ -1303,26 +1143,13 @@
       "DBInstanceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:mysql-day",
       "IAMDatabaseAuthenticationEnabled": false,
       "PerformanceInsightsEnabled": false,
-      "EnabledCloudwatchLogsExports": [
-        "audit",
-        "error",
-        "general",
-        "slowquery"
-      ],
+      "EnabledCloudwatchLogsExports": ["audit", "error", "general", "slowquery"],
       "DeletionProtection": false,
       "AssociatedRoles": [],
       "TagList": [
         {
           "Key": "integrity",
           "Value": "accurate"
-        },
-        {
-          "Key": "appservice-number",
-          "Value": "123456"
-        },
-        {
-          "Key": "blueprint_version",
-          "Value": "3.0.0"
         },
         {
           "Key": "trustlevel",
@@ -1333,28 +1160,8 @@
           "Value": "internal"
         },
         {
-          "Key": "blueprint_name",
-          "Value": "xxx-aws-rds-db_instance"
-        },
-        {
-          "Key": "backupplan",
-          "Value": "no_backup"
-        },
-        {
           "Key": "category",
           "Value": "workload"
-        },
-        {
-          "Key": "apm-number",
-          "Value": "apm0003472"
-        },
-        {
-          "Key": "certification_version",
-          "Value": "3.0.0"
-        },
-        {
-          "Key": "control_id_list",
-          "Value": "SEC.AM005.S1 SEC.AM007.S3 SEC.AM008.S1 SEC.CM002.S3_b SEC.CM002.S4 SEC.IP001.S1 SEC.IP002.S1 SEC.NS001.S1 SEC.NS001.S3 SEC.SO001.S1 TOC.CB009.S1"
         }
       ],
       "CustomerOwnedIpEnabled": false,
@@ -1469,23 +1276,13 @@
       "DBInstanceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:revolver-rds-instance1",
       "IAMDatabaseAuthenticationEnabled": false,
       "PerformanceInsightsEnabled": false,
-      "EnabledCloudwatchLogsExports": [
-        "postgresql"
-      ],
+      "EnabledCloudwatchLogsExports": ["postgresql"],
       "DeletionProtection": false,
       "AssociatedRoles": [],
       "TagList": [
         {
           "Key": "integrity",
           "Value": "accurate"
-        },
-        {
-          "Key": "appservice-number",
-          "Value": "123456"
-        },
-        {
-          "Key": "blueprint_version",
-          "Value": "3.0.0"
         },
         {
           "Key": "trustlevel",
@@ -1496,28 +1293,8 @@
           "Value": "internal"
         },
         {
-          "Key": "blueprint_name",
-          "Value": "xxx-aws-rds-rds_cluster_instance"
-        },
-        {
-          "Key": "backupplan",
-          "Value": "no_backup"
-        },
-        {
           "Key": "category",
           "Value": "workload"
-        },
-        {
-          "Key": "apm-number",
-          "Value": "apm0003472"
-        },
-        {
-          "Key": "certification_version",
-          "Value": "3.0.0"
-        },
-        {
-          "Key": "control_id_list",
-          "Value": "SEC.CM002.S4 SEC.IP001.S1 SEC.IP004.S1 SEC.NS001.S1 SEC.NS001.S2 SEC.NS001.S3"
         }
       ],
       "CustomerOwnedIpEnabled": false,
@@ -1630,23 +1407,13 @@
       "DBInstanceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:revolver-rds-instance2",
       "IAMDatabaseAuthenticationEnabled": false,
       "PerformanceInsightsEnabled": false,
-      "EnabledCloudwatchLogsExports": [
-        "postgresql"
-      ],
+      "EnabledCloudwatchLogsExports": ["postgresql"],
       "DeletionProtection": false,
       "AssociatedRoles": [],
       "TagList": [
         {
           "Key": "integrity",
           "Value": "accurate"
-        },
-        {
-          "Key": "appservice-number",
-          "Value": "123456"
-        },
-        {
-          "Key": "blueprint_version",
-          "Value": "3.0.0"
         },
         {
           "Key": "trustlevel",
@@ -1657,28 +1424,8 @@
           "Value": "internal"
         },
         {
-          "Key": "blueprint_name",
-          "Value": "xxx-aws-rds-rds_cluster_instance"
-        },
-        {
-          "Key": "backupplan",
-          "Value": "no_backup"
-        },
-        {
           "Key": "category",
           "Value": "workload"
-        },
-        {
-          "Key": "apm-number",
-          "Value": "apm0003472"
-        },
-        {
-          "Key": "certification_version",
-          "Value": "3.0.0"
-        },
-        {
-          "Key": "control_id_list",
-          "Value": "SEC.CM002.S4 SEC.IP001.S1 SEC.IP004.S1 SEC.NS001.S1 SEC.NS001.S2 SEC.NS001.S3"
         }
       ],
       "CustomerOwnedIpEnabled": false,
@@ -1700,11 +1447,7 @@
     "resourceState": "stopped",
     "resource": {
       "AllocatedStorage": 1,
-      "AvailabilityZones": [
-        "ap-southeast-2a",
-        "ap-southeast-2b",
-        "ap-southeast-2c"
-      ],
+      "AvailabilityZones": ["ap-southeast-2a", "ap-southeast-2b", "ap-southeast-2c"],
       "BackupRetentionPeriod": 1,
       "DatabaseName": "revolvertestdb",
       "DBClusterIdentifier": "revolver-test-rds-cluster",
@@ -1823,23 +1566,13 @@
             "DBInstanceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:revolver-rds-instance1",
             "IAMDatabaseAuthenticationEnabled": false,
             "PerformanceInsightsEnabled": false,
-            "EnabledCloudwatchLogsExports": [
-              "postgresql"
-            ],
+            "EnabledCloudwatchLogsExports": ["postgresql"],
             "DeletionProtection": false,
             "AssociatedRoles": [],
             "TagList": [
               {
                 "Key": "integrity",
                 "Value": "accurate"
-              },
-              {
-                "Key": "appservice-number",
-                "Value": "123456"
-              },
-              {
-                "Key": "blueprint_version",
-                "Value": "3.0.0"
               },
               {
                 "Key": "trustlevel",
@@ -1850,28 +1583,8 @@
                 "Value": "internal"
               },
               {
-                "Key": "blueprint_name",
-                "Value": "xxx-aws-rds-rds_cluster_instance"
-              },
-              {
-                "Key": "backupplan",
-                "Value": "no_backup"
-              },
-              {
                 "Key": "category",
                 "Value": "workload"
-              },
-              {
-                "Key": "apm-number",
-                "Value": "apm0003472"
-              },
-              {
-                "Key": "certification_version",
-                "Value": "3.0.0"
-              },
-              {
-                "Key": "control_id_list",
-                "Value": "SEC.CM002.S4 SEC.IP001.S1 SEC.IP004.S1 SEC.NS001.S1 SEC.NS001.S2 SEC.NS001.S3"
               }
             ],
             "CustomerOwnedIpEnabled": false,
@@ -1983,23 +1696,13 @@
             "DBInstanceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:revolver-rds-instance2",
             "IAMDatabaseAuthenticationEnabled": false,
             "PerformanceInsightsEnabled": false,
-            "EnabledCloudwatchLogsExports": [
-              "postgresql"
-            ],
+            "EnabledCloudwatchLogsExports": ["postgresql"],
             "DeletionProtection": false,
             "AssociatedRoles": [],
             "TagList": [
               {
                 "Key": "integrity",
                 "Value": "accurate"
-              },
-              {
-                "Key": "appservice-number",
-                "Value": "123456"
-              },
-              {
-                "Key": "blueprint_version",
-                "Value": "3.0.0"
               },
               {
                 "Key": "trustlevel",
@@ -2010,28 +1713,8 @@
                 "Value": "internal"
               },
               {
-                "Key": "blueprint_name",
-                "Value": "xxx-aws-rds-rds_cluster_instance"
-              },
-              {
-                "Key": "backupplan",
-                "Value": "no_backup"
-              },
-              {
                 "Key": "category",
                 "Value": "workload"
-              },
-              {
-                "Key": "apm-number",
-                "Value": "apm0003472"
-              },
-              {
-                "Key": "certification_version",
-                "Value": "3.0.0"
-              },
-              {
-                "Key": "control_id_list",
-                "Value": "SEC.CM002.S4 SEC.IP001.S1 SEC.IP004.S1 SEC.NS001.S1 SEC.NS001.S2 SEC.NS001.S3"
               }
             ],
             "CustomerOwnedIpEnabled": false,
@@ -2060,9 +1743,7 @@
       "AssociatedRoles": [],
       "IAMDatabaseAuthenticationEnabled": false,
       "ClusterCreateTime": "2024-02-12T22:15:38.537Z",
-      "EnabledCloudwatchLogsExports": [
-        "postgresql"
-      ],
+      "EnabledCloudwatchLogsExports": ["postgresql"],
       "EngineMode": "provisioned",
       "DeletionProtection": false,
       "HttpEndpointEnabled": false,
@@ -2076,14 +1757,6 @@
           "Value": "accurate"
         },
         {
-          "Key": "appservice-number",
-          "Value": "123456"
-        },
-        {
-          "Key": "blueprint_version",
-          "Value": "3.0.0"
-        },
-        {
           "Key": "trustlevel",
           "Value": "medium"
         },
@@ -2092,28 +1765,8 @@
           "Value": "internal"
         },
         {
-          "Key": "blueprint_name",
-          "Value": "xxx-aws-rds-rds_cluster"
-        },
-        {
-          "Key": "backupplan",
-          "Value": "no_backup"
-        },
-        {
           "Key": "category",
           "Value": "workload"
-        },
-        {
-          "Key": "apm-number",
-          "Value": "apm0003472"
-        },
-        {
-          "Key": "certification_version",
-          "Value": "3.0.0"
-        },
-        {
-          "Key": "control_id_list",
-          "Value": "SEC.AM005.S1 SEC.AM008.S1 SEC.CM002.S3_b SEC.CM002.S4 SEC.IP001.S1 SEC.IP002.S1 SEC.IP003.S2 SEC.NS001.S3 SEC.NS001.S5 SEC.SO001.S1 TOC.CB009.S1"
         }
       ],
       "AutoMinorVersionUpgrade": false,
