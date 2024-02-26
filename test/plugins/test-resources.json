@@ -1,0 +1,1776 @@
+[
+  {
+    "resourceId": "i-0c688d35209d7f436",
+    "resourceType": "ec2",
+    "resourceArn": "arn:aws:ec2:ap-southeast-2:112233445566:volume/i-0c688d35209d7f436",
+    "launchTimeUtc": "2024-02-13T22:43:49.000Z",
+    "resourceState": "running",
+    "resource": {
+      "AmiLaunchIndex": 0,
+      "ImageId": "ami-06c0de9677961d8f0",
+      "InstanceId": "i-0c688d35209d7f436",
+      "InstanceType": "t2.micro",
+      "LaunchTime": "2024-02-13T22:43:49.000Z",
+      "Monitoring": {
+        "State": "enabled"
+      },
+      "Placement": {
+        "AvailabilityZone": "ap-southeast-2c",
+        "GroupName": "",
+        "Tenancy": "default"
+      },
+      "PrivateDnsName": "ip-192-168-6-102.ap-southeast-2.compute.internal",
+      "PrivateIpAddress": "192.168.6.102",
+      "ProductCodes": [
+        {
+          "ProductCodeId": "73dg3lb60uxre63ucygzzdv3",
+          "ProductCodeType": "marketplace"
+        }
+      ],
+      "PublicDnsName": "",
+      "State": {
+        "Code": 16,
+        "Name": "running"
+      },
+      "StateTransitionReason": "",
+      "SubnetId": "subnet-0fa81718ad1d37598",
+      "VpcId": "vpc-096f6a0a90bec2722",
+      "Architecture": "x86_64",
+      "BlockDeviceMappings": [
+        {
+          "DeviceName": "/dev/sda1",
+          "Ebs": {
+            "AttachTime": "2024-02-13T22:43:50.000Z",
+            "DeleteOnTermination": true,
+            "Status": "attached",
+            "VolumeId": "vol-0cd7492d61ff5e4a4"
+          }
+        },
+        {
+          "DeviceName": "/dev/sdf",
+          "Ebs": {
+            "AttachTime": "2024-02-13T22:43:50.000Z",
+            "DeleteOnTermination": true,
+            "Status": "attached",
+            "VolumeId": "vol-0464941bbec488281"
+          }
+        }
+      ],
+      "ClientToken": "terraform-20240213224348152300000001",
+      "EbsOptimized": false,
+      "EnaSupport": true,
+      "Hypervisor": "xen",
+      "NetworkInterfaces": [
+        {
+          "Attachment": {
+            "AttachTime": "2024-02-13T22:43:49.000Z",
+            "AttachmentId": "eni-attach-0f22ba36171d60eaa",
+            "DeleteOnTermination": true,
+            "DeviceIndex": 0,
+            "Status": "attached",
+            "NetworkCardIndex": 0
+          },
+          "Description": "",
+          "Groups": [
+            {
+              "GroupName": "CIS Red Hat Enterprise Linux 7 Benchmark - Level 2-3.1.1.31-AutogenByAWSMP--1",
+              "GroupId": "sg-06298971876a52feb"
+            }
+          ],
+          "Ipv6Addresses": [],
+          "MacAddress": "0a:57:fd:44:26:03",
+          "NetworkInterfaceId": "eni-024a127ec6de49122",
+          "OwnerId": "112233445566",
+          "PrivateDnsName": "ip-192-168-6-102.ap-southeast-2.compute.internal",
+          "PrivateIpAddress": "192.168.6.102",
+          "PrivateIpAddresses": [
+            {
+              "Primary": true,
+              "PrivateDnsName": "ip-192-168-6-102.ap-southeast-2.compute.internal",
+              "PrivateIpAddress": "192.168.6.102"
+            }
+          ],
+          "SourceDestCheck": false,
+          "Status": "in-use",
+          "SubnetId": "subnet-0fa81718ad1d37598",
+          "VpcId": "vpc-096f6a0a90bec2722",
+          "InterfaceType": "interface"
+        }
+      ],
+      "RootDeviceName": "/dev/sda1",
+      "RootDeviceType": "ebs",
+      "SecurityGroups": [
+        {
+          "GroupName": "CIS Red Hat Enterprise Linux 7 Benchmark - Level 2-3.1.1.31-AutogenByAWSMP--1",
+          "GroupId": "sg-06298971876a52feb"
+        }
+      ],
+      "SourceDestCheck": false,
+      "Tags": [
+        {
+          "Key": "integrity",
+          "Value": "accurate"
+        },
+        {
+          "Key": "confidentiality",
+          "Value": "internal"
+        },
+        {
+          "Key": "Name",
+          "Value": "junk-vm-2-on"
+        },
+        {
+          "Key": "category",
+          "Value": "workload"
+        },
+        {
+          "Key": "trustlevel",
+          "Value": "medium"
+        }
+      ],
+      "VirtualizationType": "hvm",
+      "CpuOptions": {
+        "CoreCount": 1,
+        "ThreadsPerCore": 1
+      },
+      "CapacityReservationSpecification": {
+        "CapacityReservationPreference": "open"
+      },
+      "HibernationOptions": {
+        "Configured": false
+      },
+      "MetadataOptions": {
+        "State": "applied",
+        "HttpTokens": "optional",
+        "HttpPutResponseHopLimit": 1,
+        "HttpEndpoint": "enabled",
+        "HttpProtocolIpv6": "disabled",
+        "InstanceMetadataTags": "disabled"
+      },
+      "EnclaveOptions": {
+        "Enabled": false
+      },
+      "PlatformDetails": "Red Hat Enterprise Linux",
+      "UsageOperation": "RunInstances:0010",
+      "UsageOperationUpdateTime": "2024-02-13T22:43:49.000Z",
+      "PrivateDnsNameOptions": {
+        "HostnameType": "ip-name",
+        "EnableResourceNameDnsARecord": false,
+        "EnableResourceNameDnsAAAARecord": false
+      },
+      "MaintenanceOptions": {
+        "AutoRecovery": "default"
+      },
+      "CurrentInstanceBootMode": "legacy-bios"
+    }
+  },
+  {
+    "resourceId": "i-05b6baf37fc8f9454",
+    "resourceType": "ec2",
+    "resourceArn": "arn:aws:ec2:ap-southeast-2:112233445566:volume/i-05b6baf37fc8f9454",
+    "launchTimeUtc": "2024-02-13T22:43:55.000Z",
+    "resourceState": "running",
+    "resource": {
+      "AmiLaunchIndex": 0,
+      "ImageId": "ami-06c0de9677961d8f0",
+      "InstanceId": "i-05b6baf37fc8f9454",
+      "InstanceType": "t2.micro",
+      "LaunchTime": "2024-02-13T22:43:55.000Z",
+      "Monitoring": {
+        "State": "disabled"
+      },
+      "Placement": {
+        "AvailabilityZone": "ap-southeast-2c",
+        "GroupName": "",
+        "Tenancy": "default"
+      },
+      "PrivateDnsName": "ip-192-168-6-101.ap-southeast-2.compute.internal",
+      "PrivateIpAddress": "192.168.6.101",
+      "ProductCodes": [
+        {
+          "ProductCodeId": "73dg3lb60uxre63ucygzzdv3",
+          "ProductCodeType": "marketplace"
+        }
+      ],
+      "PublicDnsName": "",
+      "State": {
+        "Code": 16,
+        "Name": "running"
+      },
+      "StateTransitionReason": "",
+      "SubnetId": "subnet-0fa81718ad1d37598",
+      "VpcId": "vpc-096f6a0a90bec2722",
+      "Architecture": "x86_64",
+      "BlockDeviceMappings": [
+        {
+          "DeviceName": "/dev/sda1",
+          "Ebs": {
+            "AttachTime": "2024-02-13T22:43:56.000Z",
+            "DeleteOnTermination": true,
+            "Status": "attached",
+            "VolumeId": "vol-054336187a9a67cdb"
+          }
+        },
+        {
+          "DeviceName": "/dev/sdf",
+          "Ebs": {
+            "AttachTime": "2024-02-13T22:43:56.000Z",
+            "DeleteOnTermination": true,
+            "Status": "attached",
+            "VolumeId": "vol-010e9a845881818fc"
+          }
+        }
+      ],
+      "ClientToken": "ee263692-9069-942a-8889-fdbffd269751",
+      "EbsOptimized": false,
+      "EnaSupport": true,
+      "Hypervisor": "xen",
+      "NetworkInterfaces": [
+        {
+          "Attachment": {
+            "AttachTime": "2024-02-13T22:43:55.000Z",
+            "AttachmentId": "eni-attach-04e392457a7b2b87b",
+            "DeleteOnTermination": true,
+            "DeviceIndex": 0,
+            "Status": "attached",
+            "NetworkCardIndex": 0
+          },
+          "Description": "",
+          "Groups": [
+            {
+              "GroupName": "dumbsg",
+              "GroupId": "sg-003a72928da56d999"
+            }
+          ],
+          "Ipv6Addresses": [],
+          "MacAddress": "0a:f5:c7:a4:a1:3b",
+          "NetworkInterfaceId": "eni-0ff1596e99e1a1e86",
+          "OwnerId": "112233445566",
+          "PrivateDnsName": "ip-192-168-6-101.ap-southeast-2.compute.internal",
+          "PrivateIpAddress": "192.168.6.101",
+          "PrivateIpAddresses": [
+            {
+              "Primary": true,
+              "PrivateDnsName": "ip-192-168-6-101.ap-southeast-2.compute.internal",
+              "PrivateIpAddress": "192.168.6.101"
+            }
+          ],
+          "SourceDestCheck": true,
+          "Status": "in-use",
+          "SubnetId": "subnet-0fa81718ad1d37598",
+          "VpcId": "vpc-096f6a0a90bec2722",
+          "InterfaceType": "interface"
+        }
+      ],
+      "RootDeviceName": "/dev/sda1",
+      "RootDeviceType": "ebs",
+      "SecurityGroups": [
+        {
+          "GroupName": "dumbsg",
+          "GroupId": "sg-003a72928da56d999"
+        }
+      ],
+      "SourceDestCheck": true,
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": "junk-asg-2-on"
+        },
+        {
+          "Key": "confidentiality",
+          "Value": "internal"
+        },
+        {
+          "Key": "integrity",
+          "Value": "accurate"
+        },
+        {
+          "Key": "aws:ec2launchtemplate:version",
+          "Value": "1"
+        },
+        {
+          "Key": "trustlevel",
+          "Value": "medium"
+        },
+        {
+          "Key": "category",
+          "Value": "workload"
+        },
+        {
+          "Key": "aws:autoscaling:groupName",
+          "Value": "junk-asg-2-on"
+        },
+        {
+          "Key": "aws:ec2launchtemplate:id",
+          "Value": "lt-0a1c6124dae946af3"
+        }
+      ],
+      "VirtualizationType": "hvm",
+      "CpuOptions": {
+        "CoreCount": 1,
+        "ThreadsPerCore": 1
+      },
+      "CapacityReservationSpecification": {
+        "CapacityReservationPreference": "open"
+      },
+      "HibernationOptions": {
+        "Configured": false
+      },
+      "MetadataOptions": {
+        "State": "applied",
+        "HttpTokens": "optional",
+        "HttpPutResponseHopLimit": 1,
+        "HttpEndpoint": "enabled",
+        "HttpProtocolIpv6": "disabled",
+        "InstanceMetadataTags": "disabled"
+      },
+      "EnclaveOptions": {
+        "Enabled": false
+      },
+      "PlatformDetails": "Red Hat Enterprise Linux",
+      "UsageOperation": "RunInstances:0010",
+      "UsageOperationUpdateTime": "2024-02-13T22:43:55.000Z",
+      "PrivateDnsNameOptions": {
+        "HostnameType": "ip-name",
+        "EnableResourceNameDnsARecord": false,
+        "EnableResourceNameDnsAAAARecord": false
+      },
+      "MaintenanceOptions": {
+        "AutoRecovery": "default"
+      },
+      "CurrentInstanceBootMode": "legacy-bios",
+      "AutoScalingGroupName": "junk-asg-2-on"
+    }
+  },
+  {
+    "resourceId": "i-063b7bca98a844fa4",
+    "resourceType": "ec2",
+    "resourceArn": "arn:aws:ec2:ap-southeast-2:112233445566:volume/i-063b7bca98a844fa4",
+    "launchTimeUtc": "2024-02-13T22:43:49.000Z",
+    "resourceState": "running",
+    "resource": {
+      "AmiLaunchIndex": 0,
+      "ImageId": "ami-06c0de9677961d8f0",
+      "InstanceId": "i-063b7bca98a844fa4",
+      "InstanceType": "t2.micro",
+      "LaunchTime": "2024-02-13T22:43:49.000Z",
+      "Monitoring": {
+        "State": "enabled"
+      },
+      "Placement": {
+        "AvailabilityZone": "ap-southeast-2c",
+        "GroupName": "",
+        "Tenancy": "default"
+      },
+      "PrivateDnsName": "ip-192-168-6-117.ap-southeast-2.compute.internal",
+      "PrivateIpAddress": "192.168.6.117",
+      "ProductCodes": [
+        {
+          "ProductCodeId": "73dg3lb60uxre63ucygzzdv3",
+          "ProductCodeType": "marketplace"
+        }
+      ],
+      "PublicDnsName": "",
+      "State": {
+        "Code": 16,
+        "Name": "running"
+      },
+      "StateTransitionReason": "",
+      "SubnetId": "subnet-0fa81718ad1d37598",
+      "VpcId": "vpc-096f6a0a90bec2722",
+      "Architecture": "x86_64",
+      "BlockDeviceMappings": [
+        {
+          "DeviceName": "/dev/sda1",
+          "Ebs": {
+            "AttachTime": "2024-02-13T22:43:50.000Z",
+            "DeleteOnTermination": true,
+            "Status": "attached",
+            "VolumeId": "vol-04120d2ed4bb6513d"
+          }
+        },
+        {
+          "DeviceName": "/dev/sdf",
+          "Ebs": {
+            "AttachTime": "2024-02-13T22:43:50.000Z",
+            "DeleteOnTermination": true,
+            "Status": "attached",
+            "VolumeId": "vol-01f7156550b55c80a"
+          }
+        }
+      ],
+      "ClientToken": "terraform-20240213224348152300000002",
+      "EbsOptimized": false,
+      "EnaSupport": true,
+      "Hypervisor": "xen",
+      "NetworkInterfaces": [
+        {
+          "Attachment": {
+            "AttachTime": "2024-02-13T22:43:49.000Z",
+            "AttachmentId": "eni-attach-0783c3c8c0019ec40",
+            "DeleteOnTermination": true,
+            "DeviceIndex": 0,
+            "Status": "attached",
+            "NetworkCardIndex": 0
+          },
+          "Description": "",
+          "Groups": [
+            {
+              "GroupName": "CIS Red Hat Enterprise Linux 7 Benchmark - Level 2-3.1.1.31-AutogenByAWSMP--1",
+              "GroupId": "sg-06298971876a52feb"
+            }
+          ],
+          "Ipv6Addresses": [],
+          "MacAddress": "0a:de:51:35:e3:a9",
+          "NetworkInterfaceId": "eni-09b13ebefc854f75c",
+          "OwnerId": "112233445566",
+          "PrivateDnsName": "ip-192-168-6-117.ap-southeast-2.compute.internal",
+          "PrivateIpAddress": "192.168.6.117",
+          "PrivateIpAddresses": [
+            {
+              "Primary": true,
+              "PrivateDnsName": "ip-192-168-6-117.ap-southeast-2.compute.internal",
+              "PrivateIpAddress": "192.168.6.117"
+            }
+          ],
+          "SourceDestCheck": false,
+          "Status": "in-use",
+          "SubnetId": "subnet-0fa81718ad1d37598",
+          "VpcId": "vpc-096f6a0a90bec2722",
+          "InterfaceType": "interface"
+        }
+      ],
+      "RootDeviceName": "/dev/sda1",
+      "RootDeviceType": "ebs",
+      "SecurityGroups": [
+        {
+          "GroupName": "CIS Red Hat Enterprise Linux 7 Benchmark - Level 2-3.1.1.31-AutogenByAWSMP--1",
+          "GroupId": "sg-06298971876a52feb"
+        }
+      ],
+      "SourceDestCheck": false,
+      "Tags": [
+        {
+          "Key": "trustlevel",
+          "Value": "medium"
+        },
+        {
+          "Key": "category",
+          "Value": "workload"
+        },
+        {
+          "Key": "confidentiality",
+          "Value": "internal"
+        },
+        {
+          "Key": "integrity",
+          "Value": "accurate"
+        },
+        {
+          "Key": "Name",
+          "Value": "junk-vm-3-days"
+        },
+        {
+          "Key": "certification_version",
+          "Value": "3.0.0"
+        }
+      ],
+      "VirtualizationType": "hvm",
+      "CpuOptions": {
+        "CoreCount": 1,
+        "ThreadsPerCore": 1
+      },
+      "CapacityReservationSpecification": {
+        "CapacityReservationPreference": "open"
+      },
+      "HibernationOptions": {
+        "Configured": false
+      },
+      "MetadataOptions": {
+        "State": "applied",
+        "HttpTokens": "optional",
+        "HttpPutResponseHopLimit": 1,
+        "HttpEndpoint": "enabled",
+        "HttpProtocolIpv6": "disabled",
+        "InstanceMetadataTags": "disabled"
+      },
+      "EnclaveOptions": {
+        "Enabled": false
+      },
+      "PlatformDetails": "Red Hat Enterprise Linux",
+      "UsageOperation": "RunInstances:0010",
+      "UsageOperationUpdateTime": "2024-02-13T22:43:49.000Z",
+      "PrivateDnsNameOptions": {
+        "HostnameType": "ip-name",
+        "EnableResourceNameDnsARecord": false,
+        "EnableResourceNameDnsAAAARecord": false
+      },
+      "MaintenanceOptions": {
+        "AutoRecovery": "default"
+      },
+      "CurrentInstanceBootMode": "legacy-bios"
+    }
+  },
+  {
+    "resourceId": "i-031635db539857721",
+    "resourceType": "ec2",
+    "resourceArn": "arn:aws:ec2:ap-southeast-2:112233445566:volume/i-031635db539857721",
+    "launchTimeUtc": "2024-02-13T22:43:55.000Z",
+    "resourceState": "running",
+    "resource": {
+      "AmiLaunchIndex": 2,
+      "ImageId": "ami-06c0de9677961d8f0",
+      "InstanceId": "i-031635db539857721",
+      "InstanceType": "t2.micro",
+      "LaunchTime": "2024-02-13T22:43:55.000Z",
+      "Monitoring": {
+        "State": "disabled"
+      },
+      "Placement": {
+        "AvailabilityZone": "ap-southeast-2c",
+        "GroupName": "",
+        "Tenancy": "default"
+      },
+      "PrivateDnsName": "ip-192-168-6-104.ap-southeast-2.compute.internal",
+      "PrivateIpAddress": "192.168.6.104",
+      "ProductCodes": [
+        {
+          "ProductCodeId": "73dg3lb60uxre63ucygzzdv3",
+          "ProductCodeType": "marketplace"
+        }
+      ],
+      "PublicDnsName": "",
+      "State": {
+        "Code": 16,
+        "Name": "running"
+      },
+      "StateTransitionReason": "",
+      "SubnetId": "subnet-0fa81718ad1d37598",
+      "VpcId": "vpc-096f6a0a90bec2722",
+      "Architecture": "x86_64",
+      "BlockDeviceMappings": [
+        {
+          "DeviceName": "/dev/sda1",
+          "Ebs": {
+            "AttachTime": "2024-02-13T22:43:56.000Z",
+            "DeleteOnTermination": true,
+            "Status": "attached",
+            "VolumeId": "vol-03c6f45106d7f6dee"
+          }
+        },
+        {
+          "DeviceName": "/dev/sdf",
+          "Ebs": {
+            "AttachTime": "2024-02-13T22:43:56.000Z",
+            "DeleteOnTermination": true,
+            "Status": "attached",
+            "VolumeId": "vol-0309bba291650f090"
+          }
+        }
+      ],
+      "ClientToken": "1e163692-9067-4396-ca42-dfde9ee4952e",
+      "EbsOptimized": false,
+      "EnaSupport": true,
+      "Hypervisor": "xen",
+      "NetworkInterfaces": [
+        {
+          "Attachment": {
+            "AttachTime": "2024-02-13T22:43:55.000Z",
+            "AttachmentId": "eni-attach-01d8c0aee1c306762",
+            "DeleteOnTermination": true,
+            "DeviceIndex": 0,
+            "Status": "attached",
+            "NetworkCardIndex": 0
+          },
+          "Description": "",
+          "Groups": [
+            {
+              "GroupName": "dumbsg",
+              "GroupId": "sg-003a72928da56d999"
+            }
+          ],
+          "Ipv6Addresses": [],
+          "MacAddress": "0a:d7:a2:9c:de:cb",
+          "NetworkInterfaceId": "eni-0eb5464efd493c2ea",
+          "OwnerId": "112233445566",
+          "PrivateDnsName": "ip-192-168-6-104.ap-southeast-2.compute.internal",
+          "PrivateIpAddress": "192.168.6.104",
+          "PrivateIpAddresses": [
+            {
+              "Primary": true,
+              "PrivateDnsName": "ip-192-168-6-104.ap-southeast-2.compute.internal",
+              "PrivateIpAddress": "192.168.6.104"
+            }
+          ],
+          "SourceDestCheck": true,
+          "Status": "in-use",
+          "SubnetId": "subnet-0fa81718ad1d37598",
+          "VpcId": "vpc-096f6a0a90bec2722",
+          "InterfaceType": "interface"
+        }
+      ],
+      "RootDeviceName": "/dev/sda1",
+      "RootDeviceType": "ebs",
+      "SecurityGroups": [
+        {
+          "GroupName": "dumbsg",
+          "GroupId": "sg-003a72928da56d999"
+        }
+      ],
+      "SourceDestCheck": true,
+      "Tags": [
+        {
+          "Key": "confidentiality",
+          "Value": "internal"
+        },
+        {
+          "Key": "Name",
+          "Value": "junk-asg-3-day"
+        },
+        {
+          "Key": "integrity",
+          "Value": "accurate"
+        },
+        {
+          "Key": "aws:autoscaling:groupName",
+          "Value": "junk-asg-3-day"
+        },
+        {
+          "Key": "aws:ec2launchtemplate:version",
+          "Value": "1"
+        },
+        {
+          "Key": "category",
+          "Value": "workload"
+        },
+        {
+          "Key": "aws:ec2launchtemplate:id",
+          "Value": "lt-0a1c6124dae946af3"
+        },
+        {
+          "Key": "trustlevel",
+          "Value": "medium"
+        }
+      ],
+      "VirtualizationType": "hvm",
+      "CpuOptions": {
+        "CoreCount": 1,
+        "ThreadsPerCore": 1
+      },
+      "CapacityReservationSpecification": {
+        "CapacityReservationPreference": "open"
+      },
+      "HibernationOptions": {
+        "Configured": false
+      },
+      "MetadataOptions": {
+        "State": "applied",
+        "HttpTokens": "optional",
+        "HttpPutResponseHopLimit": 1,
+        "HttpEndpoint": "enabled",
+        "HttpProtocolIpv6": "disabled",
+        "InstanceMetadataTags": "disabled"
+      },
+      "EnclaveOptions": {
+        "Enabled": false
+      },
+      "PlatformDetails": "Red Hat Enterprise Linux",
+      "UsageOperation": "RunInstances:0010",
+      "UsageOperationUpdateTime": "2024-02-13T22:43:55.000Z",
+      "PrivateDnsNameOptions": {
+        "HostnameType": "ip-name",
+        "EnableResourceNameDnsARecord": false,
+        "EnableResourceNameDnsAAAARecord": false
+      },
+      "MaintenanceOptions": {
+        "AutoRecovery": "default"
+      },
+      "CurrentInstanceBootMode": "legacy-bios",
+      "AutoScalingGroupName": "junk-asg-3-day"
+    }
+  },
+  {
+    "resourceId": "i-072b78745f1879e97",
+    "resourceType": "ec2",
+    "resourceArn": "arn:aws:ec2:ap-southeast-2:112233445566:volume/i-072b78745f1879e97",
+    "launchTimeUtc": "2024-02-13T22:43:55.000Z",
+    "resourceState": "running",
+    "resource": {
+      "AmiLaunchIndex": 0,
+      "ImageId": "ami-06c0de9677961d8f0",
+      "InstanceId": "i-072b78745f1879e97",
+      "InstanceType": "t2.micro",
+      "LaunchTime": "2024-02-13T22:43:55.000Z",
+      "Monitoring": {
+        "State": "disabled"
+      },
+      "Placement": {
+        "AvailabilityZone": "ap-southeast-2c",
+        "GroupName": "",
+        "Tenancy": "default"
+      },
+      "PrivateDnsName": "ip-192-168-6-114.ap-southeast-2.compute.internal",
+      "PrivateIpAddress": "192.168.6.114",
+      "ProductCodes": [
+        {
+          "ProductCodeId": "73dg3lb60uxre63ucygzzdv3",
+          "ProductCodeType": "marketplace"
+        }
+      ],
+      "PublicDnsName": "",
+      "State": {
+        "Code": 16,
+        "Name": "running"
+      },
+      "StateTransitionReason": "",
+      "SubnetId": "subnet-0fa81718ad1d37598",
+      "VpcId": "vpc-096f6a0a90bec2722",
+      "Architecture": "x86_64",
+      "BlockDeviceMappings": [
+        {
+          "DeviceName": "/dev/sda1",
+          "Ebs": {
+            "AttachTime": "2024-02-13T22:43:56.000Z",
+            "DeleteOnTermination": true,
+            "Status": "attached",
+            "VolumeId": "vol-098c823e7a47030b4"
+          }
+        },
+        {
+          "DeviceName": "/dev/sdf",
+          "Ebs": {
+            "AttachTime": "2024-02-13T22:43:56.000Z",
+            "DeleteOnTermination": true,
+            "Status": "attached",
+            "VolumeId": "vol-0b670428709b3cdf4"
+          }
+        }
+      ],
+      "ClientToken": "1e163692-9067-4396-ca42-dfde9ee4952e",
+      "EbsOptimized": false,
+      "EnaSupport": true,
+      "Hypervisor": "xen",
+      "NetworkInterfaces": [
+        {
+          "Attachment": {
+            "AttachTime": "2024-02-13T22:43:55.000Z",
+            "AttachmentId": "eni-attach-07f59b9e240217686",
+            "DeleteOnTermination": true,
+            "DeviceIndex": 0,
+            "Status": "attached",
+            "NetworkCardIndex": 0
+          },
+          "Description": "",
+          "Groups": [
+            {
+              "GroupName": "dumbsg",
+              "GroupId": "sg-003a72928da56d999"
+            }
+          ],
+          "Ipv6Addresses": [],
+          "MacAddress": "0a:70:ea:0a:77:8d",
+          "NetworkInterfaceId": "eni-03dcc8950a6653de4",
+          "OwnerId": "112233445566",
+          "PrivateDnsName": "ip-192-168-6-114.ap-southeast-2.compute.internal",
+          "PrivateIpAddress": "192.168.6.114",
+          "PrivateIpAddresses": [
+            {
+              "Primary": true,
+              "PrivateDnsName": "ip-192-168-6-114.ap-southeast-2.compute.internal",
+              "PrivateIpAddress": "192.168.6.114"
+            }
+          ],
+          "SourceDestCheck": true,
+          "Status": "in-use",
+          "SubnetId": "subnet-0fa81718ad1d37598",
+          "VpcId": "vpc-096f6a0a90bec2722",
+          "InterfaceType": "interface"
+        }
+      ],
+      "RootDeviceName": "/dev/sda1",
+      "RootDeviceType": "ebs",
+      "SecurityGroups": [
+        {
+          "GroupName": "dumbsg",
+          "GroupId": "sg-003a72928da56d999"
+        }
+      ],
+      "SourceDestCheck": true,
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": "junk-asg-3-day"
+        },
+        {
+          "Key": "confidentiality",
+          "Value": "internal"
+        },
+        {
+          "Key": "trustlevel",
+          "Value": "medium"
+        },
+        {
+          "Key": "aws:ec2launchtemplate:id",
+          "Value": "lt-0a1c6124dae946af3"
+        },
+        {
+          "Key": "integrity",
+          "Value": "accurate"
+        },
+        {
+          "Key": "category",
+          "Value": "workload"
+        },
+        {
+          "Key": "aws:autoscaling:groupName",
+          "Value": "junk-asg-3-day"
+        },
+        {
+          "Key": "aws:ec2launchtemplate:version",
+          "Value": "1"
+        },
+        {
+          "Key": "certification_version",
+          "Value": "3.0.0"
+        }
+      ],
+      "VirtualizationType": "hvm",
+      "CpuOptions": {
+        "CoreCount": 1,
+        "ThreadsPerCore": 1
+      },
+      "CapacityReservationSpecification": {
+        "CapacityReservationPreference": "open"
+      },
+      "HibernationOptions": {
+        "Configured": false
+      },
+      "MetadataOptions": {
+        "State": "applied",
+        "HttpTokens": "optional",
+        "HttpPutResponseHopLimit": 1,
+        "HttpEndpoint": "enabled",
+        "HttpProtocolIpv6": "disabled",
+        "InstanceMetadataTags": "disabled"
+      },
+      "EnclaveOptions": {
+        "Enabled": false
+      },
+      "PlatformDetails": "Red Hat Enterprise Linux",
+      "UsageOperation": "RunInstances:0010",
+      "UsageOperationUpdateTime": "2024-02-13T22:43:55.000Z",
+      "PrivateDnsNameOptions": {
+        "HostnameType": "ip-name",
+        "EnableResourceNameDnsARecord": false,
+        "EnableResourceNameDnsAAAARecord": false
+      },
+      "MaintenanceOptions": {
+        "AutoRecovery": "default"
+      },
+      "CurrentInstanceBootMode": "legacy-bios",
+      "AutoScalingGroupName": "junk-asg-3-day"
+    }
+  },
+  {
+    "resourceId": "i-01531c2e601f21910",
+    "resourceType": "ec2",
+    "resourceArn": "arn:aws:ec2:ap-southeast-2:112233445566:volume/i-01531c2e601f21910",
+    "launchTimeUtc": "2024-02-13T22:43:55.000Z",
+    "resourceState": "running",
+    "resource": {
+      "AmiLaunchIndex": 1,
+      "ImageId": "ami-06c0de9677961d8f0",
+      "InstanceId": "i-01531c2e601f21910",
+      "InstanceType": "t2.micro",
+      "LaunchTime": "2024-02-13T22:43:55.000Z",
+      "Monitoring": {
+        "State": "disabled"
+      },
+      "Placement": {
+        "AvailabilityZone": "ap-southeast-2c",
+        "GroupName": "",
+        "Tenancy": "default"
+      },
+      "PrivateDnsName": "ip-192-168-6-109.ap-southeast-2.compute.internal",
+      "PrivateIpAddress": "192.168.6.109",
+      "ProductCodes": [
+        {
+          "ProductCodeId": "73dg3lb60uxre63ucygzzdv3",
+          "ProductCodeType": "marketplace"
+        }
+      ],
+      "PublicDnsName": "",
+      "State": {
+        "Code": 16,
+        "Name": "running"
+      },
+      "StateTransitionReason": "",
+      "SubnetId": "subnet-0fa81718ad1d37598",
+      "VpcId": "vpc-096f6a0a90bec2722",
+      "Architecture": "x86_64",
+      "BlockDeviceMappings": [
+        {
+          "DeviceName": "/dev/sda1",
+          "Ebs": {
+            "AttachTime": "2024-02-13T22:43:56.000Z",
+            "DeleteOnTermination": true,
+            "Status": "attached",
+            "VolumeId": "vol-05265520290c399db"
+          }
+        },
+        {
+          "DeviceName": "/dev/sdf",
+          "Ebs": {
+            "AttachTime": "2024-02-13T22:43:56.000Z",
+            "DeleteOnTermination": true,
+            "Status": "attached",
+            "VolumeId": "vol-0a1e490c0ada083d2"
+          }
+        }
+      ],
+      "ClientToken": "1e163692-9067-4396-ca42-dfde9ee4952e",
+      "EbsOptimized": false,
+      "EnaSupport": true,
+      "Hypervisor": "xen",
+      "NetworkInterfaces": [
+        {
+          "Attachment": {
+            "AttachTime": "2024-02-13T22:43:55.000Z",
+            "AttachmentId": "eni-attach-0f1b6e5657ff9d79a",
+            "DeleteOnTermination": true,
+            "DeviceIndex": 0,
+            "Status": "attached",
+            "NetworkCardIndex": 0
+          },
+          "Description": "",
+          "Groups": [
+            {
+              "GroupName": "dumbsg",
+              "GroupId": "sg-003a72928da56d999"
+            }
+          ],
+          "Ipv6Addresses": [],
+          "MacAddress": "0a:65:9c:4b:93:1b",
+          "NetworkInterfaceId": "eni-0bb564d91d7e3a8c2",
+          "OwnerId": "112233445566",
+          "PrivateDnsName": "ip-192-168-6-109.ap-southeast-2.compute.internal",
+          "PrivateIpAddress": "192.168.6.109",
+          "PrivateIpAddresses": [
+            {
+              "Primary": true,
+              "PrivateDnsName": "ip-192-168-6-109.ap-southeast-2.compute.internal",
+              "PrivateIpAddress": "192.168.6.109"
+            }
+          ],
+          "SourceDestCheck": true,
+          "Status": "in-use",
+          "SubnetId": "subnet-0fa81718ad1d37598",
+          "VpcId": "vpc-096f6a0a90bec2722",
+          "InterfaceType": "interface"
+        }
+      ],
+      "RootDeviceName": "/dev/sda1",
+      "RootDeviceType": "ebs",
+      "SecurityGroups": [
+        {
+          "GroupName": "dumbsg",
+          "GroupId": "sg-003a72928da56d999"
+        }
+      ],
+      "SourceDestCheck": true,
+      "Tags": [
+        {
+          "Key": "aws:ec2launchtemplate:id",
+          "Value": "lt-0a1c6124dae946af3"
+        },
+        {
+          "Key": "Name",
+          "Value": "junk-asg-3-day"
+        },
+        {
+          "Key": "integrity",
+          "Value": "accurate"
+        },
+        {
+          "Key": "aws:ec2launchtemplate:version",
+          "Value": "1"
+        },
+        {
+          "Key": "aws:autoscaling:groupName",
+          "Value": "junk-asg-3-day"
+        },
+        {
+          "Key": "confidentiality",
+          "Value": "internal"
+        },
+        {
+          "Key": "category",
+          "Value": "workload"
+        },
+        {
+          "Key": "trustlevel",
+          "Value": "medium"
+        }
+      ],
+      "VirtualizationType": "hvm",
+      "CpuOptions": {
+        "CoreCount": 1,
+        "ThreadsPerCore": 1
+      },
+      "CapacityReservationSpecification": {
+        "CapacityReservationPreference": "open"
+      },
+      "HibernationOptions": {
+        "Configured": false
+      },
+      "MetadataOptions": {
+        "State": "applied",
+        "HttpTokens": "optional",
+        "HttpPutResponseHopLimit": 1,
+        "HttpEndpoint": "enabled",
+        "HttpProtocolIpv6": "disabled",
+        "InstanceMetadataTags": "disabled"
+      },
+      "EnclaveOptions": {
+        "Enabled": false
+      },
+      "PlatformDetails": "Red Hat Enterprise Linux",
+      "UsageOperation": "RunInstances:0010",
+      "UsageOperationUpdateTime": "2024-02-13T22:43:55.000Z",
+      "PrivateDnsNameOptions": {
+        "HostnameType": "ip-name",
+        "EnableResourceNameDnsARecord": false,
+        "EnableResourceNameDnsAAAARecord": false
+      },
+      "MaintenanceOptions": {
+        "AutoRecovery": "default"
+      },
+      "CurrentInstanceBootMode": "legacy-bios",
+      "AutoScalingGroupName": "junk-asg-3-day"
+    }
+  },
+  {
+    "resourceId": "mysql-day",
+    "resourceType": "rdsInstance",
+    "resourceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:mysql-day",
+    "launchTimeUtc": "2024-02-13T22:47:00.003Z",
+    "resourceState": "running",
+    "resource": {
+      "DBInstanceIdentifier": "mysql-day",
+      "DBInstanceClass": "db.t3.micro",
+      "Engine": "mysql",
+      "DBInstanceStatus": "available",
+      "MasterUsername": "MysqlDB_User",
+      "Endpoint": {
+        "Address": "mysql-day.cs6960dszcyc.ap-southeast-2.rds.amazonaws.com",
+        "Port": 3306,
+        "HostedZoneId": "Z32T0VRHXEXS0V"
+      },
+      "AllocatedStorage": 100,
+      "InstanceCreateTime": "2024-02-13T22:47:00.003Z",
+      "PreferredBackupWindow": "15:52-16:22",
+      "BackupRetentionPeriod": 1,
+      "DBSecurityGroups": [],
+      "VpcSecurityGroups": [
+        {
+          "VpcSecurityGroupId": "sg-06298971876a52feb",
+          "Status": "active"
+        }
+      ],
+      "DBParameterGroups": [
+        {
+          "DBParameterGroupName": "default.mysql8.0",
+          "ParameterApplyStatus": "in-sync"
+        }
+      ],
+      "AvailabilityZone": "ap-southeast-2b",
+      "DBSubnetGroup": {
+        "DBSubnetGroupName": "innovation-workload-vpc0.mt_small_06",
+        "DBSubnetGroupDescription": "Managed by Terraform",
+        "VpcId": "vpc-096f6a0a90bec2722",
+        "SubnetGroupStatus": "Complete",
+        "Subnets": [
+          {
+            "SubnetIdentifier": "subnet-0fa81718ad1d37598",
+            "SubnetAvailabilityZone": {
+              "Name": "ap-southeast-2c"
+            },
+            "SubnetOutpost": {},
+            "SubnetStatus": "Active"
+          },
+          {
+            "SubnetIdentifier": "subnet-0d6aab9fc06c8df54",
+            "SubnetAvailabilityZone": {
+              "Name": "ap-southeast-2b"
+            },
+            "SubnetOutpost": {},
+            "SubnetStatus": "Active"
+          },
+          {
+            "SubnetIdentifier": "subnet-0152aed339cc52451",
+            "SubnetAvailabilityZone": {
+              "Name": "ap-southeast-2a"
+            },
+            "SubnetOutpost": {},
+            "SubnetStatus": "Active"
+          }
+        ]
+      },
+      "PreferredMaintenanceWindow": "mon:19:02-mon:19:32",
+      "PendingModifiedValues": {},
+      "LatestRestorableTime": "2024-02-14T04:40:00.000Z",
+      "MultiAZ": false,
+      "EngineVersion": "8.0.35",
+      "AutoMinorVersionUpgrade": true,
+      "ReadReplicaDBInstanceIdentifiers": [],
+      "LicenseModel": "general-public-license",
+      "OptionGroupMemberships": [
+        {
+          "OptionGroupName": "default:mysql-8-0",
+          "Status": "in-sync"
+        }
+      ],
+      "PubliclyAccessible": false,
+      "StorageType": "gp2",
+      "DbInstancePort": 0,
+      "StorageEncrypted": true,
+      "KmsKeyId": "arn:aws:kms:ap-southeast-2:112233445566:key/0fd77bc8-80e1-4915-960e-9b2dd9a758e0",
+      "DbiResourceId": "db-YIPNNONRUE6OUVRLBCVUO6FFPY",
+      "CACertificateIdentifier": "rds-ca-rsa2048-g1",
+      "DomainMemberships": [],
+      "CopyTagsToSnapshot": true,
+      "MonitoringInterval": 0,
+      "DBInstanceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:mysql-day",
+      "IAMDatabaseAuthenticationEnabled": false,
+      "PerformanceInsightsEnabled": false,
+      "EnabledCloudwatchLogsExports": ["audit", "error", "general", "slowquery"],
+      "DeletionProtection": false,
+      "AssociatedRoles": [],
+      "TagList": [
+        {
+          "Key": "integrity",
+          "Value": "accurate"
+        },
+        {
+          "Key": "trustlevel",
+          "Value": "medium"
+        },
+        {
+          "Key": "confidentiality",
+          "Value": "internal"
+        },
+        {
+          "Key": "category",
+          "Value": "workload"
+        }
+      ],
+      "CustomerOwnedIpEnabled": false,
+      "ActivityStreamStatus": "stopped",
+      "BackupTarget": "region",
+      "NetworkType": "IPV4",
+      "StorageThroughput": 0,
+      "CertificateDetails": {
+        "CAIdentifier": "rds-ca-rsa2048-g1",
+        "ValidTill": "2025-02-12T22:46:09.000Z"
+      },
+      "DedicatedLogVolume": false,
+      "IsStorageConfigUpgradeAvailable": false
+    }
+  },
+  {
+    "resourceId": "revolver-rds-instance1",
+    "resourceType": "rdsInstance",
+    "resourceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:revolver-rds-instance1",
+    "launchTimeUtc": "2024-02-12T22:39:20.867Z",
+    "resourceState": "stopped",
+    "resource": {
+      "DBInstanceIdentifier": "revolver-rds-instance1",
+      "DBInstanceClass": "db.t3.medium",
+      "Engine": "aurora-postgresql",
+      "DBInstanceStatus": "stopped",
+      "AutomaticRestartTime": "2024-02-19T23:41:01.129Z",
+      "MasterUsername": "masteruser",
+      "DBName": "revolvertestdb",
+      "Endpoint": {
+        "Address": "revolver-rds-instance1.cs6960dszcyc.ap-southeast-2.rds.amazonaws.com",
+        "Port": 5432,
+        "HostedZoneId": "Z32T0VRHXEXS0V"
+      },
+      "AllocatedStorage": 1,
+      "InstanceCreateTime": "2024-02-12T22:39:20.867Z",
+      "PreferredBackupWindow": "17:58-18:28",
+      "BackupRetentionPeriod": 1,
+      "DBSecurityGroups": [],
+      "VpcSecurityGroups": [
+        {
+          "VpcSecurityGroupId": "sg-06298971876a52feb",
+          "Status": "active"
+        }
+      ],
+      "DBParameterGroups": [
+        {
+          "DBParameterGroupName": "default.aurora-postgresql15",
+          "ParameterApplyStatus": "in-sync"
+        }
+      ],
+      "AvailabilityZone": "ap-southeast-2b",
+      "DBSubnetGroup": {
+        "DBSubnetGroupName": "innovation-workload-vpc0.mt_small_06",
+        "DBSubnetGroupDescription": "Managed by Terraform",
+        "VpcId": "vpc-096f6a0a90bec2722",
+        "SubnetGroupStatus": "Complete",
+        "Subnets": [
+          {
+            "SubnetIdentifier": "subnet-0fa81718ad1d37598",
+            "SubnetAvailabilityZone": {
+              "Name": "ap-southeast-2c"
+            },
+            "SubnetOutpost": {},
+            "SubnetStatus": "Active"
+          },
+          {
+            "SubnetIdentifier": "subnet-0d6aab9fc06c8df54",
+            "SubnetAvailabilityZone": {
+              "Name": "ap-southeast-2b"
+            },
+            "SubnetOutpost": {},
+            "SubnetStatus": "Active"
+          },
+          {
+            "SubnetIdentifier": "subnet-0152aed339cc52451",
+            "SubnetAvailabilityZone": {
+              "Name": "ap-southeast-2a"
+            },
+            "SubnetOutpost": {},
+            "SubnetStatus": "Active"
+          }
+        ]
+      },
+      "PreferredMaintenanceWindow": "thu:12:56-thu:13:26",
+      "PendingModifiedValues": {},
+      "MultiAZ": false,
+      "EngineVersion": "15.4",
+      "AutoMinorVersionUpgrade": false,
+      "ReadReplicaDBInstanceIdentifiers": [],
+      "LicenseModel": "postgresql-license",
+      "OptionGroupMemberships": [
+        {
+          "OptionGroupName": "default:aurora-postgresql-15",
+          "Status": "in-sync"
+        }
+      ],
+      "PubliclyAccessible": false,
+      "StorageType": "aurora",
+      "DbInstancePort": 0,
+      "DBClusterIdentifier": "revolver-test-rds-cluster",
+      "StorageEncrypted": true,
+      "KmsKeyId": "arn:aws:kms:ap-southeast-2:112233445566:key/0fd77bc8-80e1-4915-960e-9b2dd9a758e0",
+      "DbiResourceId": "db-MHWMWQTTP6L44IP6D4QGUTUNZU",
+      "CACertificateIdentifier": "rds-ca-rsa2048-g1",
+      "DomainMemberships": [],
+      "CopyTagsToSnapshot": true,
+      "MonitoringInterval": 30,
+      "EnhancedMonitoringResourceArn": "arn:aws:logs:ap-southeast-2:112233445566:log-group:RDSOSMetrics:log-stream:db-MHWMWQTTP6L44IP6D4QGUTUNZU",
+      "MonitoringRoleArn": "arn:aws:iam::112233445566:role/blueprints-test-rds-cluster",
+      "PromotionTier": 1,
+      "DBInstanceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:revolver-rds-instance1",
+      "IAMDatabaseAuthenticationEnabled": false,
+      "PerformanceInsightsEnabled": false,
+      "EnabledCloudwatchLogsExports": ["postgresql"],
+      "DeletionProtection": false,
+      "AssociatedRoles": [],
+      "TagList": [
+        {
+          "Key": "integrity",
+          "Value": "accurate"
+        },
+        {
+          "Key": "trustlevel",
+          "Value": "medium"
+        },
+        {
+          "Key": "confidentiality",
+          "Value": "internal"
+        },
+        {
+          "Key": "category",
+          "Value": "workload"
+        }
+      ],
+      "CustomerOwnedIpEnabled": false,
+      "BackupTarget": "region",
+      "NetworkType": "IPV4",
+      "StorageThroughput": 0,
+      "CertificateDetails": {
+        "CAIdentifier": "rds-ca-rsa2048-g1",
+        "ValidTill": "2025-02-11T22:38:20.000Z"
+      },
+      "DedicatedLogVolume": false
+    }
+  },
+  {
+    "resourceId": "revolver-rds-instance2",
+    "resourceType": "rdsInstance",
+    "resourceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:revolver-rds-instance2",
+    "launchTimeUtc": "2024-02-12T22:20:47.752Z",
+    "resourceState": "stopped",
+    "resource": {
+      "DBInstanceIdentifier": "revolver-rds-instance2",
+      "DBInstanceClass": "db.t3.medium",
+      "Engine": "aurora-postgresql",
+      "DBInstanceStatus": "stopped",
+      "AutomaticRestartTime": "2024-02-19T23:50:53.631Z",
+      "MasterUsername": "masteruser",
+      "DBName": "revolvertestdb",
+      "Endpoint": {
+        "Address": "revolver-rds-instance2.cs6960dszcyc.ap-southeast-2.rds.amazonaws.com",
+        "Port": 5432,
+        "HostedZoneId": "Z32T0VRHXEXS0V"
+      },
+      "AllocatedStorage": 1,
+      "InstanceCreateTime": "2024-02-12T22:20:47.752Z",
+      "PreferredBackupWindow": "17:58-18:28",
+      "BackupRetentionPeriod": 1,
+      "DBSecurityGroups": [],
+      "VpcSecurityGroups": [
+        {
+          "VpcSecurityGroupId": "sg-06298971876a52feb",
+          "Status": "active"
+        }
+      ],
+      "DBParameterGroups": [
+        {
+          "DBParameterGroupName": "default.aurora-postgresql15",
+          "ParameterApplyStatus": "in-sync"
+        }
+      ],
+      "AvailabilityZone": "ap-southeast-2c",
+      "DBSubnetGroup": {
+        "DBSubnetGroupName": "innovation-workload-vpc0.mt_small_06",
+        "DBSubnetGroupDescription": "Managed by Terraform",
+        "VpcId": "vpc-096f6a0a90bec2722",
+        "SubnetGroupStatus": "Complete",
+        "Subnets": [
+          {
+            "SubnetIdentifier": "subnet-0fa81718ad1d37598",
+            "SubnetAvailabilityZone": {
+              "Name": "ap-southeast-2c"
+            },
+            "SubnetOutpost": {},
+            "SubnetStatus": "Active"
+          },
+          {
+            "SubnetIdentifier": "subnet-0d6aab9fc06c8df54",
+            "SubnetAvailabilityZone": {
+              "Name": "ap-southeast-2b"
+            },
+            "SubnetOutpost": {},
+            "SubnetStatus": "Active"
+          },
+          {
+            "SubnetIdentifier": "subnet-0152aed339cc52451",
+            "SubnetAvailabilityZone": {
+              "Name": "ap-southeast-2a"
+            },
+            "SubnetOutpost": {},
+            "SubnetStatus": "Active"
+          }
+        ]
+      },
+      "PreferredMaintenanceWindow": "mon:13:41-mon:14:11",
+      "PendingModifiedValues": {},
+      "MultiAZ": false,
+      "EngineVersion": "15.4",
+      "AutoMinorVersionUpgrade": false,
+      "ReadReplicaDBInstanceIdentifiers": [],
+      "LicenseModel": "postgresql-license",
+      "OptionGroupMemberships": [
+        {
+          "OptionGroupName": "default:aurora-postgresql-15",
+          "Status": "in-sync"
+        }
+      ],
+      "PubliclyAccessible": false,
+      "StorageType": "aurora",
+      "DbInstancePort": 0,
+      "DBClusterIdentifier": "revolver-test-rds-cluster",
+      "StorageEncrypted": true,
+      "KmsKeyId": "arn:aws:kms:ap-southeast-2:112233445566:key/0fd77bc8-80e1-4915-960e-9b2dd9a758e0",
+      "DbiResourceId": "db-UTFN3BJ5GQTQSGTSHTAKKA7NBE",
+      "CACertificateIdentifier": "rds-ca-rsa2048-g1",
+      "DomainMemberships": [],
+      "CopyTagsToSnapshot": true,
+      "MonitoringInterval": 30,
+      "EnhancedMonitoringResourceArn": "arn:aws:logs:ap-southeast-2:112233445566:log-group:RDSOSMetrics:log-stream:db-UTFN3BJ5GQTQSGTSHTAKKA7NBE",
+      "MonitoringRoleArn": "arn:aws:iam::112233445566:role/blueprints-test-rds-cluster",
+      "PromotionTier": 1,
+      "DBInstanceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:revolver-rds-instance2",
+      "IAMDatabaseAuthenticationEnabled": false,
+      "PerformanceInsightsEnabled": false,
+      "EnabledCloudwatchLogsExports": ["postgresql"],
+      "DeletionProtection": false,
+      "AssociatedRoles": [],
+      "TagList": [
+        {
+          "Key": "integrity",
+          "Value": "accurate"
+        },
+        {
+          "Key": "trustlevel",
+          "Value": "medium"
+        },
+        {
+          "Key": "confidentiality",
+          "Value": "internal"
+        },
+        {
+          "Key": "category",
+          "Value": "workload"
+        }
+      ],
+      "CustomerOwnedIpEnabled": false,
+      "BackupTarget": "region",
+      "NetworkType": "IPV4",
+      "StorageThroughput": 0,
+      "CertificateDetails": {
+        "CAIdentifier": "rds-ca-rsa2048-g1",
+        "ValidTill": "2025-02-11T22:19:12.000Z"
+      },
+      "DedicatedLogVolume": false
+    }
+  },
+  {
+    "resourceId": "revolver-test-rds-cluster",
+    "resourceType": "rdsCluster",
+    "resourceArn": "arn:aws:rds:ap-southeast-2:112233445566:cluster:revolver-test-rds-cluster",
+    "launchTimeUtc": "2024-02-12T22:15:38.537Z",
+    "resourceState": "stopped",
+    "resource": {
+      "AllocatedStorage": 1,
+      "AvailabilityZones": ["ap-southeast-2a", "ap-southeast-2b", "ap-southeast-2c"],
+      "BackupRetentionPeriod": 1,
+      "DatabaseName": "revolvertestdb",
+      "DBClusterIdentifier": "revolver-test-rds-cluster",
+      "DBClusterParameterGroup": "default.aurora-postgresql15",
+      "DBSubnetGroup": "innovation-workload-vpc0.mt_small_06",
+      "Status": "stopped",
+      "AutomaticRestartTime": "2024-02-19T23:51:40.573Z",
+      "EarliestRestorableTime": "2024-02-12T22:16:32.324Z",
+      "Endpoint": "revolver-test-rds-cluster.cluster-cs6960dszcyc.ap-southeast-2.rds.amazonaws.com",
+      "ReaderEndpoint": "revolver-test-rds-cluster.cluster-ro-cs6960dszcyc.ap-southeast-2.rds.amazonaws.com",
+      "MultiAZ": true,
+      "Engine": "aurora-postgresql",
+      "EngineVersion": "15.4",
+      "LatestRestorableTime": "2024-02-12T23:43:51.781Z",
+      "Port": 5432,
+      "MasterUsername": "masteruser",
+      "PreferredBackupWindow": "17:58-18:28",
+      "PreferredMaintenanceWindow": "sat:14:02-sat:14:32",
+      "ReadReplicaIdentifiers": [],
+      "DBClusterMembers": [
+        {
+          "DBInstanceIdentifier": "revolver-rds-instance1",
+          "IsClusterWriter": false,
+          "DBClusterParameterGroupStatus": "in-sync",
+          "PromotionTier": 1,
+          "instanceData": {
+            "DBInstanceIdentifier": "revolver-rds-instance1",
+            "DBInstanceClass": "db.t3.medium",
+            "Engine": "aurora-postgresql",
+            "DBInstanceStatus": "stopped",
+            "AutomaticRestartTime": "2024-02-19T23:41:01.129Z",
+            "MasterUsername": "masteruser",
+            "DBName": "revolvertestdb",
+            "Endpoint": {
+              "Address": "revolver-rds-instance1.cs6960dszcyc.ap-southeast-2.rds.amazonaws.com",
+              "Port": 5432,
+              "HostedZoneId": "Z32T0VRHXEXS0V"
+            },
+            "AllocatedStorage": 1,
+            "InstanceCreateTime": "2024-02-12T22:39:20.867Z",
+            "PreferredBackupWindow": "17:58-18:28",
+            "BackupRetentionPeriod": 1,
+            "DBSecurityGroups": [],
+            "VpcSecurityGroups": [
+              {
+                "VpcSecurityGroupId": "sg-06298971876a52feb",
+                "Status": "active"
+              }
+            ],
+            "DBParameterGroups": [
+              {
+                "DBParameterGroupName": "default.aurora-postgresql15",
+                "ParameterApplyStatus": "in-sync"
+              }
+            ],
+            "AvailabilityZone": "ap-southeast-2b",
+            "DBSubnetGroup": {
+              "DBSubnetGroupName": "innovation-workload-vpc0.mt_small_06",
+              "DBSubnetGroupDescription": "Managed by Terraform",
+              "VpcId": "vpc-096f6a0a90bec2722",
+              "SubnetGroupStatus": "Complete",
+              "Subnets": [
+                {
+                  "SubnetIdentifier": "subnet-0fa81718ad1d37598",
+                  "SubnetAvailabilityZone": {
+                    "Name": "ap-southeast-2c"
+                  },
+                  "SubnetOutpost": {},
+                  "SubnetStatus": "Active"
+                },
+                {
+                  "SubnetIdentifier": "subnet-0d6aab9fc06c8df54",
+                  "SubnetAvailabilityZone": {
+                    "Name": "ap-southeast-2b"
+                  },
+                  "SubnetOutpost": {},
+                  "SubnetStatus": "Active"
+                },
+                {
+                  "SubnetIdentifier": "subnet-0152aed339cc52451",
+                  "SubnetAvailabilityZone": {
+                    "Name": "ap-southeast-2a"
+                  },
+                  "SubnetOutpost": {},
+                  "SubnetStatus": "Active"
+                }
+              ]
+            },
+            "PreferredMaintenanceWindow": "thu:12:56-thu:13:26",
+            "PendingModifiedValues": {},
+            "MultiAZ": false,
+            "EngineVersion": "15.4",
+            "AutoMinorVersionUpgrade": false,
+            "ReadReplicaDBInstanceIdentifiers": [],
+            "LicenseModel": "postgresql-license",
+            "OptionGroupMemberships": [
+              {
+                "OptionGroupName": "default:aurora-postgresql-15",
+                "Status": "in-sync"
+              }
+            ],
+            "PubliclyAccessible": false,
+            "StorageType": "aurora",
+            "DbInstancePort": 0,
+            "DBClusterIdentifier": "revolver-test-rds-cluster",
+            "StorageEncrypted": true,
+            "KmsKeyId": "arn:aws:kms:ap-southeast-2:112233445566:key/0fd77bc8-80e1-4915-960e-9b2dd9a758e0",
+            "DbiResourceId": "db-MHWMWQTTP6L44IP6D4QGUTUNZU",
+            "CACertificateIdentifier": "rds-ca-rsa2048-g1",
+            "DomainMemberships": [],
+            "CopyTagsToSnapshot": true,
+            "MonitoringInterval": 30,
+            "EnhancedMonitoringResourceArn": "arn:aws:logs:ap-southeast-2:112233445566:log-group:RDSOSMetrics:log-stream:db-MHWMWQTTP6L44IP6D4QGUTUNZU",
+            "MonitoringRoleArn": "arn:aws:iam::112233445566:role/blueprints-test-rds-cluster",
+            "PromotionTier": 1,
+            "DBInstanceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:revolver-rds-instance1",
+            "IAMDatabaseAuthenticationEnabled": false,
+            "PerformanceInsightsEnabled": false,
+            "EnabledCloudwatchLogsExports": ["postgresql"],
+            "DeletionProtection": false,
+            "AssociatedRoles": [],
+            "TagList": [
+              {
+                "Key": "integrity",
+                "Value": "accurate"
+              },
+              {
+                "Key": "trustlevel",
+                "Value": "medium"
+              },
+              {
+                "Key": "confidentiality",
+                "Value": "internal"
+              },
+              {
+                "Key": "category",
+                "Value": "workload"
+              }
+            ],
+            "CustomerOwnedIpEnabled": false,
+            "BackupTarget": "region",
+            "NetworkType": "IPV4",
+            "StorageThroughput": 0,
+            "CertificateDetails": {
+              "CAIdentifier": "rds-ca-rsa2048-g1",
+              "ValidTill": "2025-02-11T22:38:20.000Z"
+            },
+            "DedicatedLogVolume": false
+          }
+        },
+        {
+          "DBInstanceIdentifier": "revolver-rds-instance2",
+          "IsClusterWriter": true,
+          "DBClusterParameterGroupStatus": "in-sync",
+          "PromotionTier": 1,
+          "instanceData": {
+            "DBInstanceIdentifier": "revolver-rds-instance2",
+            "DBInstanceClass": "db.t3.medium",
+            "Engine": "aurora-postgresql",
+            "DBInstanceStatus": "stopped",
+            "AutomaticRestartTime": "2024-02-19T23:50:53.631Z",
+            "MasterUsername": "masteruser",
+            "DBName": "revolvertestdb",
+            "Endpoint": {
+              "Address": "revolver-rds-instance2.cs6960dszcyc.ap-southeast-2.rds.amazonaws.com",
+              "Port": 5432,
+              "HostedZoneId": "Z32T0VRHXEXS0V"
+            },
+            "AllocatedStorage": 1,
+            "InstanceCreateTime": "2024-02-12T22:20:47.752Z",
+            "PreferredBackupWindow": "17:58-18:28",
+            "BackupRetentionPeriod": 1,
+            "DBSecurityGroups": [],
+            "VpcSecurityGroups": [
+              {
+                "VpcSecurityGroupId": "sg-06298971876a52feb",
+                "Status": "active"
+              }
+            ],
+            "DBParameterGroups": [
+              {
+                "DBParameterGroupName": "default.aurora-postgresql15",
+                "ParameterApplyStatus": "in-sync"
+              }
+            ],
+            "AvailabilityZone": "ap-southeast-2c",
+            "DBSubnetGroup": {
+              "DBSubnetGroupName": "innovation-workload-vpc0.mt_small_06",
+              "DBSubnetGroupDescription": "Managed by Terraform",
+              "VpcId": "vpc-096f6a0a90bec2722",
+              "SubnetGroupStatus": "Complete",
+              "Subnets": [
+                {
+                  "SubnetIdentifier": "subnet-0fa81718ad1d37598",
+                  "SubnetAvailabilityZone": {
+                    "Name": "ap-southeast-2c"
+                  },
+                  "SubnetOutpost": {},
+                  "SubnetStatus": "Active"
+                },
+                {
+                  "SubnetIdentifier": "subnet-0d6aab9fc06c8df54",
+                  "SubnetAvailabilityZone": {
+                    "Name": "ap-southeast-2b"
+                  },
+                  "SubnetOutpost": {},
+                  "SubnetStatus": "Active"
+                },
+                {
+                  "SubnetIdentifier": "subnet-0152aed339cc52451",
+                  "SubnetAvailabilityZone": {
+                    "Name": "ap-southeast-2a"
+                  },
+                  "SubnetOutpost": {},
+                  "SubnetStatus": "Active"
+                }
+              ]
+            },
+            "PreferredMaintenanceWindow": "mon:13:41-mon:14:11",
+            "PendingModifiedValues": {},
+            "MultiAZ": false,
+            "EngineVersion": "15.4",
+            "AutoMinorVersionUpgrade": false,
+            "ReadReplicaDBInstanceIdentifiers": [],
+            "LicenseModel": "postgresql-license",
+            "OptionGroupMemberships": [
+              {
+                "OptionGroupName": "default:aurora-postgresql-15",
+                "Status": "in-sync"
+              }
+            ],
+            "PubliclyAccessible": false,
+            "StorageType": "aurora",
+            "DbInstancePort": 0,
+            "DBClusterIdentifier": "revolver-test-rds-cluster",
+            "StorageEncrypted": true,
+            "KmsKeyId": "arn:aws:kms:ap-southeast-2:112233445566:key/0fd77bc8-80e1-4915-960e-9b2dd9a758e0",
+            "DbiResourceId": "db-UTFN3BJ5GQTQSGTSHTAKKA7NBE",
+            "CACertificateIdentifier": "rds-ca-rsa2048-g1",
+            "DomainMemberships": [],
+            "CopyTagsToSnapshot": true,
+            "MonitoringInterval": 30,
+            "EnhancedMonitoringResourceArn": "arn:aws:logs:ap-southeast-2:112233445566:log-group:RDSOSMetrics:log-stream:db-UTFN3BJ5GQTQSGTSHTAKKA7NBE",
+            "MonitoringRoleArn": "arn:aws:iam::112233445566:role/blueprints-test-rds-cluster",
+            "PromotionTier": 1,
+            "DBInstanceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:revolver-rds-instance2",
+            "IAMDatabaseAuthenticationEnabled": false,
+            "PerformanceInsightsEnabled": false,
+            "EnabledCloudwatchLogsExports": ["postgresql"],
+            "DeletionProtection": false,
+            "AssociatedRoles": [],
+            "TagList": [
+              {
+                "Key": "integrity",
+                "Value": "accurate"
+              },
+              {
+                "Key": "trustlevel",
+                "Value": "medium"
+              },
+              {
+                "Key": "confidentiality",
+                "Value": "internal"
+              },
+              {
+                "Key": "category",
+                "Value": "workload"
+              }
+            ],
+            "CustomerOwnedIpEnabled": false,
+            "BackupTarget": "region",
+            "NetworkType": "IPV4",
+            "StorageThroughput": 0,
+            "CertificateDetails": {
+              "CAIdentifier": "rds-ca-rsa2048-g1",
+              "ValidTill": "2025-02-11T22:19:12.000Z"
+            },
+            "DedicatedLogVolume": false
+          }
+        }
+      ],
+      "VpcSecurityGroups": [
+        {
+          "VpcSecurityGroupId": "sg-06298971876a52feb",
+          "Status": "active"
+        }
+      ],
+      "HostedZoneId": "Z32T0VRHXEXS0V",
+      "StorageEncrypted": true,
+      "KmsKeyId": "arn:aws:kms:ap-southeast-2:112233445566:key/0fd77bc8-80e1-4915-960e-9b2dd9a758e0",
+      "DbClusterResourceId": "cluster-HKUG6XXQK6XCLKFXZGDXBRDGJU",
+      "DBClusterArn": "arn:aws:rds:ap-southeast-2:112233445566:cluster:revolver-test-rds-cluster",
+      "AssociatedRoles": [],
+      "IAMDatabaseAuthenticationEnabled": false,
+      "ClusterCreateTime": "2024-02-12T22:15:38.537Z",
+      "EnabledCloudwatchLogsExports": ["postgresql"],
+      "EngineMode": "provisioned",
+      "DeletionProtection": false,
+      "HttpEndpointEnabled": false,
+      "ActivityStreamStatus": "stopped",
+      "CopyTagsToSnapshot": true,
+      "CrossAccountClone": false,
+      "DomainMemberships": [],
+      "TagList": [
+        {
+          "Key": "integrity",
+          "Value": "accurate"
+        },
+        {
+          "Key": "trustlevel",
+          "Value": "medium"
+        },
+        {
+          "Key": "confidentiality",
+          "Value": "internal"
+        },
+        {
+          "Key": "category",
+          "Value": "workload"
+        }
+      ],
+      "AutoMinorVersionUpgrade": false,
+      "NetworkType": "IPV4"
+    }
+  }
+]

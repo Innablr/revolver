@@ -1,0 +1,106 @@
+---
+defaults:
+  settings:
+    region: ap-southeast-2
+    timezone: Australia/Melbourne
+    timezoneTag: Timezone
+    organizationRoleName: none
+    revolverRoleName: none
+    localResourcesFile: ./test/plugins/test-resources.json
+    resourceLog:
+      json:
+        file: ./test/plugins/resources.json
+      csv:
+        file: ./test/plugins/resources.csv
+        reportTags: ["Name", "Schedule"]
+    auditLog:
+      csv:
+        file: ./test/plugins/audit.csv
+    excludeResources:
+      - tag: 'Schedule|ignore'
+
+  drivers:
+    - name: ec2
+      pretend: true
+    - name: rdsInstance
+      pretend: true
+    - name: rdsCluster
+      pretend: true
+
+
+  plugins:
+    powercycleCentral:
+      active: true
+      configs:
+        - parser: strict
+          availabilityTag: Schedule
+          availabilityTagPriority: 5 # if this is higher than the rules below, it will override
+          predefinedSchedules:
+            BusinessHours: 'Start=08:00|mon-fri;Stop=18:00|mon-fri'
+            EarlyStartBusinessHours: 'Start=05:00|mon-fri;Stop=18:00|mon-fri'
+          matchers:
+            # EC2 instance
+            - name: 'everything off (p1)'
+              filter:
+                - type: ec2
+              schedule: '0x7'
+              priority: 1
+            - name: vm3on
+              filter:
+                - name: 'junk-vm-3-days'
+                - type: ec2
+              schedule: EarlyStartBusinessHours
+              priority: 10
+            - name: Start fairly important VMs a bit early
+              filter:
+                - tag: 'Importance|fairly'
+                - type: ec2
+              schedule: EarlyStartBusinessHours
+            # ASG EC2
+            - name: 'first asg'
+              filter:
+                - name: 'junk-asg-2-on'
+                - type: ec2
+              schedule: BusinessHours
+              priority: 10
+            - name: 'second asg'
+              filter:
+                - name: 'junk-asg-3-day'
+                - type: ec2
+              schedule: 'Start=11:00|mon-fri;Stop=13:00|mon-fri'
+              priority: 10
+            # RDS
+            - name: standalone DB
+              filter:
+                # - accountId: "112233445566"
+                - id: mysql-day
+                - type: rdsInstance
+              schedule: BusinessHours
+            - name: cluster DB
+              filter:
+                - accountId: '112233445566'
+                - id: revolver-test-rds-cluster
+                - type: rdsCluster
+              schedule: 'Start=11:00|mon-fri;Stop=13:00|mon-fri'
+
+# organizations:
+#   - accountId: "000000000000"
+#     settings:
+#       name: some-org-name
+#       stuff: 123 # ignored
+#       region: whatever # override default
+#       # revolverRoleName from defaults
+#   - accountId: "111111111111"
+#     settings:
+#       region: eu-west-1
+#       name: eh-global-euw1
+
+accounts:
+  includeList:
+    - accountId: "112233445566"
+      settings:
+        name: whatdev
+  # excludeList: []
+#     - accountId: "333333333333"
+#       settings:
+#         name: whatprod
