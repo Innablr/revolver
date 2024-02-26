@@ -1,0 +1,13 @@
+{
+    "include": [
+      "**/*.ts",
+      "**/*.js"
+    ],
+    "exclude": [
+      "**/*.d.ts",
+      "**/*.spec.ts",
+      "**/*.spec.js"
+    ],
+
+    "all": true
+}
