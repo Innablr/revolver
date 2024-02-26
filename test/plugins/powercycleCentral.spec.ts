@@ -41,7 +41,7 @@ const context: Context = {
   succeed: () => {},
 };
 
-describe('XXX Run full cycle', function () {
+describe('Run powercycleCentral full cycle', function () {
   // delete output files before run
   if (fs.existsSync(OUTPUT_AUDIT_CSV_FILE)) fs.unlinkSync(OUTPUT_AUDIT_CSV_FILE);
   if (fs.existsSync(OUTPUT_RESOURCES_JSON_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_JSON_FILE);
