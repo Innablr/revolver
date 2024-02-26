@@ -15,6 +15,7 @@ class FakeResource extends ToolingInterface {
     this.myResourceId = resourceId;
     this.myResourceType = resourceType;
     this.myResourceState = resourceState;
+    this.metadata.actionNames = ['DoThis', 'DoThat']; // pretend these are actually run
   }
 
   get resourceId(): string {
@@ -56,7 +57,7 @@ const RESOURCE_LOG_CONFIG = {
 
 const TEST_RESOURCES = [
   new FakeResource('donkey1', 'donkey', 'running', { colour: 'gray' }),
-  new FakeResource('shrek', 'ogre', 'running', { colour: 'green' }, ),
+  new FakeResource('shrek', 'ogre', 'running', { colour: 'green' }),
   new FakeResource('fiona', 'ogre', 'running', { colour: 'green' }),
   new FakeResource('lord-farquaad', 'baddie', 'dead', { colour: 'red' }),
 ];
@@ -68,8 +69,6 @@ const ACCOUNT_CONFIG = {
 };
 
 describe('Validate ObjectLog', function () {
-  // TODO: delete output files if they exist
-
   // TODO: ObjectLogConsole
   it('Check ObjectLogConsole', async function () {
     await new ObjectLogConsole(
@@ -80,6 +79,7 @@ describe('Validate ObjectLog', function () {
   });
 
   it('Check ObjectLogCsv', async function () {
+    if (fs.existsSync(RESOURCE_LOG_CONFIG.csv.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.csv.file);
     await new ObjectLogCsv(
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags),
       RESOURCE_LOG_CONFIG.csv,
@@ -87,15 +87,19 @@ describe('Validate ObjectLog', function () {
     ).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.csv.file)).to.be.true;
     // TODO: check the contents of RESOURCE_LOG_CONFIG.csv.file
+    const resourceCsvText = fs.readFileSync(RESOURCE_LOG_CONFIG.csv.file, 'utf-8');
+    expect((resourceCsvText.match(/DoThis\|DoThat/g) || []).length).to.equal(4); // number of rows
   });
 
   it('Check ObjectLogJson', async function () {
+    if (fs.existsSync(RESOURCE_LOG_CONFIG.json.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.json.file);
     await new ObjectLogJson(TEST_RESOURCES, RESOURCE_LOG_CONFIG.json).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.json.file)).to.be.true;
     // TODO: check the contents of RESOURCE_LOG_CONFIG.json.file
   });
 
   it('Check ObjectLogTemplate', async function () {
+    if (fs.existsSync(RESOURCE_LOG_CONFIG.template.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.template.file);
     await new ObjectLogTemplate(TEST_RESOURCES, RESOURCE_LOG_CONFIG.template).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.template.file)).to.be.true;
     // TODO: check the contents of RESOURCE_LOG_CONFIG.template.file
