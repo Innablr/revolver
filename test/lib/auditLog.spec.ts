@@ -4,7 +4,6 @@ import { ActionAuditEntry } from '../../actions/audit';
 import { DateTime } from 'luxon';
 import { randomBytes } from 'node:crypto';
 import * as fs from 'fs';
-import { logger } from '../../lib/logger';
 
 // A dummy AWS resource for testing
 class FakeActionAuditEntry implements ActionAuditEntry {
@@ -56,8 +55,7 @@ describe('Validate auditLog', function () {
     expect(fs.existsSync(AUDIT_LOG_CONFIG.csv.file)).to.be.true;
 
     const auditCsvText = fs.readFileSync(AUDIT_LOG_CONFIG.csv.file, 'utf-8');
-    logger.info(`FULL CSV: >>>${auditCsvText}<<<`);
-    expect((auditCsvText.match(/2024-02-27/g) || []).length).to.equal(3); // number of rows (not including header)
+    expect((auditCsvText.match(/\n/g) || []).length).to.equal(4); // number of rows
     expect(auditCsvText).to.include('dosomething,red,just because');
     expect(auditCsvText).to.include('dosomething,green,another reason');
     expect(auditCsvText).to.include('dosomething else,blue,random');
