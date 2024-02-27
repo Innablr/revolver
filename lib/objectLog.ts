@@ -1,7 +1,6 @@
 import { ToolingInterface } from '../drivers/instrumentedResource';
 import { logger } from './logger';
-import { promises as fs } from 'fs';
-import fssync from 'fs';
+import { existsSync, promises as fs } from 'fs';
 import { getAwsConfig } from './awsConfig';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ActionAuditEntry } from '../actions/audit';
@@ -97,7 +96,7 @@ export class ObjectLogCsv extends AbstractOutputWriter {
 
   getOutput(): string {
     // somewhat hacky to support CSV append needing to know if the header is needed
-    const outputExists = fssync.existsSync(dateTime.resolveFilename(this.options.file));
+    const outputExists = existsSync(dateTime.resolveFilename(this.options.file));
     let rows: string[][] = [this.dataTable.header()];
 
     // Don't write header if appending to an existing file
