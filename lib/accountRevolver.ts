@@ -137,10 +137,7 @@ export class AccountRevolver {
             await new ObjectLogJson(entries, auditConfig).process();
             break;
           case 'csv':
-            await new ObjectLogCsv(
-              new ActionAuditTable(this.config, entries, true),
-              auditConfig
-            ).process();
+            await new ObjectLogCsv(new ActionAuditTable(this.config, entries, true), auditConfig).process();
             break;
           case 'console':
             await new ObjectLogTable(

@@ -82,7 +82,7 @@ describe('Validate ResourceLog', function () {
     if (fs.existsSync(RESOURCE_LOG_CONFIG.csv.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.csv.file);
     await new ObjectLogCsv(
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags),
-      RESOURCE_LOG_CONFIG.csv
+      RESOURCE_LOG_CONFIG.csv,
     ).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.csv.file)).to.be.true;
     // TODO: check the contents of RESOURCE_LOG_CONFIG.csv.file
