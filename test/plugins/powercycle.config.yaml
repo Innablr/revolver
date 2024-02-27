@@ -1,0 +1,58 @@
+---
+defaults:
+  settings:
+    region: ap-southeast-2
+    timezone: Australia/Melbourne
+    timezoneTag: Timezone
+    organizationRoleName: none
+    revolverRoleName: none
+    localResourcesFile: ./test/plugins/powercycle.resources.json
+    # resourceLog:
+    #   json:
+    #     file: ./test/plugins/resources.json
+    #   csv:
+    #     file: ./test/plugins/resources.csv
+    #     reportTags: ["Name", "Schedule"]
+    auditLog:
+      csv:
+        file: ./test/plugins/audit.csv
+    excludeResources:
+      - tag: 'Schedule|ignore'
+
+  drivers:
+    - name: ec2
+      pretend: true
+    - name: rdsInstance
+      pretend: true
+    - name: rdsCluster
+      pretend: true
+
+
+  plugins:
+    powercycle:
+      active: true
+      configs:
+        - tagging: strict
+          availabilityTag: Schedule
+          
+# organizations:
+#   - accountId: "000000000000"
+#     settings:
+#       name: some-org-name
+#       stuff: 123 # ignored
+#       region: whatever # override default
+#       # revolverRoleName from defaults
+#   - accountId: "111111111111"
+#     settings:
+#       region: eu-west-1
+#       name: eh-global-euw1
+
+accounts:
+  includeList:
+    - accountId: "112233445566"
+      settings:
+        name: whatdev
+  # excludeList: []
+#     - accountId: "333333333333"
+#       settings:
+#         name: whatprod

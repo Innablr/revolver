@@ -108,6 +108,10 @@
       "SourceDestCheck": false,
       "Tags": [
         {
+          "Key": "Schedule",
+          "Value": "0x7"
+        },
+        {
           "Key": "integrity",
           "Value": "accurate"
         },
@@ -876,7 +880,7 @@
     "resourceType": "ec2",
     "resourceArn": "arn:aws:ec2:ap-southeast-2:112233445566:volume/i-01531c2e601f21910",
     "launchTimeUtc": "2024-02-13T22:43:55.000Z",
-    "resourceState": "running",
+    "resourceState": "stopped",
     "resource": {
       "AmiLaunchIndex": 1,
       "ImageId": "ami-06c0de9677961d8f0",
@@ -902,7 +906,7 @@
       "PublicDnsName": "",
       "State": {
         "Code": 16,
-        "Name": "running"
+        "Name": "stopped"
       },
       "StateTransitionReason": "",
       "SubnetId": "subnet-0fa81718ad1d37598",
@@ -979,6 +983,10 @@
       ],
       "SourceDestCheck": true,
       "Tags": [
+        {
+          "Key": "Schedule",
+          "Value": "24x7"
+        },
         {
           "Key": "aws:ec2launchtemplate:id",
           "Value": "lt-0a1c6124dae946af3"

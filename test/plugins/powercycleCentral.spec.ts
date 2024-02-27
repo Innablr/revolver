@@ -6,10 +6,9 @@ import { handler as revolverHandle } from '../../revolver';
 import environ from '../../lib/environ';
 import * as fs from 'fs';
 
-const LOCAL_CONFIG = path.join(__dirname, 'test-revolver-config.powercycleCentral.yaml');
-// const RESOURCES_FILE = path.join(__dirname, 'resources.json'); // in config YAML
+const LOCAL_CONFIG = path.join(__dirname, 'powercycleCentral.config.yaml');
 const OUTPUT_AUDIT_CSV_FILE = path.join(__dirname, 'audit.csv');
-// const OUTPUT_RESOURCES_CSV_FILE = path.join(__dirname, 'resources.csv');
+const OUTPUT_RESOURCES_CSV_FILE = path.join(__dirname, 'resources.csv');
 const OUTPUT_RESOURCES_JSON_FILE = path.join(__dirname, 'resources.json');
 
 const timeStamp = '2024-02-22T23:45:19.521Z';
@@ -42,24 +41,35 @@ const context: Context = {
 };
 
 describe('Run powercycleCentral full cycle', function () {
-  // delete output files before run
-  if (fs.existsSync(OUTPUT_AUDIT_CSV_FILE)) fs.unlinkSync(OUTPUT_AUDIT_CSV_FILE);
-  if (fs.existsSync(OUTPUT_RESOURCES_JSON_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_JSON_FILE);
-  environ.configPath = LOCAL_CONFIG;
+  beforeEach(function () {
+    // delete output files before run
+    if (fs.existsSync(OUTPUT_AUDIT_CSV_FILE)) fs.unlinkSync(OUTPUT_AUDIT_CSV_FILE);
+    if (fs.existsSync(OUTPUT_RESOURCES_JSON_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_JSON_FILE);
+    environ.configPath = LOCAL_CONFIG;
+  });
 
   it('resolves', (done) => {
     const r = revolverHandle(event, context, () => {});
     if (r instanceof Promise) {
       r.then(() => {
+        // TODO: validate schedule matching resources
+        // TODO: validate schedule matching resources, but overridden by resource Tags
+        // TODO: validate schedule matching resources, but NOT overridden by resource Tags (lower priority)
+
         // validate audit.csv
         logger.info(`TEST validating ${OUTPUT_AUDIT_CSV_FILE}`);
         const auditCsvText = fs.readFileSync(OUTPUT_AUDIT_CSV_FILE, 'utf-8');
-        expect((auditCsvText.match(/2024-02-/g) || []).length).to.equal(4); // number of rows
+        expect((auditCsvText.match(/2024-02-/g) || []).length).to.equal(3); // number of rows
         expect(auditCsvText).to.include(',ec2,ec2,i-0c688d35209d7f436,stop,');
         expect(auditCsvText).to.include(',ec2,ec2,i-031635db539857721,stop,');
+        expect(auditCsvText).to.include(',ec2,ec2,i-072b78745f1879e97,stop,');
         expect(auditCsvText).to.not.include(',ec2,ec2,i-05b6baf37fc8f9454,stop,');
 
         // TODO: validate resources.csv
+        logger.info(`TEST validating ${OUTPUT_RESOURCES_CSV_FILE}`);
+        const resourcesCsvText = fs.readFileSync(OUTPUT_RESOURCES_CSV_FILE, 'utf-8');
+        expect(resourcesCsvText).to.include(',TAG:Name,TAG:Schedule');
+        expect(resourcesCsvText).to.include('i-0c688d35209d7f436,running,StopAction,junk-vm-2-on,0x7');
 
         // validate matches and actions in resources.json
         logger.info(`TEST validating ${OUTPUT_RESOURCES_JSON_FILE}`);

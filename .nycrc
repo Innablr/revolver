@@ -6,7 +6,9 @@
     "exclude": [
       "**/*.d.ts",
       "**/*.spec.ts",
-      "**/*.spec.js"
+      "**/*.spec.js",
+      "**/.terraform",
+      "dist/**"
     ],
 
     "all": true
