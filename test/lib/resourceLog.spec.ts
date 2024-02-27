@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ObjectLogConsole, ObjectLogCsv, ObjectLogJson, ResourceTable } from '../../lib/objectLog';
+import { ObjectLogTable, ObjectLogCsv, ObjectLogJson, ResourceTable } from '../../lib/objectLog';
 import { ToolingInterface } from '../../drivers/instrumentedResource';
 import { DateTime } from 'luxon';
 import { randomBytes } from 'node:crypto';
@@ -70,8 +70,9 @@ const ACCOUNT_CONFIG = {
 
 describe('Validate ResourceLog', function () {
   it('Check ObjectLogConsole', async function () {
-    await new ObjectLogConsole(
+    await new ObjectLogTable(
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags),
+      { console: null },
       'My Fake Resources',
     ).process();
     // TODO: check the contents of console output
@@ -81,8 +82,7 @@ describe('Validate ResourceLog', function () {
     if (fs.existsSync(RESOURCE_LOG_CONFIG.csv.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.csv.file);
     await new ObjectLogCsv(
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags),
-      RESOURCE_LOG_CONFIG.csv,
-      false,
+      RESOURCE_LOG_CONFIG.csv
     ).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.csv.file)).to.be.true;
     // TODO: check the contents of RESOURCE_LOG_CONFIG.csv.file
