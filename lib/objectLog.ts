@@ -113,26 +113,28 @@ export class ObjectLogCsv extends ObjectLog {
 }
 
 /**
- * A class that can write arbitrary data to a file or S3 bucket as a JSON object.
+ * A base class that can write arbitrary data to a file or S3 bucket.
  */
-export class ObjectLogJson extends ObjectLog {
-  private readonly data: any;
-  private readonly options: ObjectLogWriteOptions;
+abstract class AbstractObjectLog extends ObjectLog {
+  protected readonly data: any;
+  protected readonly options: ObjectLogWriteOptions;
   constructor(data: any, options: ObjectLogWriteOptions) {
     super();
     this.data = data;
     this.options = options;
   }
 
+  abstract getOutput(): string;
+
   private async writeFile() {
     const filename = dateTime.resolveFilename(this.options.file);
-    return fs.writeFile(filename || '', JSON.stringify(this.data, null, 2));
+    return fs.writeFile(filename || '', this.getOutput());
   }
 
   private writeS3() {
     const config = getAwsConfig(this.options.s3?.region);
     const s3 = new S3Client(config);
-    const fullData = JSON.stringify(this.data, null, 2);
+    const fullData = this.getOutput();
     const path = dateTime.resolveFilename(this.options.s3?.path);
 
     this.logger.info(`Writing data to s3://${this.options.s3?.bucket}/${path}`);
@@ -148,6 +150,15 @@ export class ObjectLogJson extends ObjectLog {
       promises.push(this.writeS3());
     }
     return Promise.all(promises);
+  }
+}
+
+/**
+ * A class that can write arbitrary data to a file or S3 bucket as a JSON object.
+ */
+export class ObjectLogJson extends AbstractObjectLog {
+  getOutput(): string {
+    return JSON.stringify(this.data, null, 2);
   }
 }
 
