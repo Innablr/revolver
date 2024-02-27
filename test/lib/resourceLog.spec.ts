@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ObjectLogConsole, ObjectLogCsv, ObjectLogJson, ResourceTable } from '../../lib/objectLog';
+import { ObjectLogConsole, ObjectLogCsv, ObjectLogJson, ObjectLogTemplate, ResourceTable } from '../../lib/objectLog';
 import { ToolingInterface } from '../../drivers/instrumentedResource';
 import { DateTime } from 'luxon';
 import { randomBytes } from 'node:crypto';
@@ -95,5 +95,14 @@ describe('Validate ResourceLog', function () {
     await new ObjectLogJson(TEST_RESOURCES, RESOURCE_LOG_CONFIG.json).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.json.file)).to.be.true;
     // TODO: check the contents of RESOURCE_LOG_CONFIG.json.file
+  });
+
+  it('Check ObjectLogTemplate', async function () {
+    if (fs.existsSync(RESOURCE_LOG_CONFIG.template.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.template.file);
+    await new ObjectLogTemplate(TEST_RESOURCES, RESOURCE_LOG_CONFIG.template).process();
+    expect(fs.existsSync(RESOURCE_LOG_CONFIG.template.file)).to.be.true;
+    // TODO: check the contents of RESOURCE_LOG_CONFIG.template.file
+    const output = fs.readFileSync(RESOURCE_LOG_CONFIG.template.file, 'utf-8');
+    expect(output).to.include('lord-farquaad');
   });
 });

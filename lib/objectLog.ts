@@ -5,6 +5,8 @@ import { getAwsConfig } from './awsConfig';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ActionAuditEntry } from '../actions/audit';
 import dateTime from './dateTime';
+import path from 'path';
+import { configure as nunjucks_configure } from 'nunjucks';
 
 abstract class ObjectLog {
   protected readonly logger;
@@ -57,6 +59,10 @@ type ObjectLogWriteOptions = {
     region: string;
     path: string;
   };
+};
+
+type TemplateObjectLogWriteOptions = ObjectLogWriteOptions & {
+  templateName: string;
 };
 
 /**
@@ -159,6 +165,29 @@ abstract class AbstractObjectLog extends ObjectLog {
 export class ObjectLogJson extends AbstractObjectLog {
   getOutput(): string {
     return JSON.stringify(this.data, null, 2);
+  }
+}
+
+/**
+ * A class that can write arbitrary data to a file or S3 bucket as a rendered template.
+ * TODO: allow custom templates etc
+ */
+export class ObjectLogTemplate extends AbstractObjectLog {
+  protected readonly templateName: string;
+  constructor(data: any, options: TemplateObjectLogWriteOptions) {
+    super(data, options);
+    this.templateName = options.templateName;
+  }
+
+  getOutput(): string {
+    const templateFile = path.join(__dirname, 'templates', this.templateName);
+    const env = nunjucks_configure({ autoescape: true });
+    const s = env.render(templateFile, {
+      data: this.data,
+      options: this.options,
+    });
+
+    return s;
   }
 }
 

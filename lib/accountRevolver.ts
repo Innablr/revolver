@@ -5,7 +5,14 @@ import { logger } from './logger';
 import path from 'node:path';
 import { promises as fs } from 'fs';
 import { buildFilter } from '../plugins/filters/index';
-import { ActionAuditTable, ObjectLogConsole, ObjectLogCsv, ObjectLogJson, ResourceTable } from './objectLog';
+import {
+  ActionAuditTable,
+  ObjectLogConsole,
+  ObjectLogCsv,
+  ObjectLogJson,
+  ObjectLogTemplate,
+  ResourceTable,
+} from './objectLog';
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -162,6 +169,9 @@ export class AccountRevolver {
         switch (logFormat.toLowerCase()) {
           case 'json':
             await new ObjectLogJson(this.resources, resourceLogConfig).process();
+            break;
+          case 'template':
+            await new ObjectLogTemplate(this.resources, resourceLogConfig).process();
             break;
           case 'console':
             await new ObjectLogConsole(
