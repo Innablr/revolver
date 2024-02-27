@@ -5,14 +5,7 @@ import { logger } from './logger';
 import path from 'node:path';
 import { promises as fs } from 'fs';
 import { buildFilter } from '../plugins/filters/index';
-import {
-  ActionAuditTable,
-  ObjectLogConsole,
-  ObjectLogCsv,
-  ObjectLogJson,
-  ObjectLogTemplate,
-  ResourceTable,
-} from './objectLog';
+import { ActionAuditTable, ObjectLogTable, ObjectLogCsv, ObjectLogJson, ObjectLogTemplate, ResourceTable } from './objectLog';
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -144,14 +137,14 @@ export class AccountRevolver {
             await new ObjectLogJson(entries, auditConfig).process();
             break;
           case 'csv':
-            await new ObjectLogCsv(
-              new ActionAuditTable(this.config, entries, true),
-              auditConfig,
-              auditConfig['append'] || false,
-            ).process();
+            await new ObjectLogCsv(new ActionAuditTable(this.config, entries, true), auditConfig).process();
             break;
           case 'console':
-            await new ObjectLogConsole(new ActionAuditTable(this.config, entries, false), 'Audit Log').process();
+            await new ObjectLogTable(
+              new ActionAuditTable(this.config, entries, false),
+              { console: null },
+              'Audit Log',
+            ).process();
             break;
           default:
             logger.warn(`no implementation for audit log format ${auditFormat}`);
@@ -174,16 +167,16 @@ export class AccountRevolver {
             await new ObjectLogTemplate(this.resources, resourceLogConfig).process();
             break;
           case 'console':
-            await new ObjectLogConsole(
+            await new ObjectLogTable(
               new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags),
-              'Object Log',
+              { console: null },
+              'Resource Log',
             ).process();
             break;
           case 'csv':
             await new ObjectLogCsv(
               new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags),
               resourceLogConfig,
-              resourceLogConfig['append'] || false,
             ).process();
             break;
           default:

@@ -115,12 +115,7 @@ const Settings = z.object({
         })
         .merge(ObjectLogOptions)
         .optional(),
-      json: z
-        .object({
-          file: z.string(),
-        })
-        .merge(ObjectLogOptions)
-        .optional(),
+      json: ObjectLogOptions.optional(),
     })
     .optional(),
   excludeResources: z.union([z.array(Filters), Filters]).optional(),
