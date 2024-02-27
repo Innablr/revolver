@@ -77,7 +77,7 @@ describe('Validate ResourceLog', function () {
     // TODO: check the contents of console output
   });
 
-  it('Check ObjectLogCsv', async function () {
+  it('Check ObjectLogCsv resources', async function () {
     if (fs.existsSync(RESOURCE_LOG_CONFIG.csv.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.csv.file);
     await new ObjectLogCsv(
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags),
