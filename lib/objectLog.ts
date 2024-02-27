@@ -85,18 +85,12 @@ export class ObjectLogCsv extends ObjectLog {
   }
 
   private async writeCsv() {
-    let mode = 'w';
-    if (this.append) mode = 'a';
-
+    const mode = this.append ? 'a' : 'w';
     const filename = dateTime.resolveFilename(this.options.file);
-    const f = await fs.open(filename, mode);
     this.logger.info(`Writing ${this.dataTable.constructor.name} log to ${filename}`);
-    if (!this.append) {
-      await f.write(this.dataTable.header().join(',') + '\n');
-    }
-    for (const e of this.dataTable.data()) {
-      await f.write(this.sanitizeRow(e).join(',') + '\n');
-    }
+    const rows = this.dataTable.data().map((e) => this.sanitizeRow(e).join(',') + '\n');
+    const output = [this.dataTable.header().join(',') + '\n'].concat(rows);
+    return fs.writeFile(filename, output, { flag: mode });
   }
 
   private writeS3() {
@@ -140,8 +134,7 @@ abstract class AbstractObjectLog extends ObjectLog {
 
   private async writeFile() {
     const filename = dateTime.resolveFilename(this.options.file);
-    const f = await fs.open(filename || '', 'w');
-    return f.write(this.getOutput());
+    return fs.writeFile(filename || '', this.getOutput());
   }
 
   private writeS3() {
