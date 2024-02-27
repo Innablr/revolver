@@ -1,39 +1,129 @@
 import { ToolingInterface } from '../drivers/instrumentedResource';
 import { logger } from './logger';
-import { promises as fs } from 'fs';
+import { existsSync, promises as fs } from 'fs';
 import { getAwsConfig } from './awsConfig';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ActionAuditEntry } from '../actions/audit';
 import dateTime from './dateTime';
 
-abstract class ObjectLog {
-  protected readonly logger;
-  protected constructor() {
-    this.logger = logger;
-  }
-
-  abstract process(): void;
-}
-
+/**
+ * Used by the writers to structure table style data
+ */
 export interface DataTable {
   header(): string[];
   data(): string[][];
 }
 
 /**
- * A class that can write a {@link DataTable} to the console as a table.
+ * Configures AbstractOutputWriter options
+ * console has no deeper value so needs to be checked for null rather than undefined
+ * append is only used within file operations and doesn't support s3 appending
  */
-export class ObjectLogConsole extends ObjectLog {
+type WriteOptions = {
+  append?: boolean;
+  console?: null;
+  file?: string;
+  s3?: {
+    bucket: string;
+    region: string;
+    path: string;
+  };
+};
+
+/**
+ * A base class that can write arbitrary data to a file, S3 bucket or console.
+ */
+abstract class AbstractOutputWriter {
+  protected readonly options: WriteOptions;
+  protected readonly logger;
+
+  protected constructor(options: WriteOptions) {
+    this.logger = logger;
+    this.options = options;
+  }
+
+  abstract getOutput(): string;
+
+  protected async writeFile() {
+    const filename = dateTime.resolveFilename(this.options.file);
+    this.logger.info(`Writing data to ${filename}`);
+    return fs.writeFile(filename, this.getOutput(), { flag: this.options.append ? 'a' : 'w' });
+  }
+
+  protected writeS3() {
+    const config = getAwsConfig(this.options.s3?.region);
+    const s3 = new S3Client(config);
+    const path = dateTime.resolveFilename(this.options.s3?.path);
+    this.logger.info(`Writing data to s3://${this.options.s3?.bucket}/${path}`);
+    return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: this.getOutput() }));
+  }
+
+  protected async writeConsole() {
+    this.logger.info(this.getOutput());
+  }
+
+  process(): any {
+    const promises = [];
+    if (this.options.console === null) {
+      promises.push(this.writeConsole());
+    }
+    if (this.options.file) {
+      promises.push(this.writeFile());
+    }
+    if (this.options.s3) {
+      promises.push(this.writeS3());
+    }
+    return Promise.all(promises);
+  }
+}
+
+/**
+ * Generate a CSV table of data specified in a {@link DataTable}
+ */
+export class ObjectLogCsv extends AbstractOutputWriter {
+  private readonly dataTable: DataTable;
+
+  constructor(dataTable: DataTable, options: WriteOptions) {
+    super(options);
+    this.dataTable = dataTable;
+  }
+
+  private sanitizeRow(row: string[]): string[] {
+    return row.map((v) => (v || '').replaceAll('"', '""')).map((v) => (v.includes(',') ? `"${v}"` : v));
+  }
+
+  getOutput(): string {
+    // somewhat hacky to support CSV append needing to know if the header is needed
+    const outputExists = existsSync(dateTime.resolveFilename(this.options.file));
+    let rows: string[][] = [this.dataTable.header()];
+
+    // Don't write header if appending to an existing file
+    if (this.options.append && outputExists) {
+      rows = [];
+    }
+    return (
+      rows
+        .concat(this.dataTable.data())
+        .map((row) => this.sanitizeRow(row).join(','))
+        .join('\n') + '\n'
+    );
+  }
+}
+
+/**
+ * Generates a space aligned text table of data from a {@link DataTable}
+ */
+export class ObjectLogTable extends AbstractOutputWriter {
   private readonly padding: number = 4;
   private readonly dataTable: DataTable;
   private readonly title: string;
-  constructor(dataTable: DataTable, title: string) {
-    super();
+  constructor(dataTable: DataTable, options: WriteOptions, title: string) {
+    super(options);
     this.dataTable = dataTable;
     this.title = title;
   }
 
-  process(): void {
+  getOutput(): string {
     const data = this.dataTable.data();
     const header = this.dataTable.header();
     const columnSizes = data
@@ -46,115 +136,21 @@ export class ObjectLogConsole extends ObjectLog {
       .concat(data)
       .reduce((a, row) => a.concat(row.map((d, i) => (d || '').padEnd(columnSizes[i])).join('')), []);
     // this.logger.info(`${this.constructor.name} log follows`);
-    this.logger.info(`${this.title}:\n${lines.join('\n')}\n`);
-  }
-}
-
-type ObjectLogWriteOptions = {
-  file?: string;
-  s3?: {
-    bucket: string;
-    region: string;
-    path: string;
-  };
-};
-
-/**
- * A class that can write a {@link DataTable} to a file or S3 bucket as a CSV.
- */
-export class ObjectLogCsv extends ObjectLog {
-  private readonly options: ObjectLogWriteOptions;
-  private readonly dataTable: DataTable;
-  private readonly append: boolean;
-
-  constructor(dataTable: DataTable, options: ObjectLogWriteOptions, append: boolean) {
-    super();
-    this.dataTable = dataTable;
-    this.options = options;
-    this.append = append;
-  }
-
-  private sanitizeRow(row: string[]): string[] {
-    return row.map((v) => (v || '').replaceAll('"', '""')).map((v) => (v.includes(',') ? `"${v}"` : v));
-  }
-
-  private async writeCsv() {
-    let mode = 'w';
-    if (this.append) mode = 'a';
-
-    const filename = dateTime.resolveFilename(this.options.file);
-    const f = await fs.open(filename, mode);
-    this.logger.info(`Writing ${this.dataTable.constructor.name} log to ${filename}`);
-    if (!this.append) {
-      await f.write(this.dataTable.header().join(',') + '\n');
-    }
-    for (const e of this.dataTable.data()) {
-      await f.write(this.sanitizeRow(e).join(',') + '\n');
-    }
-  }
-
-  private writeS3() {
-    const config = getAwsConfig(this.options.s3?.region);
-    const s3 = new S3Client(config);
-    const fullData = [this.dataTable.header()]
-      .concat(this.dataTable.data())
-      .map((row) => this.sanitizeRow(row))
-      .join('\n');
-
-    const path = dateTime.resolveFilename(this.options.s3?.path);
-    this.logger.info(`Writing ${this.dataTable.constructor.name} log to s3://${this.options.s3?.bucket}/${path}`);
-    return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: fullData }));
-  }
-
-  process(): any {
-    const promises = [];
-    if (this.options.file) {
-      promises.push(this.writeCsv());
-    }
-    if (this.options.s3) {
-      promises.push(this.writeS3());
-    }
-    return Promise.all(promises);
+    return `${this.title}:\n${lines.join('\n')}\n`;
   }
 }
 
 /**
- * A class that can write arbitrary data to a file or S3 bucket as a JSON object.
+ * Generates a JSON representation of the provided data.
  */
-export class ObjectLogJson extends ObjectLog {
+export class ObjectLogJson extends AbstractOutputWriter {
   private readonly data: any;
-  private readonly options: ObjectLogWriteOptions;
-  constructor(data: any, options: ObjectLogWriteOptions) {
-    super();
+  constructor(data: any, options: WriteOptions) {
+    super(options);
     this.data = data;
-    this.options = options;
   }
-
-  private async writeFile() {
-    const filename = dateTime.resolveFilename(this.options.file);
-    const f = await fs.open(filename || '', 'w');
-    return f.write(JSON.stringify(this.data, null, 2));
-  }
-
-  private writeS3() {
-    const config = getAwsConfig(this.options.s3?.region);
-    const s3 = new S3Client(config);
-    const fullData = JSON.stringify(this.data, null, 2);
-    const path = dateTime.resolveFilename(this.options.s3?.path);
-
-    this.logger.info(`Writing data to s3://${this.options.s3?.bucket}/${path}`);
-    return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: fullData }));
-  }
-
-  process(): any {
-    const promises = [];
-    if (this.options.file) {
-      promises.push(this.writeFile());
-    }
-    if (this.options.s3) {
-      promises.push(this.writeS3());
-    }
-    return Promise.all(promises);
+  getOutput(): string {
+    return JSON.stringify(this.data, null, 2);
   }
 }
 

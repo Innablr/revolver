@@ -18,7 +18,7 @@ class DateTime {
 
   resolveFilename(filename?: string): string {
     // If filename contains any %xx tokens then escape the rest and use Luxon to resolve the tokens
-    if (filename) {
+    if (filename && filename.includes('%')) {
       const fmt = "'" + filename.replace(/%(\w+)/g, "'$1'") + "'";
       return this.getTime().toFormat(fmt);
     }
