@@ -53,11 +53,9 @@ abstract class AbstractOutputWriter {
   protected writeS3() {
     const config = getAwsConfig(this.options.s3?.region);
     const s3 = new S3Client(config);
-    const fullData = this.getOutput();
     const path = dateTime.resolveFilename(this.options.s3?.path);
-
     this.logger.info(`Writing data to s3://${this.options.s3?.bucket}/${path}`);
-    return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: fullData }));
+    return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: this.getOutput() }));
   }
 
   protected async writeConsole() {
