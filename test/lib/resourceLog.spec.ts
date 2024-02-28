@@ -45,10 +45,6 @@ const RESOURCE_LOG_CONFIG = {
   json: {
     file: 'resourcelog-out.json',
   },
-  template: {
-    file: 'resourcelog-out.template.html',
-    templateName: 'template1.njk',
-  },
   csv: {
     file: 'resourcelog-out.csv',
     reportTags: ['F1', 'F2'],
