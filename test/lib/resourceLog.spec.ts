@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ObjectLogTable, ObjectLogCsv, ObjectLogJson, ResourceTable } from '../../lib/objectLog';
+import { ObjectLogHtml, ObjectLogTable, ObjectLogCsv, ObjectLogJson, ResourceTable } from '../../lib/objectLog';
 import { ToolingInterface } from '../../drivers/instrumentedResource';
 import { DateTime } from 'luxon';
 import { randomBytes } from 'node:crypto';
@@ -44,6 +44,9 @@ class FakeResource extends ToolingInterface {
 const RESOURCE_LOG_CONFIG = {
   json: {
     file: 'resourcelog-out.json',
+  },
+  html: {
+    file: 'resourcelog-out.html',
   },
   csv: {
     file: 'resourcelog-out.csv',
@@ -94,5 +97,18 @@ describe('Validate ResourceLog', function () {
     await new ObjectLogJson(TEST_RESOURCES, RESOURCE_LOG_CONFIG.json).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.json.file)).to.be.true;
     // TODO: check the contents of RESOURCE_LOG_CONFIG.json.file
+  });
+
+  it('Check ObjectLogHtml', async function () {
+    if (fs.existsSync(RESOURCE_LOG_CONFIG.html.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.html.file);
+    await new ObjectLogHtml(TEST_RESOURCES, 'Object Log Test', RESOURCE_LOG_CONFIG.html).process();
+    expect(fs.existsSync(RESOURCE_LOG_CONFIG.html.file)).to.be.true;
+
+    const contents = fs.readFileSync(RESOURCE_LOG_CONFIG.html.file).toString('utf-8');
+
+    expect(contents).to.contain('<html');
+    for(const t of TEST_RESOURCES) {
+      expect(contents).to.contain(t.resourceId);
+    }
   });
 });

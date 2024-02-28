@@ -98,7 +98,7 @@ function objectToTable(obj: any[], depth: number): string {
 
   s += `
   <tbody>
-    ${obj.slice(1).map((row: any) => {
+    ${obj.map((row: any) => {
       return `
         <tr>
           ${headers.map((key: any) => {
