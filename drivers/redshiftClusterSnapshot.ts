@@ -50,7 +50,7 @@ class InstrumentedRedshiftClusterSnapshot extends ToolingInterface {
     return tag?.Value;
   }
   get resourceTags(): { [key: string]: string } {
-    return this.tags.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
+    return this.resource.Tags.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
   }
 }
 
