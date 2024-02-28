@@ -55,6 +55,9 @@ class InstrumentedRdsCluster extends ToolingInterface {
     const tag = this.resource.TagList.find((xt: Tag) => xt.Key === key);
     return tag?.Value;
   }
+  get resourceTags(): { [key: string]: string } {
+    return this.resource.TagList.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
+  }
 }
 
 class RdsClusterDriver extends DriverInterface {

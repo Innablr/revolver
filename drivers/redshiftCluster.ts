@@ -68,6 +68,9 @@ class InstrumentedRedshiftCluster extends ToolingInterface {
     const tag = this.tags.find((xt) => xt.Key === key);
     return tag?.Value;
   }
+  get resourceTags(): { [key: string]: string } {
+    return this.tags.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
+  }
 }
 
 class RedshiftClusterDriver extends DriverInterface {

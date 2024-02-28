@@ -38,6 +38,9 @@ class InstrumentedSnapshot extends ToolingInterface {
     const tag = this.resource.Tags.find((xt: Tag) => xt.Key === key);
     return tag?.Value;
   }
+  get resourceTags(): { [key: string]: string } {
+    return this.resource.Tags.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
+  }
 }
 
 class SnapshotDriver extends DriverInterface {

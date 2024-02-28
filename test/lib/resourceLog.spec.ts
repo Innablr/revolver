@@ -36,6 +36,9 @@ class FakeResource extends ToolingInterface {
   tag(key: string): string | undefined {
     return `value:${key}`;
   }
+  get resourceTags(): { [key: string]: string } {
+    return {};
+  }
 }
 
 const RESOURCE_LOG_CONFIG = {
