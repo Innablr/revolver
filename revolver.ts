@@ -65,8 +65,8 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
         .connectTo(account.settings.assumeRoleArn)
         .then((auth: any) => (auth ? account : undefined))
         .catch((err) => {
-          logger.error(`Unable to assume role ${account.settings.assumeRoleArn} on ${account.account_id}: ${err}`);
-          logger.error(`Account ${account.account_id} will be skipped`);
+          logger.error(`Unable to assume role ${account.settings.assumeRoleArn} on ${account.accountId}: ${err}`);
+          logger.error(`Account ${account.accountId} will be skipped`);
           return undefined;
         }),
     ),
