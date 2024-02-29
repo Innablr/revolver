@@ -86,7 +86,7 @@ export class RevolverConfig {
     );
     // build assumeRoleArn string, extract account_id and revolver_role_name
     const updatedAccountsList = filteredAccountsList.map((xa: any) => {
-      const account: any = merge.withOptions({ mergeArrays: false }, xa, config.defaults);
+      const account: any = merge.withOptions({ mergeArrays: false }, config.defaults, xa);
       account.settings.assumeRoleArn = `arn:aws:iam::${account.accountId}:role/${account.settings.revolverRoleName}`;
       return account;
     });
