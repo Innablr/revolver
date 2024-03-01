@@ -7,14 +7,14 @@ const SAMPLE_CONFIG_1 = path.join(__dirname, 'revolver-config1.yaml');
 
 describe('Validate example config', function () {
   it('Check simple parsing', async function () {
-    const config = await new RevolverConfig().readConfigFromFile(EXAMPLE_CONFIG);
+    const config = await RevolverConfig.readConfigFromFile(EXAMPLE_CONFIG);
     expect(config.defaults.settings.region).to.equal('ap-southeast-2');
   });
 });
 
 describe('Validate test config', function () {
   it('Check simple parsing', async function () {
-    const config = await new RevolverConfig().readConfigFromFile(SAMPLE_CONFIG_1);
+    const config = await RevolverConfig.readConfigFromFile(SAMPLE_CONFIG_1);
 
     // basic settings, defaults
     expect(config.defaults.settings.region).to.equal('ap-southeast-2');
