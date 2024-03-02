@@ -9,6 +9,11 @@ class DateTime {
     logger.debug(`Freezing time: ${this.currentTime}`);
   }
 
+  freezeTimeUnix(t: string) {
+    this.currentTime = LuxonDateTime.fromMillis(parseInt(t)).toUTC();
+    logger.debug(`Freezing time: ${this.currentTime}`);
+  }
+
   getTime(tz?: string) {
     if (tz) {
       return this.currentTime.setZone(tz);

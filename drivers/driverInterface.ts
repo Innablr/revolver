@@ -3,7 +3,7 @@ import { logger, RevolverLogObject } from '../lib/logger';
 import { InstrumentedResource, ToolingInterface } from './instrumentedResource';
 import { RevolverAction } from '../actions/actions';
 import { ActionAuditEntry } from '../actions/audit';
-import { DateTime } from 'luxon';
+import dateTime from '../lib/dateTime';
 
 export abstract class DriverInterface {
   protected accountConfig: any;
@@ -64,7 +64,7 @@ export abstract class DriverInterface {
 
       this.actionAuditLog.push({
         accountId: ti.accountId || '',
-        time: DateTime.now(),
+        time: dateTime.getTime(),
         plugin: plugin,
         driver: this.name,
         resourceType: ti.awsResourceType || '',
