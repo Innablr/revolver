@@ -39,7 +39,7 @@ function flattenZodErrors(ze: ZodError, depth: number): string[] {
 }
 
 export class RevolverConfig {
-  validateConfig(data: string) {
+  static validateConfig(data: string) {
     try {
       const config = ConfigSchema.parse(yaml.load(data));
       logger.debug('Read Revolver config', config);
@@ -54,23 +54,23 @@ export class RevolverConfig {
     }
   }
 
-  async readConfigFromFile(configFile: string) {
+  static async readConfigFromFile(configFile: string) {
     const fullPath = path.resolve(configFile);
     logger.debug(`Fetching config from file ${fullPath}`);
-    return this.validateConfig(await fs.readFile(fullPath, { encoding: 'utf8' }));
+    return RevolverConfig.validateConfig(await fs.readFile(fullPath, { encoding: 'utf8' }));
   }
 
-  async readConfigFromS3(configBucket: string, configKey: string) {
+  static async readConfigFromS3(configBucket: string, configKey: string) {
     const config = getAwsConfig();
     const s3 = new S3Client(config);
     logger.debug(`Fetching config from bucket [${configBucket}] key [${configKey}]`);
 
     const configObject = await s3.send(new GetObjectCommand({ Bucket: configBucket, Key: configKey }));
     logger.debug(`Found S3 object MIME ${configObject.ContentType}`);
-    return this.validateConfig(await configObject.Body!.transformToString());
+    return RevolverConfig.validateConfig(await configObject.Body!.transformToString());
   }
 
-  async getOrganisationsAccounts(creds: any[]) {
+  static async getOrganisationsAccounts(creds: any[]) {
     const orgsRegion = 'us-east-1';
     const allAccounts = await Promise.all(
       creds.map(async (cr: any) => {
@@ -96,7 +96,7 @@ export class RevolverConfig {
     return flatAccounts;
   }
 
-  filterAccountsList(orgsAccountsList: any[], config: any) {
+  static filterAccountsList(orgsAccountsList: any[], config: any) {
     logger.info(`${orgsAccountsList.length} Accounts found on the Organizations listed`);
     logger.info(`${config.accounts.includeList.length} accounts found on include_list`);
     logger.info(`${config.accounts.excludeList.length} accounts found on exclude_list`);
