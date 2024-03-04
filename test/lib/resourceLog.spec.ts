@@ -76,14 +76,29 @@ describe('Validate filename tokens', function () {
 
   expect(writer.resolveFilename(undefined)).to.equal('');
 
-  // date/time tokens
+  // Date/time tokens
   expect(writer.resolveFilename('file.txt')).to.equal('file.txt');
+  expect(writer.resolveFilename('file.%c.txt')).to.equal('file.1.txt'); // day of week
   expect(writer.resolveFilename('file.%cccc.txt')).to.equal('file.Monday.txt');
   expect(writer.resolveFilename('file.%LLLL.txt')).to.equal('file.February.txt');
   expect(writer.resolveFilename('file.%yyyy%LL%dd.txt')).to.equal('file.20240219.txt');
+  expect(writer.resolveFilename('file.%c%L.txt')).to.equal('file.12.txt'); // day of week, month
 
-  // context tokens
+  // Context tokens
   expect(writer.resolveFilename('file.%name.%accountId.txt')).to.equal('file.NAME.123.txt');
+
+  // Invalid date/time tokens (not repeating, followed by non-word)
+  expect(writer.resolveFilename('file.%cL.txt')).to.equal('file.%cL.txt');
+
+  // No context
+  const writerNoContext = new ObjectLogJson([], {});
+  expect(writerNoContext.resolveFilename('file.%cccc.txt')).to.equal('file.Monday.txt');
+  expect(writerNoContext.resolveFilename('file.%zzz.txt')).to.equal('file.zzz.txt');
+
+  // Missing context
+  const writerDifferentContext = new ObjectLogJson([], {}, { region: 'THERE' });
+  expect(writerDifferentContext.resolveFilename('file.%name.txt')).to.equal('file.%name.txt'); //
+
 });
 
 describe('Validate ResourceLog', function () {

@@ -46,7 +46,7 @@ abstract class AbstractOutputWriter {
   protected readonly logger;
   protected readonly context;
 
-  protected constructor(options: WriteOptions, context: WriterContext = {}) {
+  protected constructor(options: WriteOptions, context?: WriterContext) {
     this.logger = logger;
     this.options = options;
     this.context = context;
@@ -81,14 +81,15 @@ abstract class AbstractOutputWriter {
       const re = new RegExp('%(' + Object.keys(this.context).join('|') + ')', 'g');
       path = path.replace(re, (match) => {
         const key = match.replace('%', '');
-        return this.context[key as keyof WriterContext] || match;
+        return this.context![key as keyof WriterContext] || '??';
       });
     }
-    // If filename contains any %xx tokens then escape the rest and use Luxon to resolve the (date/time) tokens
-    if (path.includes('%')) {
-      const fmt = "'" + path.replace(/%(\w+)/g, "'$1'") + "'";
-      path = dateTime.getTime().toFormat(fmt);
-    }
+    // If filename contains any %xxx tokens (same character is repeated) attempt to use Luxon to resolve (date/time) tokens.
+    path = path.replace(/%(\w)\1*(?!\w)/g, (match) => {
+      return dateTime.getTime().toFormat(match.replace('%', ''));
+    });
+
+    // unmatched tokens will be retained as `%token`
     return path;
   }
 
@@ -113,7 +114,7 @@ abstract class AbstractOutputWriter {
 export class ObjectLogCsv extends AbstractOutputWriter {
   private readonly dataTable: DataTable;
 
-  constructor(dataTable: DataTable, options: WriteOptions, context: WriterContext) {
+  constructor(dataTable: DataTable, options: WriteOptions, context?: WriterContext) {
     super(options, context);
     this.dataTable = dataTable;
   }
@@ -147,7 +148,7 @@ export class ObjectLogTable extends AbstractOutputWriter {
   private readonly padding: number = 4;
   private readonly dataTable: DataTable;
   private readonly title: string;
-  constructor(dataTable: DataTable, options: WriteOptions, title: string, context: WriterContext) {
+  constructor(dataTable: DataTable, options: WriteOptions, title: string, context?: WriterContext) {
     super(options, context);
     this.dataTable = dataTable;
     this.title = title;
@@ -175,7 +176,7 @@ export class ObjectLogTable extends AbstractOutputWriter {
  */
 export class ObjectLogJson extends AbstractOutputWriter {
   private readonly data: any;
-  constructor(data: any, options: WriteOptions, context: WriterContext) {
+  constructor(data: any, options: WriteOptions, context?: WriterContext) {
     super(options, context);
     this.data = data;
   }
