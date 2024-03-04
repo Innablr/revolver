@@ -72,7 +72,7 @@ abstract class AbstractOutputWriter {
     this.logger.info(this.getOutput());
   }
 
-  private resolveFilename(path?: string): string {
+  protected resolveFilename(path?: string): string {
     if(path === undefined) {
       return '';
     }
@@ -82,6 +82,7 @@ abstract class AbstractOutputWriter {
       const key = match.replace('%', '');
       return this.context[key as keyof WriterContext] || match;
     });
+    // Replace datetime tokens
     return dateTime.resolveFilename(step1);
   }
 
@@ -117,7 +118,7 @@ export class ObjectLogCsv extends AbstractOutputWriter {
 
   getOutput(): string {
     // somewhat hacky to support CSV append needing to know if the header is needed
-    const outputExists = existsSync(dateTime.resolveFilename(this.options.file));
+    const outputExists = existsSync(this.resolveFilename(this.options.file));
     let rows: string[][] = [this.dataTable.header()];
 
     // Don't write header if appending to an existing file
