@@ -30,22 +30,32 @@ type WriteOptions = {
   };
 };
 
+// values used for expanding tokens in output filenames
+type WriterContext = {
+  region?: string,
+  timezone?: string,
+  accountId?: string,
+  name?: string,
+}
+
 /**
  * A base class that can write arbitrary data to a file, S3 bucket or console.
  */
 abstract class AbstractOutputWriter {
   protected readonly options: WriteOptions;
   protected readonly logger;
+  protected readonly context;
 
-  protected constructor(options: WriteOptions) {
+  protected constructor(options: WriteOptions, context: WriterContext = {}) {
     this.logger = logger;
     this.options = options;
+    this.context = context;
   }
 
   abstract getOutput(): string;
 
   protected async writeFile() {
-    const filename = dateTime.resolveFilename(this.options.file);
+    const filename = this.resolveFilename(this.options.file);
     this.logger.info(`Writing data to ${filename}`);
     return fs.writeFile(filename, this.getOutput(), { flag: this.options.append ? 'a' : 'w' });
   }
@@ -53,13 +63,26 @@ abstract class AbstractOutputWriter {
   protected writeS3() {
     const config = getAwsConfig(this.options.s3?.region);
     const s3 = new S3Client(config);
-    const path = dateTime.resolveFilename(this.options.s3?.path);
+    const path = this.resolveFilename(this.options.s3?.path);
     this.logger.info(`Writing data to s3://${this.options.s3?.bucket}/${path}`);
     return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: this.getOutput() }));
   }
 
   protected async writeConsole() {
     this.logger.info(this.getOutput());
+  }
+
+  private resolveFilename(path?: string): string {
+    if(path === undefined) {
+      return '';
+    }
+    // Replace all tokens from this.context
+    const re = new RegExp('%(' + Object.keys(this.context).join('|') + ')', 'g');
+    const step1 = path.replace(re, (match) => {
+      const key = match.replace('%', '');
+      return this.context[key as keyof WriterContext] || match;
+    });
+    return dateTime.resolveFilename(step1);
   }
 
   process(): any {
@@ -83,8 +106,8 @@ abstract class AbstractOutputWriter {
 export class ObjectLogCsv extends AbstractOutputWriter {
   private readonly dataTable: DataTable;
 
-  constructor(dataTable: DataTable, options: WriteOptions) {
-    super(options);
+  constructor(dataTable: DataTable, options: WriteOptions, context: WriterContext) {
+    super(options, context);
     this.dataTable = dataTable;
   }
 
@@ -117,8 +140,8 @@ export class ObjectLogTable extends AbstractOutputWriter {
   private readonly padding: number = 4;
   private readonly dataTable: DataTable;
   private readonly title: string;
-  constructor(dataTable: DataTable, options: WriteOptions, title: string) {
-    super(options);
+  constructor(dataTable: DataTable, options: WriteOptions, title: string, context: WriterContext) {
+    super(options, context);
     this.dataTable = dataTable;
     this.title = title;
   }
@@ -145,8 +168,8 @@ export class ObjectLogTable extends AbstractOutputWriter {
  */
 export class ObjectLogJson extends AbstractOutputWriter {
   private readonly data: any;
-  constructor(data: any, options: WriteOptions) {
-    super(options);
+  constructor(data: any, options: WriteOptions, context: WriterContext) {
+    super(options, context);
     this.data = data;
   }
   getOutput(): string {

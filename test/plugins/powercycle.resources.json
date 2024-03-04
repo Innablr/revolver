@@ -1782,79 +1782,97 @@
     }
   },
   {
-    "resourceId": "i-3B868E5FB9E0043A",
+    "resourceId": "i-B7781A749688DAD2",
     "resourceType": "ec2",
-    "resourceArn": "arn:aws:ec2:ap-southeast-2:777777777777:volume/i-3B868E5FB9E0043A",
-    "launchTimeUtc": "2024-02-13T22:43:49.000Z",
-    "resourceState": "running",
+    "resourceArn": "arn:aws:ec2:ap-southeast-2:777777777777:volume/i-B7781A749688DAD2",
+    "launchTimeUtc": "2024-02-13T22:43:55.000Z",
+    "resourceState": "stopped",
     "resource": {
-      "AmiLaunchIndex": 0,
+      "AmiLaunchIndex": 1,
       "ImageId": "ami-06c0de9677961d8f0",
-      "InstanceId": "i-3B868E5FB9E0043A",
+      "InstanceId": "i-B7781A749688DAD2",
       "InstanceType": "t2.micro",
-      "LaunchTime": "2024-02-13T22:43:49.000Z",
-      "Monitoring": {
-        "State": "enabled"
-      },
-      "Placement": {
-        "AvailabilityZone": "ap-southeast-2c",
-        "GroupName": "",
-        "Tenancy": "default"
-      },
-      "PrivateDnsName": "ip-192-168-6-102.ap-southeast-2.compute.internal",
-      "PrivateIpAddress": "192.168.6.102",
-      "ProductCodes": [
-        {
-          "ProductCodeId": "73dg3lb60uxre63ucygzzdv3",
-          "ProductCodeType": "marketplace"
-        }
-      ],
-      "PublicDnsName": "",
+      "LaunchTime": "2024-02-13T22:43:55.000Z",
       "State": {
         "Code": 16,
-        "Name": "running"
+        "Name": "stopped"
       },
-      "StateTransitionReason": "",
       "SubnetId": "subnet-0fa81718ad1d37598",
       "VpcId": "vpc-096f6a0a90bec2722",
-      "Architecture": "x86_64",
-      "BlockDeviceMappings": [
-      ],
-      "ClientToken": "terraform-20240213224348152300000001",
-      "EbsOptimized": false,
-      "EnaSupport": true,
-      "Hypervisor": "xen",
-      "NetworkInterfaces": [
-      ],
-      "RootDeviceName": "/dev/sda1",
-      "RootDeviceType": "ebs",
       "SecurityGroups": [
         {
-          "GroupName": "CIS Red Hat Enterprise Linux 7 Benchmark - Level 2-3.1.1.31-AutogenByAWSMP--1",
-          "GroupId": "sg-06298971876a52feb"
+          "GroupName": "dumbsg",
+          "GroupId": "sg-003a72928da56d999"
         }
       ],
-      "SourceDestCheck": false,
       "Tags": [
         {
           "Key": "Schedule",
-          "Value": "0x7"
+          "Value": "24x7"
+        },
+        {
+          "Key": "aws:ec2launchtemplate:id",
+          "Value": "lt-0a1c6124dae946af3"
         },
         {
           "Key": "Name",
-          "Value": "junk-vm-2-on"
+          "Value": "junk-asg-3-day"
         }
       ],
-      "VirtualizationType": "hvm",
-      "PlatformDetails": "Red Hat Enterprise Linux",
-      "UsageOperation": "RunInstances:0010",
-      "UsageOperationUpdateTime": "2024-02-13T22:43:49.000Z",
-      "PrivateDnsNameOptions": {
-        "HostnameType": "ip-name",
-        "EnableResourceNameDnsARecord": false,
-        "EnableResourceNameDnsAAAARecord": false
+      "AutoScalingGroupName": "junk-asg-3-day"
+    }
+  },
+  {
+    "resourceId": "i-B7781A749688DAD2",
+    "resourceType": "ec2",
+    "resourceArn": "arn:aws:ec2:ap-southeast-2:888888888888:volume/i-B7781A749688DAD2",
+    "launchTimeUtc": "2024-02-13T22:43:55.000Z",
+    "resourceState": "stopped",
+    "resource": {
+      "AmiLaunchIndex": 1,
+      "ImageId": "ami-06c0de9677961d8f0",
+      "InstanceId": "i-B7781A749688DAD2",
+      "InstanceType": "t2.micro",
+      "LaunchTime": "2024-02-13T22:43:55.000Z",
+      "State": {
+        "Code": 16,
+        "Name": "stopped"
       },
-      "CurrentInstanceBootMode": "legacy-bios"
+      "SubnetId": "subnet-0fa81718ad1d37598",
+      "VpcId": "vpc-096f6a0a90bec2722",
+      "SecurityGroups": [
+        {
+          "GroupName": "dumbsg",
+          "GroupId": "sg-003a72928da56d999"
+        }
+      ],
+      "Tags": [
+        {
+          "Key": "Schedule",
+          "Value": "24x7"
+        },
+        {
+          "Key": "aws:ec2launchtemplate:id",
+          "Value": "lt-0a1c6124dae946af3"
+        },
+        {
+          "Key": "Name",
+          "Value": "junk-asg-3-day"
+        },
+        {
+          "Key": "integrity",
+          "Value": "accurate"
+        },
+        {
+          "Key": "aws:ec2launchtemplate:version",
+          "Value": "1"
+        },
+        {
+          "Key": "aws:autoscaling:groupName",
+          "Value": "junk-asg-3-day"
+        }
+      ],
+      "AutoScalingGroupName": "junk-asg-3-day"
     }
   }
 ]

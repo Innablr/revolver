@@ -34,7 +34,7 @@ defaults:
       configs:
         - tagging: strict
           availabilityTag: Schedule
-          
+
 # organizations:
 #   - accountId: "000000000000"
 #     settings:
