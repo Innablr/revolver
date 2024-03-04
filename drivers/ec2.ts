@@ -16,7 +16,7 @@ import {
 import { InstrumentedResource, ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
-import { chunkArray, paginateAwsCall } from '../lib/common';
+import { chunkArray, makeResourceTags, paginateAwsCall } from '../lib/common';
 import { ec2Tagger } from './tags';
 import { getAwsClientForAccount } from '../lib/awsConfig';
 
@@ -71,7 +71,7 @@ class InstrumentedEc2 extends ToolingInterface {
     }
   }
   get resourceTags(): { [key: string]: string } {
-    return this.resource.Tags.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
+    return makeResourceTags(this.resource.Tags);
   }
 }
 
