@@ -171,7 +171,6 @@ export abstract class DriverInterface {
       .filter((res: InstrumentedResource) => res.resourceType === this.name)
       .map((res: InstrumentedResource) => this.resource(res))
       .filter((r) => r.accountId === this.accountId);
-
   }
 
   abstract resource(obj: InstrumentedResource): ToolingInterface;
