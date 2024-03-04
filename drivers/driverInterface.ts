@@ -163,5 +163,15 @@ export abstract class DriverInterface {
 
   abstract collect(): Promise<ToolingInterface[]>;
 
+  // Filter the list of resources to only those of the correct type and account.
+  // This is used only when loading a local set of resources rather than collecting real resources from AWS,
+  // for testing purposes only.
+  collectLocal(resources: InstrumentedResource[]): ToolingInterface[] {
+    return resources
+      .filter((res: InstrumentedResource) => res.resourceType === this.name)
+      .map((res: InstrumentedResource) => this.resource(res))
+      .filter((r) => r.accountId === this.accountId);
+  }
+
   abstract resource(obj: InstrumentedResource): ToolingInterface;
 }
