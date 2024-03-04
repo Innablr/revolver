@@ -98,7 +98,6 @@ describe('Validate filename tokens', function () {
   // Missing context
   const writerDifferentContext = new ObjectLogJson([], {}, { region: 'THERE' });
   expect(writerDifferentContext.resolveFilename('file.%name.txt')).to.equal('file.%name.txt'); //
-
 });
 
 describe('Validate ResourceLog', function () {
