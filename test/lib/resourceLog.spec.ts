@@ -4,6 +4,7 @@ import { ToolingInterface } from '../../drivers/instrumentedResource';
 import { DateTime } from 'luxon';
 import { randomBytes } from 'node:crypto';
 import * as fs from 'fs';
+import dateTime from '../../lib/dateTime';
 
 // A dummy AWS resource for testing
 class FakeResource extends ToolingInterface {
@@ -68,12 +69,45 @@ const ACCOUNT_CONFIG = {
   },
 };
 
+describe('Validate filename tokens', function () {
+  const writer = new ObjectLogJson([], {}, { name: 'NAME', accountId: '123' });
+  const timeStamp = '2024-02-19T04:40:44.526Z';
+  dateTime.freezeTime(timeStamp);
+
+  expect(writer.resolveFilename(undefined)).to.equal('');
+
+  // Date/time tokens
+  expect(writer.resolveFilename('file.txt')).to.equal('file.txt');
+  expect(writer.resolveFilename('file.%c.txt')).to.equal('file.1.txt'); // day of week
+  expect(writer.resolveFilename('file.%cccc.txt')).to.equal('file.Monday.txt');
+  expect(writer.resolveFilename('file.%LLLL.txt')).to.equal('file.February.txt');
+  expect(writer.resolveFilename('file.%yyyy%LL%dd.txt')).to.equal('file.20240219.txt');
+  expect(writer.resolveFilename('file.%c%L.txt')).to.equal('file.12.txt'); // day of week, month
+
+  // Context tokens
+  expect(writer.resolveFilename('file.%name.%accountId.txt')).to.equal('file.NAME.123.txt');
+
+  // Invalid date/time tokens (not repeating, followed by non-word)
+  expect(writer.resolveFilename('file.%cL.txt')).to.equal('file.%cL.txt');
+
+  // No context
+  const writerNoContext = new ObjectLogJson([], {});
+  expect(writerNoContext.resolveFilename('file.%cccc.txt')).to.equal('file.Monday.txt');
+  expect(writerNoContext.resolveFilename('file.%zzz.txt')).to.equal('file.zzz.txt');
+
+  // Missing context
+  const writerDifferentContext = new ObjectLogJson([], {}, { region: 'THERE' });
+  expect(writerDifferentContext.resolveFilename('file.%name.txt')).to.equal('file.%name.txt'); //
+
+});
+
 describe('Validate ResourceLog', function () {
   it('Check ObjectLogConsole', async function () {
     await new ObjectLogTable(
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags),
       { console: null },
       'My Fake Resources',
+      ACCOUNT_CONFIG.settings,
     ).process();
     // TODO: check the contents of console output
   });
@@ -83,6 +117,7 @@ describe('Validate ResourceLog', function () {
     await new ObjectLogCsv(
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags),
       RESOURCE_LOG_CONFIG.csv,
+      ACCOUNT_CONFIG.settings,
     ).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.csv.file)).to.be.true;
     // TODO: check the contents of RESOURCE_LOG_CONFIG.csv.file
@@ -92,7 +127,7 @@ describe('Validate ResourceLog', function () {
 
   it('Check ObjectLogJson', async function () {
     if (fs.existsSync(RESOURCE_LOG_CONFIG.json.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.json.file);
-    await new ObjectLogJson(TEST_RESOURCES, RESOURCE_LOG_CONFIG.json).process();
+    await new ObjectLogJson(TEST_RESOURCES, RESOURCE_LOG_CONFIG.json, ACCOUNT_CONFIG.settings).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.json.file)).to.be.true;
     // TODO: check the contents of RESOURCE_LOG_CONFIG.json.file
   });

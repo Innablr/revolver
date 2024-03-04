@@ -9,13 +9,14 @@ defaults:
     localResourcesFile: ./test/plugins/powercycle.resources.json
     resourceLog:
       json:
-        file: ./test/plugins/resources.json
+        file: ./test/plugins/resources.%name.%accountId.json
       csv:
-        file: ./test/plugins/resources.csv
+        file: ./test/plugins/resources.%name.%accountId.csv
         reportTags: ["Name", "Schedule"]
     auditLog:
       csv:
         file: ./test/plugins/audit.csv
+        append: true
     excludeResources:
       - tag: 'Schedule|ignore'
 
@@ -100,7 +101,10 @@ accounts:
     - accountId: "112233445566"
       settings:
         name: whatdev
-  # excludeList: []
-#     - accountId: "333333333333"
-#       settings:
-#         name: whatprod
+    - accountId: "888888888888"
+      settings:
+        name: second
+  excludeList:
+    - accountId: "777777777777"
+      settings:
+        name: whatprod2

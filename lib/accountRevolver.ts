@@ -127,21 +127,23 @@ export class AccountRevolver {
     this.logger.info('Processing action audit log');
     const entries = this.drivers.map((d) => d.getAuditLog()).reduce((a, l) => a.concat(l), []);
 
+    const context = Object.assign({}, this.config.settings, { accountId: this.config.accountId });
     for (const auditFormat of Object.keys(this.config.settings.auditLog)) {
       try {
         const auditConfig = this.config.settings.auditLog[auditFormat];
         switch (auditFormat.toLowerCase()) {
           case 'json':
-            await new ObjectLogJson(entries, auditConfig).process();
+            await new ObjectLogJson(entries, auditConfig, context).process();
             break;
           case 'csv':
-            await new ObjectLogCsv(new ActionAuditTable(this.config, entries, true), auditConfig).process();
+            await new ObjectLogCsv(new ActionAuditTable(this.config, entries, true), auditConfig, context).process();
             break;
           case 'console':
             await new ObjectLogTable(
               new ActionAuditTable(this.config, entries, false),
               { console: null },
               'Audit Log',
+              context,
             ).process();
             break;
           default:
@@ -154,24 +156,27 @@ export class AccountRevolver {
   }
 
   async logResources(): Promise<void> {
+    const context = Object.assign({}, this.config.settings, { accountId: this.config.accountId });
     for (const logFormat of Object.keys(this.config.settings.resourceLog)) {
       try {
         const resourceLogConfig = this.config.settings.resourceLog[logFormat];
         switch (logFormat.toLowerCase()) {
           case 'json':
-            await new ObjectLogJson(this.resources, resourceLogConfig).process();
+            await new ObjectLogJson(this.resources, resourceLogConfig, context).process();
             break;
           case 'console':
             await new ObjectLogTable(
               new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags),
               { console: null },
               'Resource Log',
+              context,
             ).process();
             break;
           case 'csv':
             await new ObjectLogCsv(
               new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags),
               resourceLogConfig,
+              context,
             ).process();
             break;
           default:

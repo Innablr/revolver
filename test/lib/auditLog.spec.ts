@@ -50,7 +50,11 @@ describe('Validate auditLog', function () {
       new FakeActionAuditEntry('green', 'dosomething', 'another reason'),
       new FakeActionAuditEntry('blue', 'dosomething else', 'random'),
     ];
-    await new ObjectLogCsv(new ActionAuditTable(ACCOUNT_CONFIG, entries, true), AUDIT_LOG_CONFIG.csv).process();
+    await new ObjectLogCsv(
+      new ActionAuditTable(ACCOUNT_CONFIG, entries, true),
+      AUDIT_LOG_CONFIG.csv,
+      ACCOUNT_CONFIG.settings,
+    ).process();
 
     expect(fs.existsSync(AUDIT_LOG_CONFIG.csv.file)).to.be.true;
 
