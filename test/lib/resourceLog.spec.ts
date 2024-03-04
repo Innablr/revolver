@@ -70,7 +70,7 @@ const ACCOUNT_CONFIG = {
 
 describe('Validate ResourceLog', function () {
   it('Check ObjectLogConsole', async function () {
-    await new ObjectLogTable(
+    await new ObjectLogTable(ACCOUNT_CONFIG,
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags),
       { console: null },
       'My Fake Resources',
@@ -80,7 +80,7 @@ describe('Validate ResourceLog', function () {
 
   it('Check ObjectLogCsv resources', async function () {
     if (fs.existsSync(RESOURCE_LOG_CONFIG.csv.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.csv.file);
-    await new ObjectLogCsv(
+    await new ObjectLogCsv(ACCOUNT_CONFIG,
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags),
       RESOURCE_LOG_CONFIG.csv,
     ).process();
@@ -92,7 +92,7 @@ describe('Validate ResourceLog', function () {
 
   it('Check ObjectLogJson', async function () {
     if (fs.existsSync(RESOURCE_LOG_CONFIG.json.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.json.file);
-    await new ObjectLogJson(TEST_RESOURCES, RESOURCE_LOG_CONFIG.json).process();
+    await new ObjectLogJson(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.json).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.json.file)).to.be.true;
     // TODO: check the contents of RESOURCE_LOG_CONFIG.json.file
   });

@@ -132,13 +132,13 @@ export class AccountRevolver {
         const auditConfig = this.config.settings.auditLog[auditFormat];
         switch (auditFormat.toLowerCase()) {
           case 'json':
-            await new ObjectLogJson(entries, auditConfig).process();
+            await new ObjectLogJson(this.config, entries, auditConfig).process();
             break;
           case 'csv':
-            await new ObjectLogCsv(new ActionAuditTable(this.config, entries, true), auditConfig).process();
+            await new ObjectLogCsv(this.config, new ActionAuditTable(this.config, entries, true), auditConfig).process();
             break;
           case 'console':
-            await new ObjectLogTable(
+            await new ObjectLogTable(this.config,
               new ActionAuditTable(this.config, entries, false),
               { console: null },
               'Audit Log',
@@ -159,17 +159,17 @@ export class AccountRevolver {
         const resourceLogConfig = this.config.settings.resourceLog[logFormat];
         switch (logFormat.toLowerCase()) {
           case 'json':
-            await new ObjectLogJson(this.resources, resourceLogConfig).process();
+            await new ObjectLogJson(this.config, this.resources, resourceLogConfig).process();
             break;
           case 'console':
-            await new ObjectLogTable(
+            await new ObjectLogTable(this.config,
               new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags),
               { console: null },
               'Resource Log',
             ).process();
             break;
           case 'csv':
-            await new ObjectLogCsv(
+            await new ObjectLogCsv(this.config,
               new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags),
               resourceLogConfig,
             ).process();

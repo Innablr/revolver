@@ -1,7 +1,7 @@
 import { ToolingInterface } from '../drivers/instrumentedResource';
 import { logger } from './logger';
 import { existsSync, promises as fs } from 'fs';
-import { getAwsConfig } from './awsConfig';
+import { getAwsClientForAccount } from './awsConfig';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ActionAuditEntry } from '../actions/audit';
 import dateTime from './dateTime';
@@ -35,11 +35,13 @@ type WriteOptions = {
  */
 abstract class AbstractOutputWriter {
   protected readonly options: WriteOptions;
+  protected readonly accountConfig: any;
   protected readonly logger;
 
-  protected constructor(options: WriteOptions) {
+  protected constructor(accountConfig: any, options: WriteOptions) {
     this.logger = logger;
     this.options = options;
+    this.accountConfig = accountConfig;
   }
 
   abstract getOutput(): string;
@@ -50,9 +52,8 @@ abstract class AbstractOutputWriter {
     return fs.writeFile(filename, this.getOutput(), { flag: this.options.append ? 'a' : 'w' });
   }
 
-  protected writeS3() {
-    const config = getAwsConfig(this.options.s3?.region);
-    const s3 = new S3Client(config);
+  protected async writeS3() {
+    const s3 = await getAwsClientForAccount(S3Client, this.accountConfig.settings);
     const path = dateTime.resolveFilename(this.options.s3?.path);
     this.logger.info(`Writing data to s3://${this.options.s3?.bucket}/${path}`);
     return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: this.getOutput() }));
@@ -83,8 +84,8 @@ abstract class AbstractOutputWriter {
 export class ObjectLogCsv extends AbstractOutputWriter {
   private readonly dataTable: DataTable;
 
-  constructor(dataTable: DataTable, options: WriteOptions) {
-    super(options);
+  constructor(accountConfig: any, dataTable: DataTable, options: WriteOptions) {
+    super(accountConfig, options);
     this.dataTable = dataTable;
   }
 
@@ -117,8 +118,8 @@ export class ObjectLogTable extends AbstractOutputWriter {
   private readonly padding: number = 4;
   private readonly dataTable: DataTable;
   private readonly title: string;
-  constructor(dataTable: DataTable, options: WriteOptions, title: string) {
-    super(options);
+  constructor(accountConfig: any, dataTable: DataTable, options: WriteOptions, title: string) {
+    super(accountConfig, options);
     this.dataTable = dataTable;
     this.title = title;
   }
@@ -145,8 +146,8 @@ export class ObjectLogTable extends AbstractOutputWriter {
  */
 export class ObjectLogJson extends AbstractOutputWriter {
   private readonly data: any;
-  constructor(data: any, options: WriteOptions) {
-    super(options);
+  constructor(accountConfig: any, data: any, options: WriteOptions) {
+    super(accountConfig, options);
     this.data = data;
   }
   getOutput(): string {
