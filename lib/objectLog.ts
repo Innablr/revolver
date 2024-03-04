@@ -30,7 +30,9 @@ type WriteOptions = {
   };
 };
 
-// values used for expanding tokens in output filenames
+/**
+ * Values used for expanding tokens in output filenames.
+ */
 type WriterContext = {
   region?: string;
   timezone?: string;
@@ -72,6 +74,11 @@ abstract class AbstractOutputWriter {
     this.logger.info(this.getOutput());
   }
 
+  /**
+   * Replace `%token` tokens in the given path with values from the Writer context, and date/time.
+   * @param path - the string to be substituted
+   * @returns a version of `path` with tokens replaced with their values; unmatched tokens will be retained as `%token`
+   */
   public resolveFilename(path?: string): string {
     if (path === undefined) {
       return '';
