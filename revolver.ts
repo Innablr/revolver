@@ -79,7 +79,7 @@ async function main(config: any) {
   }
 
   logger.info(
-    `Revolver will run on ${authenticatedAccounts.length} account(s): ${authenticatedAccounts.map((xa: any) => `${xa.settings.name}(${xa.account_id})`)}`,
+    `Revolver will run on ${authenticatedAccounts.length} account(s): ${authenticatedAccounts.map((xa: any) => `${xa.settings.name}(${xa.accountId})`)}`,
   );
 
   const revolvers = authenticatedAccounts.map((account: any) => new AccountRevolver(account));
