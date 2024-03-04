@@ -85,9 +85,7 @@ export class AccountRevolver {
       await Promise.all(
         this.drivers.map((xd) => {
           if (local !== undefined) {
-            return localResources
-              .filter((res: InstrumentedResource) => res.resourceType === xd.name)
-              .map((res: InstrumentedResource) => xd.resource(res));
+            return xd.collectLocal(localResources);
           } else {
             return xd.collect();
           }
