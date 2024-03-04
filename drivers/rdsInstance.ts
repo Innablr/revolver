@@ -12,6 +12,7 @@ import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { rdsTagger } from './tags';
 import { getAwsClientForAccount } from '../lib/awsConfig';
+import { makeResourceTags } from '../lib/common';
 
 class InstrumentedRdsInstance extends ToolingInterface {
   public tags: Tag[] = [];
@@ -55,7 +56,7 @@ class InstrumentedRdsInstance extends ToolingInterface {
     return tag?.Value;
   }
   get resourceTags(): { [key: string]: string } {
-    return this.resource.TagList.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
+    return makeResourceTags(this.resource.TagList);
   }
 }
 
