@@ -32,11 +32,11 @@ type WriteOptions = {
 
 // values used for expanding tokens in output filenames
 type WriterContext = {
-  region?: string,
-  timezone?: string,
-  accountId?: string,
-  name?: string,
-}
+  region?: string;
+  timezone?: string;
+  accountId?: string;
+  name?: string;
+};
 
 /**
  * A base class that can write arbitrary data to a file, S3 bucket or console.
@@ -73,7 +73,7 @@ abstract class AbstractOutputWriter {
   }
 
   protected resolveFilename(path?: string): string {
-    if(path === undefined) {
+    if (path === undefined) {
       return '';
     }
     // Replace all tokens from this.context

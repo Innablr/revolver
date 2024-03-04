@@ -41,11 +41,12 @@ const context: Context = {
   succeed: () => {},
 };
 
-describe('XXX Run powercycleCentral full cycle', function () { // TODO: remove XXX
+describe('Run powercycleCentral full cycle', function () {
   beforeEach(function () {
     // delete output files before run
     if (fs.existsSync(OUTPUT_AUDIT_CSV_FILE)) fs.unlinkSync(OUTPUT_AUDIT_CSV_FILE);
     if (fs.existsSync(OUTPUT_RESOURCES_JSON_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_JSON_FILE);
+    if (fs.existsSync(OUTPUT_RESOURCES_888_CSV_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_888_CSV_FILE);
     environ.configPath = LOCAL_CONFIG;
   });
 

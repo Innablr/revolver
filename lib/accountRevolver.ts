@@ -127,7 +127,7 @@ export class AccountRevolver {
     this.logger.info('Processing action audit log');
     const entries = this.drivers.map((d) => d.getAuditLog()).reduce((a, l) => a.concat(l), []);
 
-    const context = Object.assign({}, this.config.settings, {accountId: this.config.accountId});
+    const context = Object.assign({}, this.config.settings, { accountId: this.config.accountId });
     for (const auditFormat of Object.keys(this.config.settings.auditLog)) {
       try {
         const auditConfig = this.config.settings.auditLog[auditFormat];
@@ -143,7 +143,7 @@ export class AccountRevolver {
               new ActionAuditTable(this.config, entries, false),
               { console: null },
               'Audit Log',
-              context
+              context,
             ).process();
             break;
           default:
@@ -156,7 +156,7 @@ export class AccountRevolver {
   }
 
   async logResources(): Promise<void> {
-    const context = Object.assign({}, this.config.settings, {accountId: this.config.accountId});
+    const context = Object.assign({}, this.config.settings, { accountId: this.config.accountId });
     for (const logFormat of Object.keys(this.config.settings.resourceLog)) {
       try {
         const resourceLogConfig = this.config.settings.resourceLog[logFormat];
@@ -169,14 +169,14 @@ export class AccountRevolver {
               new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags),
               { console: null },
               'Resource Log',
-              context
+              context,
             ).process();
             break;
           case 'csv':
             await new ObjectLogCsv(
               new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags),
               resourceLogConfig,
-              context
+              context,
             ).process();
             break;
           default:
