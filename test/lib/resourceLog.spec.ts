@@ -4,6 +4,7 @@ import { ToolingInterface } from '../../drivers/instrumentedResource';
 import { DateTime } from 'luxon';
 import { randomBytes } from 'node:crypto';
 import * as fs from 'fs';
+import dateTime from '../../lib/dateTime';
 
 // A dummy AWS resource for testing
 class FakeResource extends ToolingInterface {
@@ -67,6 +68,23 @@ const ACCOUNT_CONFIG = {
     name: 'dummyaccount',
   },
 };
+
+describe('Validate filename tokens', function () {
+  const writer = new ObjectLogJson([], {}, { name: 'NAME', accountId: '123' });
+  const timeStamp = '2024-02-19T04:40:44.526Z';
+  dateTime.freezeTime(timeStamp);
+
+  expect(writer.resolveFilename(undefined)).to.equal('');
+
+  // date/time tokens
+  expect(writer.resolveFilename('file.txt')).to.equal('file.txt');
+  expect(writer.resolveFilename('file.%cccc.txt')).to.equal('file.Monday.txt');
+  expect(writer.resolveFilename('file.%LLLL.txt')).to.equal('file.February.txt');
+  expect(writer.resolveFilename('file.%yyyy%LL%dd.txt')).to.equal('file.20240219.txt');
+
+  // context tokens
+  expect(writer.resolveFilename('file.%name.%accountId.txt')).to.equal('file.NAME.123.txt');
+});
 
 describe('Validate ResourceLog', function () {
   it('Check ObjectLogConsole', async function () {

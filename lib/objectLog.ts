@@ -72,18 +72,24 @@ abstract class AbstractOutputWriter {
     this.logger.info(this.getOutput());
   }
 
-  protected resolveFilename(path?: string): string {
+  public resolveFilename(path?: string): string {
     if (path === undefined) {
       return '';
     }
     // Replace all tokens from this.context
-    const re = new RegExp('%(' + Object.keys(this.context).join('|') + ')', 'g');
-    const step1 = path.replace(re, (match) => {
-      const key = match.replace('%', '');
-      return this.context[key as keyof WriterContext] || match;
-    });
-    // Replace datetime tokens
-    return dateTime.resolveFilename(step1);
+    if (this.context && Object.keys(this.context).length) {
+      const re = new RegExp('%(' + Object.keys(this.context).join('|') + ')', 'g');
+      path = path.replace(re, (match) => {
+        const key = match.replace('%', '');
+        return this.context[key as keyof WriterContext] || match;
+      });
+    }
+    // If filename contains any %xx tokens then escape the rest and use Luxon to resolve the (date/time) tokens
+    if (path.includes('%')) {
+      const fmt = "'" + path.replace(/%(\w+)/g, "'$1'") + "'";
+      path = dateTime.getTime().toFormat(fmt);
+    }
+    return path;
   }
 
   process(): any {
