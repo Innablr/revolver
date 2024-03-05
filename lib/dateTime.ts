@@ -1,6 +1,9 @@
 import { DateTime as LuxonDateTime } from 'luxon';
 import { logger } from './logger';
 
+/**
+ * A class for using a consistent time during execution of a cycle of Revolver.
+ */
 class DateTime {
   private currentTime: LuxonDateTime;
 
