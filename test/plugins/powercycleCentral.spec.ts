@@ -36,9 +36,10 @@ function getOutputFilename(accountNumber: number, which: OutputFiles): string {
     path = configCopy.defaults.settings.auditLog?.csv?.file;
   } else if (which === OutputFiles.ResourcesCsv) {
     path = configCopy.defaults.settings.resourceLog?.csv?.file;
-  } else {
-    // if (which === OutputFiles.ResourcesJson) {
+  } else if (which === OutputFiles.ResourcesJson) {
     path = configCopy.defaults.settings.resourceLog?.json?.file;
+  } else {
+    return '';
   }
   return writer.resolveFilename(path);
 }
@@ -72,13 +73,18 @@ const context: Context = {
   succeed: () => {},
 };
 
+function unlinkIfExists(filename: string) {
+  if (fs.existsSync(filename)) {
+    fs.unlinkSync(filename);
+  }
+}
+
 describe('Run powercycleCentral full cycle', function () {
   beforeEach(function () {
-    // delete output files before run
     ACCOUNTS.forEach((account, accountIndex) => {
-      fs.unlinkSync(getOutputFilename(accountIndex, OutputFiles.Audit));
-      fs.unlinkSync(getOutputFilename(accountIndex, OutputFiles.ResourcesCsv));
-      fs.unlinkSync(getOutputFilename(accountIndex, OutputFiles.ResourcesJson));
+      unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.Audit));
+      unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.ResourcesCsv));
+      unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.ResourcesJson));
     });
     environ.configPath = LOCAL_CONFIG;
   });
@@ -131,9 +137,9 @@ describe('Run powercycleCentral full cycle', function () {
         expect(a2_resourcecsv_text).to.include('888888888888,');
         expect(a2_resourcecsv_text).to.include(',i-B7781A749688DAD2,');
 
-        const account2_audit_file = getOutputFilename(1, OutputFiles.Audit);
-        const a2_audit_text = fs.readFileSync(account2_audit_file, 'utf-8');
-        expect(a2_resourcecsv_text.match(/\n/g)!.length).to.equal(2); // including heading
+        const a2_audit_file = getOutputFilename(1, OutputFiles.Audit);
+        const a2_audit_text = fs.readFileSync(a2_audit_file, 'utf-8');
+        expect(a2_audit_text.match(/\n/g)!.length).to.equal(2); // including heading
         expect(a2_audit_text).to.include('i-B7781A749688DAD2,stop'); // stopped because Thu 23:45 +0 is outside EarlyStartBusinessHours
       }).then(done, done);
     }
