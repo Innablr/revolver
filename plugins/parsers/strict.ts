@@ -1,7 +1,7 @@
 import { DateTime, Interval } from 'luxon';
 
 const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
-export const reasonDateFormat = 'ccc HH:MM Z';
+export const reasonDateFormat = 'ccc T Z'; //  Format is 'Wed 15:02 +11'
 
 class ParsedComponent {
   private timeHourLiteral: string | null = null;
@@ -195,7 +195,6 @@ function startOrStop(tag: string, timeNow: DateTime) {
   }
 
   if (t.isWindow) {
-    //  Format is 'Wed 15:02 +11'
     const r = `It's ${timeNow.toFormat(reasonDateFormat)}, availability is from ${t.start.time} till ${t.stop.time} ${
       t.days ? t.days : 'all week'
     }`;
