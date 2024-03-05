@@ -15,7 +15,7 @@ defaults:
         reportTags: ["Name", "Schedule"]
     auditLog:
       csv:
-        file: ./test/plugins/audit.csv
+        file: ./test/plugins/audit.%name.%accountId.csv
         append: true
     excludeResources:
       - tag: 'Schedule|ignore'
@@ -40,10 +40,13 @@ defaults:
             BusinessHours: 'Start=08:00|mon-fri;Stop=18:00|mon-fri'
             EarlyStartBusinessHours: 'Start=05:00|mon-fri;Stop=18:00|mon-fri'
           matchers:
+            # TEST RUNS AT '2024-02-22T23:45:19.521Z' # Thursday 11:45pm UTC
+
             # EC2 instance
             - name: 'everything off (p1)'
               filter:
                 - type: ec2
+                - accountId: '112233445566'
               schedule: '0x7'
               priority: 1
             - name: vm3on
@@ -83,6 +86,13 @@ defaults:
                 - id: revolver-test-rds-cluster
                 - type: rdsCluster
               schedule: 'Start=11:00|mon-fri;Stop=13:00|mon-fri'
+            # second account VMs - in UTC timezone!
+            - name: early1
+              filter:
+                - accountId: '888888888888'
+                - name: second-account-vm-1
+              schedule: EarlyStartBusinessHours
+              priority: 10
 
 # organizations:
 #   - accountId: "000000000000"
@@ -104,6 +114,7 @@ accounts:
     - accountId: "888888888888"
       settings:
         name: second
+        timezone: UTC
   excludeList:
     - accountId: "777777777777"
       settings:

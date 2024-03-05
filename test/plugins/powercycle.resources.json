@@ -1827,7 +1827,7 @@
     "resourceType": "ec2",
     "resourceArn": "arn:aws:ec2:ap-southeast-2:888888888888:volume/i-B7781A749688DAD2",
     "launchTimeUtc": "2024-02-13T22:43:55.000Z",
-    "resourceState": "stopped",
+    "resourceState": "running",
     "resource": {
       "AmiLaunchIndex": 1,
       "ImageId": "ami-06c0de9677961d8f0",
@@ -1836,43 +1836,44 @@
       "LaunchTime": "2024-02-13T22:43:55.000Z",
       "State": {
         "Code": 16,
-        "Name": "stopped"
+        "Name": "running"
       },
       "SubnetId": "subnet-0fa81718ad1d37598",
       "VpcId": "vpc-096f6a0a90bec2722",
-      "SecurityGroups": [
-        {
-          "GroupName": "dumbsg",
-          "GroupId": "sg-003a72928da56d999"
-        }
-      ],
+      "SecurityGroups": [],
       "Tags": [
         {
-          "Key": "Schedule",
-          "Value": "24x7"
-        },
-        {
-          "Key": "aws:ec2launchtemplate:id",
-          "Value": "lt-0a1c6124dae946af3"
-        },
+          "Key": "Name",
+          "Value": "second-account-vm-1"
+        }
+      ]
+    }
+  },
+  {
+    "resourceId": "i-09CA72278AC3A8B5",
+    "resourceType": "ec2",
+    "resourceArn": "arn:aws:ec2:ap-southeast-2:888888888888:volume/i-09CA72278AC3A8B5",
+    "launchTimeUtc": "2024-02-13T22:43:55.000Z",
+    "resourceState": "running",
+    "resource": {
+      "AmiLaunchIndex": 1,
+      "ImageId": "ami-06c0de9677961d8f0",
+      "InstanceId": "i-09CA72278AC3A8B5",
+      "InstanceType": "t2.micro",
+      "LaunchTime": "2024-02-13T22:43:55.000Z",
+      "State": {
+        "Code": 16,
+        "Name": "running"
+      },
+      "SubnetId": "subnet-0fa81718ad1d37598",
+      "VpcId": "vpc-096f6a0a90bec2722",
+      "SecurityGroups": [],
+      "Tags": [
         {
           "Key": "Name",
-          "Value": "junk-asg-3-day"
-        },
-        {
-          "Key": "integrity",
-          "Value": "accurate"
-        },
-        {
-          "Key": "aws:ec2launchtemplate:version",
-          "Value": "1"
-        },
-        {
-          "Key": "aws:autoscaling:groupName",
-          "Value": "junk-asg-3-day"
+          "Value": "second-account-vm-2"
         }
-      ],
-      "AutoScalingGroupName": "junk-asg-3-day"
+      ]
     }
   }
 ]

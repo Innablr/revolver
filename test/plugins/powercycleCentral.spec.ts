@@ -1,18 +1,49 @@
 import { expect } from 'chai';
-import { logger } from '../../lib/logger';
 import path from 'path';
 import { Context, EventBridgeEvent } from 'aws-lambda';
 import { handler as revolverHandle } from '../../revolver';
 import environ from '../../lib/environ';
 import * as fs from 'fs';
+import { RevolverConfig } from '../../lib/config';
+import { ObjectLogJson } from '../../lib/objectLog';
 
+// information from the config file to be used for validation
 const LOCAL_CONFIG = path.join(__dirname, 'powercycleCentral.config.yaml');
-const OUTPUT_AUDIT_CSV_FILE = path.join(__dirname, 'audit.csv');
-const OUTPUT_RESOURCES_CSV_FILE = path.join(__dirname, 'resources.whatdev.112233445566.csv');
-const OUTPUT_RESOURCES_888_CSV_FILE = path.join(__dirname, 'resources.second.888888888888.csv');
-const OUTPUT_RESOURCES_JSON_FILE = path.join(__dirname, 'resources.whatdev.112233445566.json'); // resources.%name.%accountId.json
+const ACCOUNTS = [
+  {
+    accountId: '112233445566',
+    name: 'whatdev',
+  },
+  {
+    accountId: '888888888888',
+    name: 'second',
+  },
+];
 
-const timeStamp = '2024-02-22T23:45:19.521Z';
+enum OutputFiles {
+  Audit,
+  ResourcesCsv,
+  ResourcesJson,
+}
+
+const configCopy = RevolverConfig.validateConfig(fs.readFileSync(LOCAL_CONFIG, { encoding: 'utf8' }));
+
+// Get the resolved name of an output file for (0-based) account and output-file-type
+function getOutputFilename(accountNumber: number, which: OutputFiles): string {
+  const writer = new ObjectLogJson([], {}, ACCOUNTS[accountNumber]);
+  let path: string | undefined;
+  if (which === OutputFiles.Audit) {
+    path = configCopy.defaults.settings.auditLog?.csv?.file;
+  } else if (which === OutputFiles.ResourcesCsv) {
+    path = configCopy.defaults.settings.resourceLog?.csv?.file;
+  } else {
+    // if (which === OutputFiles.ResourcesJson) {
+    path = configCopy.defaults.settings.resourceLog?.json?.file;
+  }
+  return writer.resolveFilename(path);
+}
+
+const timeStamp = '2024-02-22T23:45:19.521Z'; // Fri 10:45 +11,  Thu 23:45 +0
 
 const event: EventBridgeEvent<'Scheduled Event', 'test-event'> = {
   id: '0',
@@ -44,9 +75,11 @@ const context: Context = {
 describe('Run powercycleCentral full cycle', function () {
   beforeEach(function () {
     // delete output files before run
-    if (fs.existsSync(OUTPUT_AUDIT_CSV_FILE)) fs.unlinkSync(OUTPUT_AUDIT_CSV_FILE);
-    if (fs.existsSync(OUTPUT_RESOURCES_JSON_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_JSON_FILE);
-    if (fs.existsSync(OUTPUT_RESOURCES_888_CSV_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_888_CSV_FILE);
+    ACCOUNTS.forEach((account, accountIndex) => {
+      fs.unlinkSync(getOutputFilename(accountIndex, OutputFiles.Audit));
+      fs.unlinkSync(getOutputFilename(accountIndex, OutputFiles.ResourcesCsv));
+      fs.unlinkSync(getOutputFilename(accountIndex, OutputFiles.ResourcesJson));
+    });
     environ.configPath = LOCAL_CONFIG;
   });
 
@@ -59,45 +92,49 @@ describe('Run powercycleCentral full cycle', function () {
         // TODO: validate schedule matching resources, but NOT overridden by resource Tags (lower priority)
 
         // validate audit.csv
-        logger.info(`TEST validating ${OUTPUT_AUDIT_CSV_FILE}`);
-        const auditCsvText = fs.readFileSync(OUTPUT_AUDIT_CSV_FILE, 'utf-8');
-        expect((auditCsvText.match(/2024-02-/g) || []).length).to.equal(3); // number of rows
-        expect(auditCsvText).to.include(',ec2,ec2,i-0c688d35209d7f436,stop,');
-        expect(auditCsvText).to.include(',ec2,ec2,i-031635db539857721,stop,');
-        expect(auditCsvText).to.include(',ec2,ec2,i-072b78745f1879e97,stop,');
-        expect(auditCsvText).to.not.include(',ec2,ec2,i-05b6baf37fc8f9454,stop,');
+        const a1_audit_file = getOutputFilename(0, OutputFiles.Audit);
+        const a1_audit_text = fs.readFileSync(a1_audit_file, 'utf-8');
+        expect((a1_audit_text.match(/2024-02-/g) || []).length).to.equal(3); // number of rows
+        expect(a1_audit_text).to.include(',ec2,ec2,i-0c688d35209d7f436,stop,');
+        expect(a1_audit_text).to.include(',ec2,ec2,i-031635db539857721,stop,');
+        expect(a1_audit_text).to.include(',ec2,ec2,i-072b78745f1879e97,stop,');
+        expect(a1_audit_text).to.not.include(',ec2,ec2,i-05b6baf37fc8f9454,stop,');
 
         // TODO: validate resources.csv
-        logger.info(`TEST validating ${OUTPUT_RESOURCES_CSV_FILE}`);
-        const resourcesCsvText = fs.readFileSync(OUTPUT_RESOURCES_CSV_FILE, 'utf-8');
-        expect(resourcesCsvText).to.include(',TAG:Name,TAG:Schedule');
-        expect(resourcesCsvText).to.include('i-0c688d35209d7f436,running,StopAction,junk-vm-2-on,0x7');
-        expect(resourcesCsvText).to.not.include('777777777777,'); // don't include excluded account
-        expect(resourcesCsvText).to.not.include('888888888888,'); // under different filename
-        expect(resourcesCsvText).to.not.include(',i-B7781A749688DAD2,'); // under different filename
-
-        logger.info(`TEST validating ${OUTPUT_RESOURCES_888_CSV_FILE}`);
-        const resources888CsvText = fs.readFileSync(OUTPUT_RESOURCES_888_CSV_FILE, 'utf-8');
-        expect(resources888CsvText).to.not.include('777777777777,'); // don't include excluded account
-        expect(resources888CsvText).to.include('888888888888,');
-        expect(resources888CsvText).to.include(',i-B7781A749688DAD2,');
+        const a1_resourcecsv_file = getOutputFilename(0, OutputFiles.ResourcesCsv);
+        const a1_resourcecsv_text = fs.readFileSync(a1_resourcecsv_file, 'utf-8');
+        expect(a1_resourcecsv_text).to.include(',TAG:Name,TAG:Schedule');
+        expect(a1_resourcecsv_text).to.include('i-0c688d35209d7f436,running,StopAction,junk-vm-2-on,0x7');
+        expect(a1_resourcecsv_text).to.not.include('777777777777,'); // don't include excluded account
+        expect(a1_resourcecsv_text).to.not.include('888888888888,'); // under different filename
+        expect(a1_resourcecsv_text).to.not.include(',i-B7781A749688DAD2,'); // under different filename
 
         // validate matches and actions in resources.json
-        logger.info(`TEST validating ${OUTPUT_RESOURCES_JSON_FILE}`);
-        const rawData = fs.readFileSync(OUTPUT_RESOURCES_JSON_FILE, 'utf-8');
-        const resourceList = JSON.parse(rawData);
-        const resources = Object.fromEntries(resourceList.map((r: any) => [r.resourceId, r]));
-        expect(resourceList.length).to.equal(10); // number of resources, in first account
+        const a1_resourcejson_file = getOutputFilename(0, OutputFiles.ResourcesJson);
+        const a1_resources = JSON.parse(fs.readFileSync(a1_resourcejson_file, 'utf-8'));
+        const a1_resources_by_id = Object.fromEntries(a1_resources.map((r: any) => [r.resourceId, r]));
+        expect(a1_resources.length).to.equal(10); // number of resources, in first account
+        expect(a1_resources_by_id['i-0c688d35209d7f436'].resourceState).to.equal('running');
+        expect(a1_resources_by_id['i-0c688d35209d7f436'].metadata.matches.length).to.equal(1);
+        expect(a1_resources_by_id['i-0c688d35209d7f436'].metadata.matches[0].name).to.equal('everything off (p1)');
+        expect(a1_resources_by_id['i-0c688d35209d7f436'].metadata.actionNames.length).to.equal(1);
+        expect(a1_resources_by_id['i-0c688d35209d7f436'].metadata.actionNames[0]).to.equal('StopAction');
+        expect(a1_resources_by_id['i-05b6baf37fc8f9454'].resourceState).to.equal('running');
+        expect(a1_resources_by_id['i-05b6baf37fc8f9454'].metadata.matches.length).to.equal(2);
+        expect(a1_resources_by_id['i-05b6baf37fc8f9454'].metadata.actionNames).to.equal(undefined);
 
-        expect(resources['i-0c688d35209d7f436'].resourceState).to.equal('running');
-        expect(resources['i-0c688d35209d7f436'].metadata.matches.length).to.equal(1);
-        expect(resources['i-0c688d35209d7f436'].metadata.matches[0].name).to.equal('everything off (p1)');
-        expect(resources['i-0c688d35209d7f436'].metadata.actionNames.length).to.equal(1);
-        expect(resources['i-0c688d35209d7f436'].metadata.actionNames[0]).to.equal('StopAction');
+        // validate account 2 resources file
+        const a2_resourcecsv_file = getOutputFilename(1, OutputFiles.ResourcesCsv);
+        const a2_resourcecsv_text = fs.readFileSync(a2_resourcecsv_file, 'utf-8');
+        expect(a2_resourcecsv_text.match(/\n/g)!.length).to.equal(3); // including heading
+        expect(a2_resourcecsv_text).to.not.include('777777777777,'); // don't include excluded account
+        expect(a2_resourcecsv_text).to.include('888888888888,');
+        expect(a2_resourcecsv_text).to.include(',i-B7781A749688DAD2,');
 
-        expect(resources['i-05b6baf37fc8f9454'].resourceState).to.equal('running');
-        expect(resources['i-05b6baf37fc8f9454'].metadata.matches.length).to.equal(2);
-        expect(resources['i-05b6baf37fc8f9454'].metadata.actionNames).to.equal(undefined);
+        const account2_audit_file = getOutputFilename(1, OutputFiles.Audit);
+        const a2_audit_text = fs.readFileSync(account2_audit_file, 'utf-8');
+        expect(a2_resourcecsv_text.match(/\n/g)!.length).to.equal(2); // including heading
+        expect(a2_audit_text).to.include('i-B7781A749688DAD2,stop'); // stopped because Thu 23:45 +0 is outside EarlyStartBusinessHours
       }).then(done, done);
     }
   });
