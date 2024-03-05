@@ -42,7 +42,7 @@ export class RevolverConfig {
   static validateConfig(data: string) {
     try {
       const config = ConfigSchema.parse(yaml.load(data));
-      logger.debug('Read Revolver config', config);
+      // logger.debug('Read Revolver config', config);
       return config;
     } catch (e: any) {
       if (e instanceof ZodError) {
