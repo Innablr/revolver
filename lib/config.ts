@@ -110,7 +110,9 @@ export class RevolverConfig {
     const accountList = orgWithoutIncludeList.concat(config.accounts.includeList);
     // exclude accounts specified in excludeList, and non-active accounts
     const filteredAccountsList = accountList.filter(
-      (xa: any) => xa.Status == 'ACTIVE' && !config.accounts.excludeList.find((xi: any) => xi.accountId === xa.accountId),
+      (xa: any) =>
+        [undefined, 'ACTIVE'].includes(xa.Status) &&
+        !config.accounts.excludeList.find((xi: any) => xi.accountId === xa.accountId),
     );
     // build assumeRoleArn string, extract account_id and revolver_role_name
     const updatedAccountsList = filteredAccountsList.map((xa: any) => {
