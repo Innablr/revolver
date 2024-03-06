@@ -140,6 +140,8 @@ defaults:
 # List of organizational accounts, used to discover the full account list
 organizations:
   - accountId: "000000000000"
+    # optional regular expression to filter organization accounts
+    accountNameRegex: "-nonprod$"
     settings:
       # All settings from the 'default' section can be specified here to make them specific to all of an organization's accounts
       region: ap-southeast-2
