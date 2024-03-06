@@ -158,7 +158,7 @@ Example `defaults` section:
             pretend: false
     ```
 
-    Option `accountNameRegex` is a regular expression which acts as a filter against all of the accounts in this organization.  The example above limits the list of accounts discovered to those ending in "-nonprod".
+    Optional `accountNameRegex` is a regular expression which acts as a filter against all of the accounts in this organization.  The example above limits the list of accounts discovered to those ending in "-nonprod".
 
 3. Section `accounts` have two lists:
     * in the `include_list` you can specify a list of accounts to be included in the run. If AWS Organisation is configured, these accounts will be added to the list of accounts from the organization. If AWS Organisation is not configured, only these accounts will be processed.
