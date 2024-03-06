@@ -184,6 +184,7 @@ const ConfigSchema = z
         z
           .object({
             accountId: AWSAccountId,
+            accountNameRegex: z.string().optional(),
             settings: z.object({ name: z.string() }).merge(Settings.partial()),
           })
           .strict(),

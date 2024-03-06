@@ -107,7 +107,22 @@ export class RevolverConfig {
           (xi: any) => xi.accountId === xa.accountId && xi.settings.region === xa.settings.region,
         ),
     );
-    const accountList = orgWithoutIncludeList.concat(config.accounts.includeList);
+
+    // Create an org accountId to name-regex lookup table
+    const orgAccountNameRegex = Object.fromEntries(
+      config.organizations.map((org: { accountId: string; accountNameRegex: string | undefined }) => [
+        org.accountId,
+        org.accountNameRegex ? new RegExp(org.accountNameRegex) : undefined,
+      ]),
+    );
+    // Filter list of accounts using (org-specific) accountNameRegex if provided. Add includeList.
+    const accountList = orgWithoutIncludeList
+      .filter((xa: any) => {
+        // the orgId is part of the account Arn: "arn:aws:organizations::ORG_NUMBER:account/ORG_ID/ACCOUNT_ID",
+        const orgNumber = xa.Arn.split(':')[4];
+        return orgAccountNameRegex[orgNumber] == undefined || orgAccountNameRegex[orgNumber].test(xa.Name);
+      })
+      .concat(config.accounts.includeList);
     // exclude accounts specified in excludeList, and non-active accounts
     const filteredAccountsList = accountList.filter(
       (xa: any) =>
