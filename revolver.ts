@@ -7,15 +7,17 @@ import { RevolverConfig } from './lib/config';
 import dateTime from './lib/dateTime';
 import assume from './lib/assume';
 
-const sqsRecordPrefix = process.env['SQS_RECORD_PREFIX'];
+// Specify a SQS message attribute to log out to the console
+const sqsLogAttribute = process.env['SQS_LOG_ATTRIBUTE'];
+
 export const handlerSQS: SQSHandler = async (event: SQSEvent) => {
   for (const record of event.Records) {
-    if (sqsRecordPrefix) {
-      const recordId = record.messageAttributes[sqsRecordPrefix]?.stringValue;
-      if (recordId) logger.settings.prefix = [recordId];
+    if (sqsLogAttribute) {
+      const recordId = record.messageAttributes[sqsLogAttribute]?.stringValue;
+      if (recordId) logger.settings.prefix = [`${sqsLogAttribute}:${recordId}`];
     }
     logger.info(`Starting revolver for record ${record.messageId}`);
-    logger.debug(`Record: ${record}`);
+    logger.trace('Record', record);
     const configuration = Buffer.from(record.body).toString('utf-8');
     const config = RevolverConfig.validateConfig(configuration);
 
