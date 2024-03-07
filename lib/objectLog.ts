@@ -5,6 +5,8 @@ import { getAwsConfig } from './awsConfig';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ActionAuditEntry } from '../actions/audit';
 import dateTime from './dateTime';
+import { htmlTableReport } from "./templater";
+import DateTime from "./dateTime";
 
 /**
  * Used by the writers to structure table style data
@@ -151,6 +153,24 @@ export class ObjectLogJson extends AbstractOutputWriter {
   }
   getOutput(): string {
     return JSON.stringify(this.data, null, 2);
+  }
+}
+
+/**
+ * Produce a HTML version of the provided data
+ */
+export class ObjectLogHtml extends AbstractOutputWriter {
+  private readonly data: any;
+  private readonly title: string;
+
+  constructor(data: any, title: string, options: WriteOptions) {
+    super(options);
+    this.data = data;
+    this.title = title;
+  }
+
+  getOutput(): string {
+    return htmlTableReport(`${this.title} ${DateTime.getTime().toLocal()}`, this.data);
   }
 }
 
