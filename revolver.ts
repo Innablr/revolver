@@ -19,7 +19,7 @@ export const handlerSQS: SQSHandler = async (event: SQSEvent) => {
     logger.info(`Starting revolver for record ${record.messageId}`);
     logger.trace('Record', record);
     const configuration = Buffer.from(record.body).toString('utf-8');
-    const config = RevolverConfig.validateConfig(configuration);
+    const config = RevolverConfig.validateYamlConfig(configuration);
 
     dateTime.freezeTimeUnix(record.attributes.SentTimestamp);
     await main(config);

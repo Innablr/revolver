@@ -109,3 +109,16 @@ accounts:
 #     - accountId: "333333333333"
 #       settings:
 #         name: whatprod
+
+---
+defaults:
+  settings:
+    resourceLog:
+      json:
+        file: override.json
+
+accounts:
+  includeList:
+    - accountId: "123456789012"
+      settings:
+        name: seconddoc

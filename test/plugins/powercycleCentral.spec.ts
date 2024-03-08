@@ -26,7 +26,7 @@ enum OutputFiles {
   ResourcesJson,
 }
 
-const configCopy = RevolverConfig.validateConfig(fs.readFileSync(LOCAL_CONFIG, { encoding: 'utf8' }));
+const configCopy = RevolverConfig.validateYamlConfig(fs.readFileSync(LOCAL_CONFIG, { encoding: 'utf8' }));
 
 // Get the resolved name of an output file for (0-based) account and output-file-type
 function getOutputFilename(accountNumber: number, which: OutputFiles): string {
