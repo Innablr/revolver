@@ -5,8 +5,7 @@ import { getAwsConfig } from './awsConfig';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ActionAuditEntry } from '../actions/audit';
 import dateTime from './dateTime';
-import { htmlTableReport } from "./templater";
-import DateTime from "./dateTime";
+import { htmlTableReport } from './templater';
 
 /**
  * Used by the writers to structure table style data
@@ -170,7 +169,7 @@ export class ObjectLogHtml extends AbstractOutputWriter {
   }
 
   getOutput(): string {
-    return htmlTableReport(`${this.title} ${DateTime.getTime().toLocal()}`, this.data);
+    return htmlTableReport(`${this.title} ${dateTime.getTime().toLocal()}`, this.data);
   }
 }
 

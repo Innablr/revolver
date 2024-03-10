@@ -107,7 +107,7 @@ describe('Validate ResourceLog', function () {
     const contents = fs.readFileSync(RESOURCE_LOG_CONFIG.html.file).toString('utf-8');
 
     expect(contents).to.contain('<html');
-    for(const t of TEST_RESOURCES) {
+    for (const t of TEST_RESOURCES) {
       expect(contents).to.contain(t.resourceId);
     }
   });

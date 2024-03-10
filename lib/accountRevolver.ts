@@ -11,8 +11,8 @@ import {
   ObjectLogCsv,
   ObjectLogJson,
   ResourceTable,
-  ObjectLogHtml
-} from "./objectLog";
+  ObjectLogHtml,
+} from './objectLog';
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -193,7 +193,7 @@ export class AccountRevolver {
             logger.warn(`no implementation for resource log format ${logFormat}`);
         }
       } catch (e: any) {
-        logger.error(e)
+        logger.error(e);
         logger.error(`failed to write resourcesLog ${logFormat}: ${e.message}`);
       }
     }

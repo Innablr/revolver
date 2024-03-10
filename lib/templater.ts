@@ -76,9 +76,7 @@ function template(title: string, content: string): string {
   </div>
 </body>
 </html>`;
-
 }
-
 
 /**
  * Convert an array of objects to a table with headers determined from the first object's keys
@@ -98,14 +96,18 @@ function objectToTable(obj: any[], depth: number): string {
 
   s += `
   <tbody>
-    ${obj.map((row: any) => {
-      return `
+    ${obj
+      .map((row: any) => {
+        return `
         <tr>
-          ${headers.map((key: any) => {
-            return `<td>${objectToHtml(row[key], depth+1)}</td>`
-          }).join('')}
+          ${headers
+            .map((key: any) => {
+              return `<td>${objectToHtml(row[key], depth + 1)}</td>`;
+            })
+            .join('')}
         </tr>`;
-    }).join('')}
+      })
+      .join('')}
   </tbody>`;
 
   s += `</table>`;
@@ -121,22 +123,25 @@ function objectToTable(obj: any[], depth: number): string {
 function objectToHtml(obj: any, depth: number): string {
   if (Array.isArray(obj)) {
     let s = `<details ${depth != 1 && (depth == 0 || obj.length < 5) ? 'open' : ''}><summary></summary><table>`;
-    s += obj.map((i) => {
+    s += obj
+      .map((i) => {
         if (typeof i == 'object' && Object.keys(i).length === 1) {
           const f = Object.keys(i)[0];
           return `<tr><th>${f}</th><td>${i[f]}</td>`;
         } else {
           return `<tr><td>${objectToHtml(i, depth)}</td></tr>`;
         }
-      }).join('');
+      })
+      .join('');
     s += `</table></details>`;
     return s;
-  }
-  else if (obj != undefined && typeof obj === 'object') {
+  } else if (obj != undefined && typeof obj === 'object') {
     let s = `<details ${depth != 1 && (depth == 0 || Object.keys(obj).length < 5) ? 'open' : ''}><summary></summary><table>`;
-    s += Object.keys(obj).map((k) => {
-      return `<tr><th>${k}</th><td>${objectToHtml(obj[k], depth + 1)}</td></tr>`
-    }).join('');
+    s += Object.keys(obj)
+      .map((k) => {
+        return `<tr><th>${k}</th><td>${objectToHtml(obj[k], depth + 1)}</td></tr>`;
+      })
+      .join('');
     s += `</table></details>`;
     return s;
   } else {
