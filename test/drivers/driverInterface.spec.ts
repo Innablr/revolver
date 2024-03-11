@@ -26,6 +26,9 @@ class RandomInstrumentedResource extends ToolingInterface {
   tag(key: string): string | undefined {
     throw new Error(`Method not implemented. key=${key}`);
   }
+  get resourceTags(): { [key: string]: string } {
+    throw new Error('Method not implemented.');
+  }
 }
 
 describe('check toLimitedString', function () {

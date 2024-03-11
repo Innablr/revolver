@@ -11,6 +11,8 @@ defaults:
       console:
         reportTags: ["Name"]
     auditLog:
+      html:
+        file: report.html
       console:
     excludeResources:
       - tag: 'Schedule|ignore'

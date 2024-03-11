@@ -83,6 +83,7 @@ const Settings = z.object({
   resourceLog: z
     .object({
       json: ObjectLogOptions.optional(),
+      html: ObjectLogOptions.optional(),
       csv: z
         .object({
           reportTags: z.array(z.string()).optional(),
@@ -103,6 +104,7 @@ const Settings = z.object({
   auditLog: z
     .object({
       console: z.null().optional(),
+      html: ObjectLogOptions.optional(),
       csv: z
         .object({
           append: z.boolean().default(false),

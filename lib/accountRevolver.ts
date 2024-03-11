@@ -5,7 +5,14 @@ import { logger } from './logger';
 import path from 'node:path';
 import { promises as fs } from 'fs';
 import { buildFilter } from '../plugins/filters/index';
-import { ActionAuditTable, ObjectLogTable, ObjectLogCsv, ObjectLogJson, ResourceTable } from './objectLog';
+import {
+  ActionAuditTable,
+  ObjectLogTable,
+  ObjectLogCsv,
+  ObjectLogJson,
+  ResourceTable,
+  ObjectLogHtml,
+} from './objectLog';
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -138,6 +145,9 @@ export class AccountRevolver {
           case 'csv':
             await new ObjectLogCsv(new ActionAuditTable(this.config, entries, true), auditConfig, context).process();
             break;
+          case 'html':
+            await new ObjectLogHtml(entries, 'Audit Log', auditConfig).process();
+            break;
           case 'console':
             await new ObjectLogTable(
               new ActionAuditTable(this.config, entries, false),
@@ -164,6 +174,9 @@ export class AccountRevolver {
           case 'json':
             await new ObjectLogJson(this.resources, resourceLogConfig, context).process();
             break;
+          case 'html':
+            await new ObjectLogHtml(this.resources, 'Resource Log', resourceLogConfig).process();
+            break;
           case 'console':
             await new ObjectLogTable(
               new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags),
@@ -183,6 +196,7 @@ export class AccountRevolver {
             logger.warn(`no implementation for resource log format ${logFormat}`);
         }
       } catch (e: any) {
+        logger.error(e);
         logger.error(`failed to write resourcesLog ${logFormat}: ${e.message}`);
       }
     }

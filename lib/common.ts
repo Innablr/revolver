@@ -40,4 +40,9 @@ function unique<T>(array: T[]): T[] {
   return uniqueBy(array, (x: T) => x);
 }
 
-export { paginateAwsCall, chunkArray, uniqueBy, unique };
+// Convert a list of Tags in AWS format to an object
+function makeResourceTags(tagList: any): { [key: string]: string } {
+  return tagList.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
+}
+
+export { paginateAwsCall, chunkArray, uniqueBy, unique, makeResourceTags };

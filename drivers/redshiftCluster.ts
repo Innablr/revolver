@@ -14,6 +14,7 @@ import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import dateTime from '../lib/dateTime';
 import { getAwsClientForAccount } from '../lib/awsConfig';
+import { makeResourceTags } from '../lib/common';
 
 class InstrumentedRedshiftCluster extends ToolingInterface {
   public tags: Tag[] = [];
@@ -67,6 +68,9 @@ class InstrumentedRedshiftCluster extends ToolingInterface {
   tag(key: string) {
     const tag = this.tags.find((xt) => xt.Key === key);
     return tag?.Value;
+  }
+  get resourceTags(): { [key: string]: string } {
+    return makeResourceTags(this.resource.Tags);
   }
 }
 

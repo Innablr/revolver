@@ -8,6 +8,7 @@ export interface InstrumentedResource {
   resourceArn: string;
   launchTimeUtc: DateTime;
   resourceState: string;
+  resourceTags: { [key: string]: string };
   resource: any;
   metadata: any;
 }
@@ -56,6 +57,7 @@ export abstract class ToolingInterface implements InstrumentedResource {
       resourceState: this.resourceState,
       resource: this.resource,
       metadata: this.metadata,
+      resourceTags: this.resourceTags,
     };
   }
 
@@ -94,4 +96,6 @@ export abstract class ToolingInterface implements InstrumentedResource {
   abstract get resourceState(): string;
 
   abstract tag(key: string): string | undefined;
+
+  abstract get resourceTags(): { [key: string]: string };
 }

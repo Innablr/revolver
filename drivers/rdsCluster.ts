@@ -12,6 +12,7 @@ import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
 import { rdsTagger } from './tags';
 import { getAwsClientForAccount } from '../lib/awsConfig';
+import { makeResourceTags } from '../lib/common';
 
 class InstrumentedRdsCluster extends ToolingInterface {
   get resourceId() {
@@ -54,6 +55,9 @@ class InstrumentedRdsCluster extends ToolingInterface {
   tag(key: string) {
     const tag = this.resource.TagList.find((xt: Tag) => xt.Key === key);
     return tag?.Value;
+  }
+  get resourceTags(): { [key: string]: string } {
+    return makeResourceTags(this.resource.TagList);
   }
 }
 

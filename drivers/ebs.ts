@@ -6,7 +6,7 @@ import {
   paginateDescribeInstances,
 } from '@aws-sdk/client-ec2';
 import { DateTime } from 'luxon';
-import { paginateAwsCall } from '../lib/common';
+import { makeResourceTags, paginateAwsCall } from '../lib/common';
 import { InstrumentedResource, ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
@@ -46,6 +46,9 @@ class InstrumentedEBS extends ToolingInterface {
     if (tag !== undefined) {
       return tag.Value;
     }
+  }
+  get resourceTags(): { [key: string]: string } {
+    return makeResourceTags(this.resource.Tags);
   }
 }
 

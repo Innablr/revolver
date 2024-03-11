@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import { buildFilter } from '../../plugins/filters';
 import { ToolingInterface } from '../../drivers/instrumentedResource';
 import { DateTime } from 'luxon';
+import { makeResourceTags } from '../../lib/common';
 
 chai.use(chaiAsPromised);
 
@@ -37,6 +38,9 @@ class TestingResource extends ToolingInterface {
 
   tag(key: string): string | undefined {
     return this.topResource['tags'][key];
+  }
+  get resourceTags(): { [key: string]: string } {
+    return makeResourceTags(this.topResource['tags']);
   }
 }
 

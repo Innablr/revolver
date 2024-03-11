@@ -9,7 +9,7 @@ import {
 import { InstrumentedResource, ToolingInterface } from './instrumentedResource';
 import { DriverInterface } from './driverInterface';
 import { RevolverActionWithTags } from '../actions/actions';
-import { paginateAwsCall } from '../lib/common';
+import { makeResourceTags, paginateAwsCall } from '../lib/common';
 import { ec2Tagger } from './tags';
 import { getAwsClientForAccount } from '../lib/awsConfig';
 
@@ -37,6 +37,9 @@ class InstrumentedSnapshot extends ToolingInterface {
   tag(key: string) {
     const tag = this.resource.Tags.find((xt: Tag) => xt.Key === key);
     return tag?.Value;
+  }
+  get resourceTags(): { [key: string]: string } {
+    return makeResourceTags(this.resource.Tags);
   }
 }
 
