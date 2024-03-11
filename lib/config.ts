@@ -39,9 +39,41 @@ function flattenZodErrors(ze: ZodError, depth: number): string[] {
 }
 
 export class RevolverConfig {
-  static validateConfig(data: string) {
+  /**
+   * Validate JSON configuration conforms to the schema and return a configuration object.
+   * Multiple JSON documents can be specified and will be deep merged together with later documents overriding.
+   * @param data
+   */
+  static validateJsonConfig(...data: string[]) {
+    const merged = data.reduce((da: any, d) => {
+      merge.withOptions({ mergeArrays: true }, da, JSON.parse(d));
+    }, {});
+    return RevolverConfig.validateConfig(merged);
+  }
+
+  /**
+   * Validate YAML configuration conforms to the schema and return a configuration object.
+   * Multiple YAML documents can be specified and will be deep merged together with later documents overriding.
+   * Accepts multi doc yamls, following the same logic.
+   * @param data
+   */
+  static validateYamlConfig(...data: string[]) {
+    const merged = data.reduce((da: any, d) => {
+      const docs: any[] = yaml.loadAll(d);
+      const docMerged = docs.reduce((a, doc) => merge.withOptions({ mergeArrays: true }, a, doc));
+      return merge.withOptions({ mergeArrays: true }, da, docMerged);
+    }, {});
+
+    return RevolverConfig.validateConfig(merged);
+  }
+
+  /**
+   * Validate configuration object conforms to the schema and return a parsed and validated configuration object
+   * @param data
+   */
+  static validateConfig(data: any) {
     try {
-      const config = ConfigSchema.parse(yaml.load(data));
+      const config = ConfigSchema.parse(data);
       logger.trace('Read Revolver config', config);
       return config;
     } catch (e: any) {
@@ -57,7 +89,7 @@ export class RevolverConfig {
   static async readConfigFromFile(configFile: string) {
     const fullPath = path.resolve(configFile);
     logger.debug(`Fetching config from file ${fullPath}`);
-    return RevolverConfig.validateConfig(await fs.readFile(fullPath, { encoding: 'utf8' }));
+    return RevolverConfig.validateYamlConfig(await fs.readFile(fullPath, { encoding: 'utf8' }));
   }
 
   static async readConfigFromS3(configBucket: string, configKey: string) {
@@ -67,7 +99,7 @@ export class RevolverConfig {
 
     const configObject = await s3.send(new GetObjectCommand({ Bucket: configBucket, Key: configKey }));
     logger.debug(`Found S3 object MIME ${configObject.ContentType}`);
-    return RevolverConfig.validateConfig(await configObject.Body!.transformToString());
+    return RevolverConfig.validateYamlConfig(await configObject.Body!.transformToString());
   }
 
   static async getOrganisationsAccounts(creds: any[]) {
