@@ -26,6 +26,9 @@ describe('Validate test config', function () {
     expect(config.defaults.settings.resourceLog?.csv?.reportTags).to.contain.all.members(['Name', 'Schedule']);
     expect(config.defaults.settings.auditLog?.csv?.file).to.equal('audit.csv');
 
+    expect(config.defaults.settings.auditLog?.json?.sqs?.url).to.equal('http://some.sqs.url/queue');
+    expect(config.defaults.settings.auditLog?.json?.sqs?.attributes?.thing).to.equal('some value');
+
     // second yaml doc
     expect(config.defaults.settings.resourceLog?.json?.file).to.equal('override.json');
     expect(config.accounts.includeList[1].accountId).to.equal('123456789012');

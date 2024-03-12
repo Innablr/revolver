@@ -15,6 +15,11 @@ defaults:
     auditLog:
       csv:
         file: 'audit.csv'
+      json:
+        sqs:
+          url: 'http://some.sqs.url/queue'
+          attributes:
+            thing: "some value"
     excludeResources:
       - tag: 'Schedule|ignore'
 
