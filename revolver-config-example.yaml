@@ -41,6 +41,14 @@ defaults:
         append: true
       html:
         file: report-audit.html
+      json:
+        # Option to write output to an SQS queue
+        sqs:
+          url: "https://sqs.ap-southeast-2.amazonaws.com/123456789012/sqs-queue"
+          # attributes can be any key/value string pair and are submitted as message attributes for each SQS message
+          attributes:
+            costCenter: "1234"
+            recordId: "0000001"
     # Exclude resources from Revolver processing if they match the filter specified here.
     excludeResources:
       - tag:
