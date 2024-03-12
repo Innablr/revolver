@@ -4,6 +4,9 @@ import { NoopAction, SetTagAction, StartAction, StopAction } from '../actions/ac
 import getParser from './parsers/index';
 import { ToolingInterface } from '../drivers/instrumentedResource';
 
+/**
+ * A plugin for Revolver that applies schedules to resources based on Tags on target resources
+ */
 export default class PowerCyclePlugin extends RevolverPlugin {
   private parser: any;
   private scheduleTagName: string;

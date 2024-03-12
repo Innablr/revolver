@@ -2,6 +2,10 @@ import { Logger } from 'tslog';
 import { logger } from '../lib/logger';
 import { ToolingInterface } from '../drivers/instrumentedResource';
 
+/**
+ * Abstract class representing a Plugin for Revolver, which selects resources, and generates Actions, based on
+ * plugin-specific logic.
+ */
 export abstract class RevolverPlugin {
   protected accountConfig: any;
   protected accountId: string;
@@ -30,6 +34,11 @@ export abstract class RevolverPlugin {
     return Promise.resolve(this);
   }
 
+  /**
+   * Check whether the given resource is supported by this Plugin
+   * @param resource - a resource to be checked
+   * @returns True if this plugin is capable of handling the given resource
+   */
   isApplicable(resource: ToolingInterface) {
     return this.supportedResources.find((xs) => xs === resource.resourceType) !== undefined;
   }

@@ -13,6 +13,10 @@ interface Matcher {
   priority: number;
 }
 
+/**
+ * A plugin for Revolver that applies schedules to resources based on central configuration, optionally overridden
+ * by Tags on target resources
+ */
 export default class PowerCycleCentralPlugin extends RevolverPlugin {
   private parser: any;
 

@@ -7,7 +7,7 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'eslint-plugin-tsdoc'],
   root: true,
   rules: {
     'import/no-extraneous-dependencies': 'warn',
@@ -16,6 +16,7 @@ module.exports = {
     'import/no-absolute-path': 'error',
     'prettier/prettier': ['warn', { endOfLine: 'auto' }],
     '@typescript-eslint/no-explicit-any': 'off',
+    'tsdoc/syntax': 'warn',
   },
   settings: {
     'import/resolver': {

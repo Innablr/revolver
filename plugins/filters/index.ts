@@ -6,7 +6,6 @@ import FilterOr from './or';
 export interface Filter {
   /**
    * Return true if a resource matches this filter
-   * @param resource
    */
   matches(resource: ToolingInterface): boolean;
 }
@@ -21,7 +20,6 @@ export interface FilterCtor {
 
 /**
  * Create filter based on a generic config map. keys match up against file names for filters.
- * @param config
  */
 export async function buildFilter(config: any): Promise<Filter> {
   if (Array.isArray(config)) {
