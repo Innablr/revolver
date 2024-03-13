@@ -31,9 +31,8 @@ export interface RevolverLogObject {
 /**
  * Restructure JSON logs to behave better in JSON ingestors like cloudwatch.
  *
- * Writes JSON logs to the appropriate console.{level} function and converts any configured log prefixes
+ * Writes JSON logs to the appropriate console.\{level\} function and converts any configured log prefixes
  * to object keys if they have a ':' separator. Splits out string messages and object messages to message and data.
- * @param log
  */
 function restructureJsonLog(log: any) {
   if (log == undefined) return;
