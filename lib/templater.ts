@@ -1,7 +1,7 @@
 /**
  * Produce a HTML report of an object
- * @param title
- * @param obj
+ * @param title - title for the generated page
+ * @param obj - object to be displayed as a table
  */
 export function htmlObjectReport(title: string, obj: any): string {
   return template(title, objectToHtml(JSON.parse(JSON.stringify(obj)), 0));
@@ -10,8 +10,8 @@ export function htmlObjectReport(title: string, obj: any): string {
 /**
  * Produce a HTML report of an object in a standard table, using the first object's keys as headers.
  * If obj isn't an array, produce an object report without a table.
- * @param title
- * @param obj
+ * @param title - title for the generated page
+ * @param obj - object to be displayed as a table
  */
 export function htmlTableReport(title: string, obj: any[]): string {
   if (!Array.isArray(obj)) return htmlObjectReport(title, obj);
@@ -20,8 +20,8 @@ export function htmlTableReport(title: string, obj: any[]): string {
 
 /**
  * Base HTML template with css and HTML boilerplate
- * @param title
- * @param content
+ * @param title - title for the generated page
+ * @param content - HTML markup for the page body
  */
 function template(title: string, content: string): string {
   return `<!DOCTYPE html>
@@ -80,8 +80,8 @@ function template(title: string, content: string): string {
 
 /**
  * Convert an array of objects to a table with headers determined from the first object's keys
- * @param obj
- * @param depth
+ * @param obj - object to be displayed as a table
+ * @param depth - how deep to traverse into the object when rendering
  */
 function objectToTable(obj: any[], depth: number): string {
   if (!Array.isArray(obj) || obj.length == 0) return `${obj}`;
@@ -117,8 +117,8 @@ function objectToTable(obj: any[], depth: number): string {
 
 /**
  * Convert arbitrary object to HTML. First column is keys, second is values
- * @param obj
- * @param depth used to determine if top level objects should be displayed open
+ * @param obj - object to be displayed as a table
+ * @param depth - used to determine if top level objects should be displayed open
  */
 function objectToHtml(obj: any, depth: number): string {
   if (Array.isArray(obj)) {

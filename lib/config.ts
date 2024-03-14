@@ -43,7 +43,6 @@ export class RevolverConfig {
   /**
    * Validate JSON configuration conforms to the schema and return a configuration object.
    * Multiple JSON documents can be specified and will be deep merged together with later documents overriding.
-   * @param data
    */
   static validateJsonConfig(...data: string[]) {
     const merged = data.reduce((da: any, d) => {
@@ -56,7 +55,6 @@ export class RevolverConfig {
    * Validate YAML configuration conforms to the schema and return a configuration object.
    * Multiple YAML documents can be specified and will be deep merged together with later documents overriding.
    * Accepts multi doc yamls, following the same logic.
-   * @param data
    */
   static validateYamlConfig(...data: string[]) {
     const merged = data.reduce((da: any, d) => {
@@ -70,7 +68,6 @@ export class RevolverConfig {
 
   /**
    * Validate configuration object conforms to the schema and return a parsed and validated configuration object
-   * @param data
    */
   static validateConfig(data: any) {
     try {
