@@ -3,6 +3,7 @@ import { logger } from './logger';
 import { existsSync, promises as fs } from 'fs';
 import { getAwsConfig } from './awsConfig';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { SendMessageCommand, SQSClient, MessageAttributeValue } from '@aws-sdk/client-sqs';
 import { ActionAuditEntry } from '../actions/audit';
 import dateTime from './dateTime';
 import { htmlTableReport } from './templater';
@@ -28,6 +29,10 @@ type WriteOptions = {
     bucket: string;
     region: string;
     path: string;
+  };
+  sqs?: {
+    url: string;
+    attributes?: { [key: string]: string };
   };
 };
 
@@ -71,6 +76,29 @@ abstract class AbstractOutputWriter {
     return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: this.getOutput() }));
   }
 
+  protected async writeSQS() {
+    const config = getAwsConfig();
+    const sqs = new SQSClient(Object.assign(config, { useQueueUrlAsEndpoint: false }));
+
+    const attributes: Record<string, MessageAttributeValue> = {};
+
+    Object.entries(this.options.sqs?.attributes || {}).forEach((e) => {
+      attributes[e[0]] = {
+        DataType: 'String',
+        StringValue: e[1],
+      };
+    });
+
+    this.logger.info(`Sending message to sqs ${this.options.sqs?.url}`);
+    return sqs.send(
+      new SendMessageCommand({
+        QueueUrl: this.options.sqs?.url,
+        MessageBody: this.getOutput(),
+        MessageAttributes: attributes,
+      }),
+    );
+  }
+
   protected async writeConsole() {
     this.logger.info(this.getOutput());
   }
@@ -111,6 +139,9 @@ abstract class AbstractOutputWriter {
     }
     if (this.options.s3) {
       promises.push(this.writeS3());
+    }
+    if (this.options.sqs) {
+      promises.push(this.writeSQS());
     }
     return Promise.all(promises);
   }

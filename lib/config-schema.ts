@@ -64,6 +64,12 @@ const Filters: z.ZodType<FilterT> = BaseFilters.extend({
 
 const ObjectLogOptions = z.object({
   file: z.string().optional(),
+  sqs: z
+    .object({
+      url: z.string(),
+      attributes: z.record(z.string(), z.string()).optional(),
+    })
+    .optional(),
   s3: z
     .object({
       bucket: z.string(),
