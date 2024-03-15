@@ -79,15 +79,20 @@ function unlinkIfExists(filename: string) {
   }
 }
 
+function clearFiles() {
+  ACCOUNTS.forEach((account, accountIndex) => {
+    unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.Audit));
+    unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.ResourcesCsv));
+    unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.ResourcesJson));
+  });
+}
+
 describe('Run powercycleCentral full cycle', function () {
-  beforeEach(function () {
-    ACCOUNTS.forEach((account, accountIndex) => {
-      unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.Audit));
-      unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.ResourcesCsv));
-      unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.ResourcesJson));
-    });
+  beforeEach(() => {
+    clearFiles();
     environ.configPath = LOCAL_CONFIG;
   });
+  afterEach(clearFiles);
 
   it('resolves', (done) => {
     const r = revolverHandle(event, context, () => {});
