@@ -7,6 +7,7 @@ import { SendMessageCommand, SQSClient, MessageAttributeValue } from '@aws-sdk/c
 import { ActionAuditEntry } from '../actions/audit';
 import dateTime from './dateTime';
 import { htmlTableReport } from './templater';
+import zlib from 'node:zlib';
 
 /**
  * Used by the writers to structure table style data
@@ -32,6 +33,7 @@ type WriteOptions = {
   };
   sqs?: {
     url: string;
+    compress: boolean;
     attributes?: { [key: string]: string };
   };
 };
@@ -76,6 +78,15 @@ abstract class AbstractOutputWriter {
     return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: this.getOutput() }));
   }
 
+  private static compress(data: string): string {
+    return zlib.deflateSync(Buffer.from(data)).toString('base64');
+  }
+
+  // here as reference, unused
+  private static decompress(compressedB64: string): string {
+    return zlib.inflateSync(Buffer.from(compressedB64, 'base64')).toString('utf-8');
+  }
+
   protected async writeSQS() {
     const config = getAwsConfig();
     const sqs = new SQSClient(Object.assign(config, { useQueueUrlAsEndpoint: false }));
@@ -89,11 +100,33 @@ abstract class AbstractOutputWriter {
       };
     });
 
+    let output = this.getOutput();
+    attributes['compression'] = {
+      DataType: 'String',
+      StringValue: 'none',
+    };
+    attributes['encoding'] = {
+      DataType: 'String',
+      StringValue: 'none',
+    };
+
+    if (this.options.sqs?.compress) {
+      output = AbstractOutputWriter.compress(output);
+      attributes['compression'] = {
+        DataType: 'String',
+        StringValue: 'gzip',
+      };
+      attributes['encoding'] = {
+        DataType: 'String',
+        StringValue: 'base64',
+      };
+    }
+
     this.logger.info(`Sending message to sqs ${this.options.sqs?.url}`);
     return sqs.send(
       new SendMessageCommand({
         QueueUrl: this.options.sqs?.url,
-        MessageBody: this.getOutput(),
+        MessageBody: output,
         MessageAttributes: attributes,
       }),
     );

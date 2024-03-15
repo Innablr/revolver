@@ -6,6 +6,7 @@ import { logger } from './lib/logger';
 import { RevolverConfig } from './lib/config';
 import dateTime from './lib/dateTime';
 import assume from './lib/assume';
+import zlib from 'node:zlib';
 
 // Specify a SQS message attribute to log out to the console
 const sqsLogAttribute = process.env['SQS_LOG_ATTRIBUTE'];
@@ -18,8 +19,15 @@ export const handlerSQS: SQSHandler = async (event: SQSEvent) => {
     }
     logger.info(`Starting revolver for record ${record.messageId}`);
     logger.trace('Record', record);
-    const configuration = Buffer.from(record.body).toString('utf-8');
-    const config = RevolverConfig.validateYamlConfig(configuration);
+
+    let body = record.body;
+
+    // assumed base64 encoding since this is a text field
+    if (record.messageAttributes['compression']?.stringValue === 'gzip') {
+      body = zlib.inflateSync(Buffer.from(record.body, 'base64')).toString('utf-8');
+    }
+
+    const config = RevolverConfig.validateYamlConfig(body);
 
     dateTime.freezeTimeUnix(record.attributes.SentTimestamp);
     await main(config);
