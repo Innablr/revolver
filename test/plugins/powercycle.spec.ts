@@ -40,14 +40,18 @@ const context: Context = {
   succeed: () => {},
 };
 
+function clearFiles() {
+  if (fs.existsSync(OUTPUT_AUDIT_CSV_FILE)) fs.unlinkSync(OUTPUT_AUDIT_CSV_FILE);
+  if (fs.existsSync(OUTPUT_RESOURCES_CSV_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_CSV_FILE);
+  if (fs.existsSync(OUTPUT_RESOURCES_JSON_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_JSON_FILE);
+}
+
 describe('Run powercycle full cycle', function () {
-  beforeEach(function () {
-    // delete output files before run
-    if (fs.existsSync(OUTPUT_AUDIT_CSV_FILE)) fs.unlinkSync(OUTPUT_AUDIT_CSV_FILE);
-    if (fs.existsSync(OUTPUT_RESOURCES_CSV_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_CSV_FILE);
-    if (fs.existsSync(OUTPUT_RESOURCES_JSON_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_JSON_FILE);
+  beforeEach(() => {
+    clearFiles();
     environ.configPath = LOCAL_CONFIG;
   });
+  afterEach(clearFiles);
 
   it('resolves', (done) => {
     const r = revolverHandle(event, context, () => {});
