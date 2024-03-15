@@ -67,6 +67,7 @@ const ObjectLogOptions = z.object({
   sqs: z
     .object({
       url: z.string(),
+      compress: z.boolean().default(true),
       attributes: z.record(z.string(), z.string()).optional(),
     })
     .optional(),

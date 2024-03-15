@@ -52,6 +52,8 @@ defaults:
         # Option to write output to an SQS queue
         sqs:
           url: "https://sqs.ap-southeast-2.amazonaws.com/123456789012/sqs-queue"
+          # compress messages before sending to queue, defaults to true
+          compress: true
           # attributes can be any key/value string pair and are submitted as message attributes for each SQS message
           attributes:
             costCenter: "1234"
