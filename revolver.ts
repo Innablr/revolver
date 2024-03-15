@@ -44,19 +44,29 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
 };
 
 async function main(config: any) {
-  // Assume-role on each org (if any listed) and get the list of accounts from it
-  const organisationCreds = await Promise.all(
-    config.organizations.flatMap((xa: any) => {
-      logger.info(`Getting list of accounts from ${xa.settings.name} organization..`);
-      return assume
-        .connectTo(`arn:aws:iam::${xa.accountId}:role/${xa.settings.organizationRoleName}`)
-        .then((cred: any) => {
-          cred.settings = xa.settings;
-          return cred;
-        });
-    }),
-  );
-  const orgsAccountsList = await RevolverConfig.getOrganisationsAccounts(organisationCreds);
+  const local = config.defaults.settings.localOrgAccountsFile;
+  let orgsAccountsList: any[];
+  if (local !== undefined) {
+    orgsAccountsList = await RevolverConfig.getLocalOrganisationsAccounts(local);
+  } else {
+    const organisationCreds = await Promise.all(
+      config.organizations.flatMap((xa: any) => {
+        logger.info(`Getting list of accounts from ${xa.settings.name} organization..`);
+        return assume
+          .connectTo(`arn:aws:iam::${xa.accountId}:role/${xa.settings.organizationRoleName}`)
+          .then((cred: any) => {
+            cred.settings = xa.settings;
+            return cred;
+          });
+      }),
+    );
+    orgsAccountsList = await RevolverConfig.getOrganisationsAccounts(organisationCreds);
+
+    const localWrite = config.defaults.settings.localOrgAccountsWriteFile;
+    if (localWrite !== undefined) {
+      await RevolverConfig.writeLocalOrganisationsAccounts(localWrite, orgsAccountsList);
+    }
+  }
 
   // Filter final accounts list to be processed
   const filteredAccountsList = await RevolverConfig.filterAccountsList(orgsAccountsList, config);

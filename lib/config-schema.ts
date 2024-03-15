@@ -107,6 +107,8 @@ const Settings = z.object({
     })
     .optional(),
   localResourcesFile: z.string().optional(),
+  localOrgAccountsFile: z.string().optional(),
+  localOrgAccountsWriteFile: z.string().optional(),
   auditLog: z
     .object({
       console: z.null().optional(),

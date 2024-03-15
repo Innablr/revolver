@@ -9,6 +9,7 @@ import { merge } from 'ts-deepmerge';
 import { getAwsConfig } from './awsConfig';
 import { ConfigSchema } from './config-schema';
 import { ZodError, ZodIssueCode, ZodInvalidUnionIssue, ZodInvalidArgumentsIssue, ZodInvalidReturnTypeIssue } from 'zod';
+import { ObjectLogJson } from './objectLog';
 
 function flattenZodErrors(ze: ZodError, depth: number): string[] {
   let lines: string[] = [];
@@ -125,6 +126,16 @@ export class RevolverConfig {
     return flatAccounts;
   }
 
+  static async getLocalOrganisationsAccounts(localFile: string) {
+    const resourcesFilePath = path.resolve(localFile);
+    const localResourcesStr = await fs.readFile(resourcesFilePath, { encoding: 'utf-8' });
+    return JSON.parse(localResourcesStr) as any[];
+  }
+
+  static async writeLocalOrganisationsAccounts(localFile: string, accounts: any[]) {
+    return new ObjectLogJson(accounts, { file: localFile }).process();
+  }
+
   static filterAccountsList(orgsAccountsList: any[], config: any) {
     logger.info(`${orgsAccountsList.length} Accounts found on the Organizations listed`);
     logger.info(`${config.accounts.includeList.length} accounts found on include_list`);
@@ -165,6 +176,7 @@ export class RevolverConfig {
       return account;
     });
 
+    logger.info(`${updatedAccountsList.length} Accounts remaining after filtering`);
     return updatedAccountsList;
   }
 }
