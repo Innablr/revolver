@@ -112,9 +112,10 @@ abstract class AbstractOutputWriter {
 
     if (this.options.sqs?.compress) {
       output = AbstractOutputWriter.compress(output);
+      this.logger.debug(`compressed sqs message size: ${output.length}`);
       attributes['compression'] = {
         DataType: 'String',
-        StringValue: 'gzip',
+        StringValue: 'zlib',
       };
       attributes['encoding'] = {
         DataType: 'String',
