@@ -73,6 +73,16 @@ class InstrumentedEc2 extends ToolingInterface {
   get resourceTags(): { [key: string]: string } {
     return makeResourceTags(this.resource.Tags);
   }
+
+  get sizing(): any {
+    return {
+      InstanceType: this.resource.InstanceType,
+      Placement: {
+        Tenancy: this.resource.Placement?.Tenancy,
+      },
+      PlatformDetails: this.resource.PlatformDetails,
+    };
+  }
 }
 
 class Ec2Driver extends DriverInterface {

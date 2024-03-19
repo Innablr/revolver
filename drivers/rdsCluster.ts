@@ -59,6 +59,27 @@ class InstrumentedRdsCluster extends ToolingInterface {
   get resourceTags(): { [key: string]: string } {
     return makeResourceTags(this.resource.TagList);
   }
+
+  get sizing(): any {
+    return {
+      AllocatedStorage: this.resource.AllocatedStorage,
+      MultiAZ: this.resource.MultiAZ,
+      Engine: this.resource.Engine,
+      EngineVersion: this.resource.EngineVersion,
+      EngineMode: this.resource.EngineMode,
+      DBClusterMembers: this.resource.DBClusterMembers.map((m: any) => {
+        return {
+          AllocatedStorage: m.instanceData.AllocatedStorage,
+          StorageType: m.instanceData.StorageType,
+          DBInstanceClass: m.instanceData.DBInstanceClass,
+          MultiAZ: m.instanceData.MultiAZ,
+          Engine: m.instanceData.Engine,
+          EngineVersion: m.instanceData.EngineVersion,
+          LicenseModel: m.instanceData.LicenseModel,
+        };
+      }),
+    };
+  }
 }
 
 class RdsClusterDriver extends DriverInterface {

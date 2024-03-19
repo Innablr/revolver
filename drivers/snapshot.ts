@@ -41,6 +41,13 @@ class InstrumentedSnapshot extends ToolingInterface {
   get resourceTags(): { [key: string]: string } {
     return makeResourceTags(this.resource.Tags);
   }
+
+  get sizing(): any {
+    return {
+      StorageTier: this.resource.StorageTier,
+      VolumeSize: this.resource.VolumeSize,
+    };
+  }
 }
 
 class SnapshotDriver extends DriverInterface {
