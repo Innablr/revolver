@@ -265,8 +265,8 @@ export class ObjectLogHtml extends AbstractOutputWriter {
   private readonly data: any;
   private readonly title: string;
 
-  constructor(data: any, title: string, options: WriteOptions) {
-    super(options);
+  constructor(data: any, title: string, options: WriteOptions, context?: WriterContext) {
+    super(options, context);
     this.data = data;
     this.title = title;
   }

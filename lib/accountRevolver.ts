@@ -146,7 +146,7 @@ export class AccountRevolver {
             await new ObjectLogCsv(new ActionAuditTable(this.config, entries, true), auditConfig, context).process();
             break;
           case 'html':
-            await new ObjectLogHtml(entries, 'Audit Log', auditConfig).process();
+            await new ObjectLogHtml(entries, 'Audit Log', auditConfig, context).process();
             break;
           case 'console':
             await new ObjectLogTable(
@@ -175,7 +175,7 @@ export class AccountRevolver {
             await new ObjectLogJson(this.resources, resourceLogConfig, context).process();
             break;
           case 'html':
-            await new ObjectLogHtml(this.resources, 'Resource Log', resourceLogConfig).process();
+            await new ObjectLogHtml(this.resources, 'Resource Log', resourceLogConfig, context).process();
             break;
           case 'console':
             await new ObjectLogTable(
