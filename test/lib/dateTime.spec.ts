@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import dateTime from '../../lib/dateTime';
 import { FixedOffsetZone } from 'luxon';
 
-describe('Validate auditLog', function () {
+describe('Validate DateTime', function () {
   it('Check DateTime freeze', async function () {
     const d1 = dateTime.getTime();
     expect(d1.zone).to.equal(FixedOffsetZone.instance(0));
