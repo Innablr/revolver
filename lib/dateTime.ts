@@ -9,19 +9,17 @@ class DateTime {
 
   freezeTime(t: string) {
     this.currentTime = LuxonDateTime.fromISO(t).toUTC();
+    logger.debug(`Freezing time: ${t} -> ${this.currentTime}`);
     if (this.currentTime.invalidReason) {
-      logger.warn(`Invalid time freezeTime(${t}): ${this.currentTime.invalidReason}: ${this.currentTime.invalidExplanation}`);
-    } else {
-      logger.debug(`Freezing time: ${this.currentTime}`);
+      logger.warn(`Invalid time: ${this.currentTime.invalidReason}: ${this.currentTime.invalidExplanation}`);
     }
   }
 
   freezeTimeUnix(t: string) {
     this.currentTime = LuxonDateTime.fromMillis(parseInt(t)).toUTC();
+    logger.debug(`Freezing time Unix: ${t} -> ${this.currentTime}`);
     if (this.currentTime.invalidReason) {
-      logger.warn(`Invalid time freezeTimeUnix(${t}): ${this.currentTime.invalidReason}: ${this.currentTime.invalidExplanation}`);
-    } else {
-      logger.debug(`Freezing time: ${this.currentTime}`);
+      logger.warn(`Invalid time: ${this.currentTime.invalidReason}: ${this.currentTime.invalidExplanation}`);
     }
   }
 

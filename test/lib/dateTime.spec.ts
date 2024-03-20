@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import dateTime from '../../lib/dateTime';
-import { FixedOffsetZone, SystemZone, InvalidZone } from 'luxon';
+import { FixedOffsetZone } from 'luxon';
 
 describe('Validate auditLog', function () {
   it('Check DateTime freeze', async function () {
