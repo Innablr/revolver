@@ -64,6 +64,7 @@ export abstract class DriverInterface {
 
       this.actionAuditLog.push({
         accountId: ti.accountId || '',
+        region: xa.who.region,
         time: dateTime.getTime(),
         plugin: plugin,
         driver: this.name,
@@ -72,6 +73,7 @@ export abstract class DriverInterface {
         action: action,
         reason: reason,
         status: status,
+        sizing: ti.sizing,
       });
     }
   }

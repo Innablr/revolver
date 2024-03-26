@@ -72,6 +72,15 @@ class InstrumentedRedshiftCluster extends ToolingInterface {
   get resourceTags(): { [key: string]: string } {
     return makeResourceTags(this.resource.Tags);
   }
+
+  get sizing(): any {
+    return {
+      NodeType: this.resource.NodeType,
+      NumberOfNodes: this.resource.NumberOfNodes,
+      MultiAZ: this.resource.MultiAZ,
+      TotalStorageCapacityInMegaBytes: this.resource.TotalStorageCapacityInMegaBytes,
+    };
+  }
 }
 
 class RedshiftClusterDriver extends DriverInterface {

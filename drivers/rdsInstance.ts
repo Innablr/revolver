@@ -58,6 +58,18 @@ class InstrumentedRdsInstance extends ToolingInterface {
   get resourceTags(): { [key: string]: string } {
     return makeResourceTags(this.resource.TagList);
   }
+
+  get sizing(): any {
+    return {
+      DBInstanceClass: this.resource.DBInstanceClass,
+      Engine: this.resource.Engine,
+      EngineVersion: this.resource.EngineVersion,
+      AllocatedStorage: this.resource.AllocatedStorage,
+      StorageType: this.resource.StorageType,
+      MultiAZ: this.resource.MultiAZ,
+      LicenseModel: this.resource.LicenseModel,
+    };
+  }
 }
 
 class RdsInstanceDriver extends DriverInterface {

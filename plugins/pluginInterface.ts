@@ -28,6 +28,9 @@ export abstract class RevolverPlugin {
   get name(): string {
     return this.pluginConfig.name;
   }
+  get region(): any {
+    return this.accountConfig.region;
+  }
 
   async initialise(): Promise<RevolverPlugin> {
     this.logger.info(`Plugin ${this.name} is initialising...`);

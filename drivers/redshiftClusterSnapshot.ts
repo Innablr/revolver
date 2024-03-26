@@ -53,6 +53,15 @@ class InstrumentedRedshiftClusterSnapshot extends ToolingInterface {
   get resourceTags(): { [key: string]: string } {
     return makeResourceTags(this.resource.Tags);
   }
+
+  get sizing(): any {
+    return {
+      NodeType: this.resource.NodeType,
+      NumberOfNodes: this.resource.NumberOfNodes,
+      ActualIncrementalBackupSizeInMegaBytes: this.resource.ActualIncrementalBackupSizeInMegaBytes,
+      TotalBackupSizeInMegaBytes: this.resource.TotalBackupSizeInMegaBytes,
+    };
+  }
 }
 
 class RedshiftClusterSnapshotDriver extends DriverInterface {

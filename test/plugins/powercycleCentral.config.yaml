@@ -17,6 +17,8 @@ defaults:
       csv:
         file: ./test/plugins/audit.%name.%accountId.csv
         append: true
+      json:
+        file: ./test/plugins/audit.%name.%accountId.json
     excludeResources:
       - tag: 'Schedule|ignore'
 

@@ -40,6 +40,10 @@ class FakeResource extends ToolingInterface {
   get resourceTags(): { [key: string]: string } {
     return {};
   }
+
+  get sizing(): any {
+    return {};
+  }
 }
 
 const RESOURCE_LOG_CONFIG = {

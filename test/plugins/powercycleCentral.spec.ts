@@ -22,6 +22,7 @@ const ACCOUNTS = [
 
 enum OutputFiles {
   Audit,
+  AuditJson,
   ResourcesCsv,
   ResourcesJson,
 }
@@ -34,6 +35,8 @@ function getOutputFilename(accountNumber: number, which: OutputFiles): string {
   let path: string | undefined;
   if (which === OutputFiles.Audit) {
     path = configCopy.defaults.settings.auditLog?.csv?.file;
+  } else if (which === OutputFiles.AuditJson) {
+    path = configCopy.defaults.settings.auditLog?.json?.file;
   } else if (which === OutputFiles.ResourcesCsv) {
     path = configCopy.defaults.settings.resourceLog?.csv?.file;
   } else if (which === OutputFiles.ResourcesJson) {
@@ -82,6 +85,7 @@ function unlinkIfExists(filename: string) {
 function clearFiles() {
   ACCOUNTS.forEach((account, accountIndex) => {
     unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.Audit));
+    unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.AuditJson));
     unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.ResourcesCsv));
     unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.ResourcesJson));
   });
@@ -110,6 +114,15 @@ describe('Run powercycleCentral full cycle', function () {
         expect(a1_audit_text).to.include(',ec2,ec2,i-031635db539857721,stop,');
         expect(a1_audit_text).to.include(',ec2,ec2,i-072b78745f1879e97,stop,');
         expect(a1_audit_text).to.not.include(',ec2,ec2,i-05b6baf37fc8f9454,stop,');
+
+        const a1_auditjson_file = getOutputFilename(0, OutputFiles.AuditJson);
+        const a1_auditjson_text = fs.readFileSync(a1_auditjson_file, 'utf-8');
+        const a1_audit_json = JSON.parse(a1_auditjson_text);
+
+        expect(a1_audit_json.length).to.equal(3);
+        a1_audit_json.forEach((a: any) => {
+          expect(a.sizing.InstanceType).to.equal('t2.micro');
+        });
 
         // TODO: validate resources.csv
         const a1_resourcecsv_file = getOutputFilename(0, OutputFiles.ResourcesCsv);
@@ -146,6 +159,15 @@ describe('Run powercycleCentral full cycle', function () {
         const a2_audit_text = fs.readFileSync(a2_audit_file, 'utf-8');
         expect(a2_audit_text.match(/\n/g)!.length).to.equal(2); // including heading
         expect(a2_audit_text).to.include('i-B7781A749688DAD2,stop'); // stopped because Thu 23:45 +0 is outside EarlyStartBusinessHours
+
+        const a2_auditjson_file = getOutputFilename(1, OutputFiles.AuditJson);
+        const a2_auditjson_text = fs.readFileSync(a2_auditjson_file, 'utf-8');
+        const a2_audit_json = JSON.parse(a2_auditjson_text);
+
+        expect(a2_audit_json.length).to.equal(1);
+        a2_audit_json.forEach((a: any) => {
+          expect(a.sizing.InstanceType).to.equal('t2.micro');
+        });
       }).then(done, done);
     }
   });

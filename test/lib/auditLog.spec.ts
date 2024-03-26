@@ -9,6 +9,7 @@ import * as fs from 'fs';
 class FakeActionAuditEntry implements ActionAuditEntry {
   time: DateTime<boolean>;
   accountId: string;
+  region: string;
   plugin: string;
   driver: string;
   resourceType: string;
@@ -16,9 +17,12 @@ class FakeActionAuditEntry implements ActionAuditEntry {
   status: string;
   action: string;
   reason: string;
+  sizing: any;
+
   constructor(status: string, action: string, reason: string) {
     this.time = DateTime.fromISO('2024-02-27T09:12:33.018+11:00');
     this.accountId = randomBytes(20).toString('hex');
+    this.region = 'ap-southeast-2';
     this.plugin = 'fakeplugin';
     this.driver = 'fakedriver';
     this.resourceType = 'type_' + randomBytes(20).toString('hex');

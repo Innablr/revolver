@@ -11,6 +11,7 @@ export interface InstrumentedResource {
   resourceTags: { [key: string]: string };
   resource: any;
   metadata: any;
+  sizing: any;
 }
 
 export abstract class ToolingInterface implements InstrumentedResource {
@@ -58,6 +59,7 @@ export abstract class ToolingInterface implements InstrumentedResource {
       resource: this.resource,
       metadata: this.metadata,
       resourceTags: this.resourceTags,
+      sizing: this.sizing,
     };
   }
 
@@ -98,4 +100,6 @@ export abstract class ToolingInterface implements InstrumentedResource {
   abstract tag(key: string): string | undefined;
 
   abstract get resourceTags(): { [key: string]: string };
+
+  abstract get sizing(): any;
 }
