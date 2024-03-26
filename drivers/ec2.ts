@@ -81,6 +81,7 @@ class InstrumentedEc2 extends ToolingInterface {
         Tenancy: this.resource.Placement?.Tenancy,
       },
       PlatformDetails: this.resource.PlatformDetails,
+      AutoScalingGroupName: this.resource.AutoScalingGroupName,
     };
   }
 }
