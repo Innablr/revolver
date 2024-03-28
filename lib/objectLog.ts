@@ -186,6 +186,7 @@ abstract class AbstractOutputWriter {
  */
 export class ObjectLogCsv extends AbstractOutputWriter {
   private readonly dataTable: DataTable;
+  private skipHeaders = false;
 
   constructor(dataTable: DataTable, options: WriteOptions, context?: WriterContext) {
     super(options, context);
@@ -196,15 +197,18 @@ export class ObjectLogCsv extends AbstractOutputWriter {
     return row.map((v) => (v || '').replaceAll('"', '""')).map((v) => (v.includes(',') ? `"${v}"` : v));
   }
 
-  getOutput(): string {
-    // somewhat hacky to support CSV append needing to know if the header is needed
+  protected async writeFile() {
+    // Write the DataTable to the configured file as CSV, omitting headers if the file already exists.
     const outputExists = existsSync(this.resolveFilename(this.options.file));
-    let rows: string[][] = [this.dataTable.header()];
+    this.skipHeaders = this.options.append === true && outputExists;
+    const result = super.writeFile();
+    this.skipHeaders = false;
+    return result;
+  }
 
-    // Don't write header if appending to an existing file
-    if (this.options.append && outputExists) {
-      rows = [];
-    }
+  getOutput(): string {
+    // Return the dataTable as a CSV with headers unless this.skipHeaders
+    const rows: string[][] = this.skipHeaders ? [] : [this.dataTable.header()];
     return (
       rows
         .concat(this.dataTable.data())
