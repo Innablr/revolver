@@ -70,7 +70,7 @@ abstract class AbstractOutputWriter {
     return fs.writeFile(filename, this.getOutput(), { flag: this.options.append ? 'a' : 'w' });
   }
 
-  protected writeS3() {
+  protected async writeS3() {
     const config = getAwsConfig(this.options.s3?.region);
     const s3 = new S3Client(config);
     const path = this.resolveFilename(this.options.s3?.path);
@@ -200,10 +200,12 @@ export class ObjectLogCsv extends AbstractOutputWriter {
   protected async writeFile() {
     // Write the DataTable to the configured file as CSV, omitting headers if the file already exists.
     const outputExists = existsSync(this.resolveFilename(this.options.file));
-    this.skipHeaders = this.options.append === true && outputExists;
-    const result = super.writeFile();
-    this.skipHeaders = false;
-    return result;
+    try {
+      this.skipHeaders = this.options.append === true && outputExists;
+      return super.writeFile();
+    } finally {
+      this.skipHeaders = false;
+    }
   }
 
   getOutput(): string {
