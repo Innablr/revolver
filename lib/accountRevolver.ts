@@ -12,6 +12,7 @@ import {
   ObjectLogJson,
   ResourceTable,
   ObjectLogHtml,
+  resetFileLogger,
 } from './objectLog';
 
 export class AccountRevolver {
@@ -207,6 +208,7 @@ export class AccountRevolver {
       await this.loadResources();
       await this.runPlugins();
       await this.runActions();
+      resetFileLogger();
       if (this.config.settings.resourceLog) {
         await this.logResources();
       }
