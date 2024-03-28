@@ -2,7 +2,7 @@ import { ToolingInterface } from '../drivers/instrumentedResource';
 import { logger } from './logger';
 import { existsSync, promises as fs } from 'fs';
 import { getAwsConfig } from './awsConfig';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { SendMessageCommand, SQSClient, MessageAttributeValue } from '@aws-sdk/client-sqs';
 import { ActionAuditEntry } from '../actions/audit';
 import dateTime from './dateTime';
@@ -20,10 +20,9 @@ export interface DataTable {
 /**
  * Configures AbstractOutputWriter options
  * console has no deeper value so needs to be checked for null rather than undefined
- * append is only used within file operations and doesn't support s3 appending
  */
 type WriteOptions = {
-  append?: boolean;
+  append?: boolean; // file and S3
   console?: null;
   file?: string;
   s3?: {
@@ -187,6 +186,7 @@ abstract class AbstractOutputWriter {
 export class ObjectLogCsv extends AbstractOutputWriter {
   private readonly dataTable: DataTable;
   private skipHeaders = false;
+  private prependOutput: string = '';
 
   constructor(dataTable: DataTable, options: WriteOptions, context?: WriterContext) {
     super(options, context);
@@ -198,7 +198,7 @@ export class ObjectLogCsv extends AbstractOutputWriter {
   }
 
   protected async writeFile() {
-    // Write the DataTable to the configured file as CSV, omitting headers if the file already exists.
+    // Write the DataTable to the configured file as CSV, omitting headers and appending if the file already exists.
     const outputExists = existsSync(this.resolveFilename(this.options.file));
     try {
       this.skipHeaders = this.options.append === true && outputExists;
@@ -208,15 +208,44 @@ export class ObjectLogCsv extends AbstractOutputWriter {
     }
   }
 
+  private async getS3ObjectBody(): Promise<string> {
+    // Return the contents of the configured output file, or '' if it doesn't exist
+    const config = getAwsConfig(this.options.s3?.region);
+    const s3 = new S3Client(config);
+    const path = this.resolveFilename(this.options.s3?.path);
+    try {
+      const configObject = await s3.send(new GetObjectCommand({ Bucket: this.options.s3?.bucket, Key: path }));
+      return await configObject.Body!.transformToString();
+    } catch (error) {
+      if (error instanceof NoSuchKey) {
+        return '';
+      }
+      throw error; // rethrow any other exceptions
+    }
+  }
+
+  protected async writeS3() {
+    // Write the DataTable to the configured S3 Object as CSV, omitting headers and appending if the file already exists.
+    try {
+      if (this.options.append) {
+        this.prependOutput = await this.getS3ObjectBody();
+        this.skipHeaders = this.prependOutput !== '';
+      }
+      return super.writeS3();
+    } finally {
+      this.skipHeaders = false;
+      this.prependOutput = '';
+    }
+  }
+
   getOutput(): string {
     // Return the dataTable as a CSV with headers unless this.skipHeaders
     const rows: string[][] = this.skipHeaders ? [] : [this.dataTable.header()];
-    return (
-      rows
-        .concat(this.dataTable.data())
-        .map((row) => this.sanitizeRow(row).join(','))
-        .join('\n') + '\n'
-    );
+    const rowsText = rows
+      .concat(this.dataTable.data())
+      .map((row) => this.sanitizeRow(row).join(','))
+      .join('\n');
+    return this.prependOutput + rowsText + '\n';
   }
 }
 
