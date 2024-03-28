@@ -186,7 +186,7 @@ abstract class AbstractOutputWriter {
 export class ObjectLogCsv extends AbstractOutputWriter {
   private readonly dataTable: DataTable;
   private skipHeaders = false;
-  private prependOutput: string = '';
+  private prependOutput = '';
 
   constructor(dataTable: DataTable, options: WriteOptions, context?: WriterContext) {
     super(options, context);
