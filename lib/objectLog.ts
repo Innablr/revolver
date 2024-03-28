@@ -56,6 +56,8 @@ abstract class AbstractOutputWriter {
   protected readonly logger;
   protected readonly context;
 
+  static filesWritten: string[] = [];
+
   protected constructor(options: WriteOptions, context?: WriterContext) {
     this.logger = logger;
     this.options = options;
@@ -64,9 +66,19 @@ abstract class AbstractOutputWriter {
 
   abstract getOutput(): string;
 
+  // Emit a log message about a new output file being created, and warn if it has been used already.
+  public logFileOutput(filename: string) {
+    if (AbstractOutputWriter.filesWritten.includes(filename)) {
+      this.logger.warn(`Writing data to ${filename}. This output filename has already been used this cycle!`);
+    } else {
+      this.logger.info(`Writing data to ${filename}`);
+      AbstractOutputWriter.filesWritten.push(filename);
+    }
+  }
+
   protected async writeFile() {
     const filename = this.resolveFilename(this.options.file);
-    this.logger.info(`Writing data to ${filename}`);
+    this.logFileOutput(filename);
     return fs.writeFile(filename, this.getOutput(), { flag: this.options.append ? 'a' : 'w' });
   }
 
@@ -74,7 +86,7 @@ abstract class AbstractOutputWriter {
     const config = getAwsConfig(this.options.s3?.region);
     const s3 = new S3Client(config);
     const path = this.resolveFilename(this.options.s3?.path);
-    this.logger.info(`Writing data to s3://${this.options.s3?.bucket}/${path}`);
+    this.logFileOutput(`s3://${this.options.s3?.bucket}/${path}`);
     return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: this.getOutput() }));
   }
 
@@ -351,4 +363,8 @@ export class ActionAuditTable implements DataTable {
       ]),
     );
   }
+}
+
+export function resetFileLogger() {
+  AbstractOutputWriter.filesWritten = [];
 }
