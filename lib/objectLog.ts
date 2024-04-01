@@ -197,6 +197,16 @@ export class ObjectLogCsv extends AbstractOutputWriter {
     return row.map((v) => (v || '').replaceAll('"', '""')).map((v) => (v.includes(',') ? `"${v}"` : v));
   }
 
+  getOutput(): string {
+    // Return the dataTable as a CSV with headers unless this.skipHeaders
+    const rows: string[][] = this.skipHeaders ? [] : [this.dataTable.header()];
+    const rowsText = rows
+      .concat(this.dataTable.data())
+      .map((row) => this.sanitizeRow(row).join(','))
+      .join('\n');
+    return this.prependOutput + rowsText + '\n';
+  }
+
   protected async writeFile() {
     // Write the DataTable to the configured file as CSV, omitting headers and appending if the file already exists.
     const outputExists = existsSync(this.resolveFilename(this.options.file));
@@ -236,16 +246,6 @@ export class ObjectLogCsv extends AbstractOutputWriter {
       this.skipHeaders = false;
       this.prependOutput = '';
     }
-  }
-
-  getOutput(): string {
-    // Return the dataTable as a CSV with headers unless this.skipHeaders
-    const rows: string[][] = this.skipHeaders ? [] : [this.dataTable.header()];
-    const rowsText = rows
-      .concat(this.dataTable.data())
-      .map((row) => this.sanitizeRow(row).join(','))
-      .join('\n');
-    return this.prependOutput + rowsText + '\n';
   }
 }
 
