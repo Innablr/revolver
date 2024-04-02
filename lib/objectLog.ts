@@ -205,7 +205,7 @@ export class ObjectLogCsv extends AbstractOutputWriter {
       .map((row) => this.sanitizeRow(row).join(','))
       .join('\n');
     // Add a trailing newline only if output included rows or headers
-    return this.prependOutput + rowsText + (rowsText==='' ? '' : '\n');
+    return this.prependOutput + rowsText + (rowsText === '' ? '' : '\n');
   }
 
   protected async writeFile() {
