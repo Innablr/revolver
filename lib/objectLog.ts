@@ -365,6 +365,7 @@ export class ActionAuditTable implements DataTable {
   }
 }
 
+// Reset the list of files that have been written in this cycle
 export function resetFileLogger() {
   AbstractOutputWriter.filesWritten = [];
 }
