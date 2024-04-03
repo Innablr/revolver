@@ -27,7 +27,7 @@ class FakeActionAuditEntry implements ActionAuditEntry {
     this.status = status;
     this.action = action;
     this.reason = reason;
-    this.metadata = {'something': 'happened', 'colour': 'red'}
+    this.metadata = { something: 'happened', colour: 'red' };
   }
 }
 
