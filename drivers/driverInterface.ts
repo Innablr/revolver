@@ -72,6 +72,7 @@ export abstract class DriverInterface {
         action: action,
         reason: reason,
         status: status,
+        metadata: ti.metadata,
       });
     }
   }

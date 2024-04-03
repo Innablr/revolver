@@ -15,6 +15,12 @@ import { getAwsClientForAccount } from '../lib/awsConfig';
 import { makeResourceTags } from '../lib/common';
 
 class InstrumentedRdsCluster extends ToolingInterface {
+
+  constructor(awsResource: any) {
+    super(awsResource);
+    this.metadata.members = awsResource.DBClusterMembers;
+  }
+
   get resourceId() {
     return this.resource.DBClusterIdentifier;
   }

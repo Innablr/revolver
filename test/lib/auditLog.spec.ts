@@ -16,6 +16,7 @@ class FakeActionAuditEntry implements ActionAuditEntry {
   status: string;
   action: string;
   reason: string;
+  metadata: any;
   constructor(status: string, action: string, reason: string) {
     this.time = DateTime.fromISO('2024-02-27T09:12:33.018+11:00');
     this.accountId = randomBytes(20).toString('hex');
@@ -26,6 +27,7 @@ class FakeActionAuditEntry implements ActionAuditEntry {
     this.status = status;
     this.action = action;
     this.reason = reason;
+    this.metadata = {'something': 'happened', 'colour': 'red'}
   }
 }
 

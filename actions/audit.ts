@@ -10,4 +10,5 @@ export interface ActionAuditEntry {
   status: string;
   action: string;
   reason: string;
+  metadata: any;
 }
