@@ -14,3 +14,13 @@ updates:
         # keep patch updates as if aws ever releases one, it's because there's a serious issue with the minor version
       - dependency-name: "@aws-sdk*"
         update-types: ["version-update:semver-minor"]
+    groups:
+      aws-sdk:
+        patterns:
+        - "@aws-sdk*"
+      production-dependencies:
+        dependency-type: "production"
+        exclude-patterns:
+        - "@aws-sdk*"
+      development-dependencies:
+        dependency-type: "development"
