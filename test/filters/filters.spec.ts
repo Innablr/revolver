@@ -42,6 +42,10 @@ class TestingResource extends ToolingInterface {
   get resourceTags(): { [key: string]: string } {
     return makeResourceTags(this.topResource['tags']);
   }
+
+  get sizing(): any {
+    return {};
+  }
 }
 
 const basicEc2 = {

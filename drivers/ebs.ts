@@ -50,6 +50,14 @@ class InstrumentedEBS extends ToolingInterface {
   get resourceTags(): { [key: string]: string } {
     return makeResourceTags(this.resource.Tags);
   }
+
+  get sizing(): any {
+    return {
+      Size: this.resource.Size,
+      Iops: this.resource.Iops,
+      VolumeType: this.resource.VolumeType,
+    };
+  }
 }
 
 class EBSDriver extends DriverInterface {
