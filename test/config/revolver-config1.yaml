@@ -104,16 +104,25 @@ organizations:
     settings:
       region: eu-west-1
       name: eh-global-euw1
+  - accountId: "777777777777"
+    accountNameRegex: '-nonprod$'
+    settings:
+      region: 'somewhere'
+      name: 'org1'
 
 accounts:
   includeList:
     - accountId: "002222222222"
       settings:
         name: whatdev
-  # excludeList: []
-#     - accountId: "333333333333"
-#       settings:
-#         name: whatprod
+    - accountId: "000000000123"
+      settings:
+        name: someother
+        region: somewhere
+  excludeList:
+    - accountId: "000000000789"
+      settings:
+        name: whatprod
 
 ---
 defaults:
