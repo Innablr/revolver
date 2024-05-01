@@ -109,4 +109,7 @@ async function main(config: any) {
   await Promise.all(revolvers.map((revolver) => revolver.revolve()));
 
   logger.info('One revolution done.');
+  if (logger.hasError) {
+    throw new Error('Errors were emitted during execution');
+  }
 }
