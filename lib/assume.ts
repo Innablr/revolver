@@ -28,7 +28,7 @@ class RemoteCredentials {
   }
 
   async connectTo(remoteRole: string, region?: string): Promise<Credentials | Provider<Credentials>> {
-    logger.debug(`Requested connection via ${remoteRole}`);
+    // logger.debug(`Requested connection via ${remoteRole}`);
     if (remoteRole === undefined || remoteRole.endsWith('/none')) {
       return fromNodeProviderChain();
     }
@@ -43,8 +43,8 @@ class RemoteCredentials {
       );
     }
 
-    logger.debug(`Assuming role ${remoteRole}...`);
     const awsConfig = getAwsConfig(region || 'ap-southeast-2');
+    logger.debug(`Assuming role ${remoteRole} in ${awsConfig.region}...`);
     const sts = new STS(awsConfig);
     const creds = await sts
       .assumeRole({
@@ -54,7 +54,7 @@ class RemoteCredentials {
       .then((r) => r.Credentials);
 
     if (!creds) {
-      throw new Error(`Unable to assume role ${remoteRole}, got empty creds`);
+      throw new Error(`Unable to assume role ${remoteRole} in ${awsConfig.region}, got empty creds`);
     }
     if (creds.Expiration === undefined) {
       throw new Error(`Credentials have no expiry time`);
