@@ -4,7 +4,6 @@ import { logger } from '../../lib/logger';
 // TODO: validate JSON format, including restructure
 // TODO: validate metadata
 // TODO: validate minLevel
-// TODO: validate metadata
 
 describe('Validate ErrorTrackingLogger behaviour', function () {
   // hasError should start out false, and once error/fatal message has been
