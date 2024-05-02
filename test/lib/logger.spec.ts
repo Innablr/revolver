@@ -7,7 +7,7 @@ import { logger } from '../../lib/logger';
 
 describe('Validate ErrorTrackingLogger behaviour', function () {
   // hasError should start out false, and once error/fatal message has been
-  // emitted, should stay false
+  // emitted, should be set to true, and stay that way.
   logger.hasError = false; // reset
 
   expect(logger.hasError).to.be.false;
