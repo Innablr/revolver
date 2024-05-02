@@ -9,16 +9,19 @@ function getAwsConfig(region?: string, credentials?: Credentials | Provider<Cred
   // returns:
   // - AwsAuthInputConfig (credentials)
   // - ClientDefaults (region, maxAttempts, retryMode, )
-  // logger.info(`Set AWS SDK retry options to ${baseBackoff}ms base backoff, max retries ${maxRetries}`);
-  let requestHandler = undefined;
-  if (environ.httpsProxy) {
-    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-configuring-proxies.html
-    const agent = new HttpsProxyAgent(environ.httpsProxy);
-    requestHandler = new NodeHttpHandler({
-      httpAgent: agent,
-      httpsAgent: agent,
-    });
-  }
+
+  // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-configuring-proxies.html
+  const agent = environ.httpsProxy ? new HttpsProxyAgent(environ.httpsProxy) : undefined;
+  const requestHandler = new NodeHttpHandler({
+    httpAgent: agent,
+    httpsAgent: agent,
+    // The maximum time in milliseconds that the connection phase of a request may take before the connection
+    // attempt is abandoned. Defaults to 0, which disables the timeout.
+    connectionTimeout: environ.connectionTimeout,
+    // The number of milliseconds a request can take before automatically being terminated. Defaults to 0,
+    // which disables the timeout.
+    requestTimeout: environ.requestTimeout,
+  });
   return {
     credentials: credentials,
     region: region,

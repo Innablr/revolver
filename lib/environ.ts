@@ -7,6 +7,8 @@ class Environ {
   configBucket: string | undefined;
   configKey: string;
   baseBackoff: number;
+  connectionTimeout: number;
+  requestTimeout: number;
   maxRetries: number;
   httpsProxy: string | undefined;
 }
@@ -21,6 +23,8 @@ environ.configPath = process.env['CONFIG_FILE'];
 environ.configBucket = process.env['S3_BUCKET'];
 environ.configKey = process.env['S3_KEY'] || 'config/revolver.yaml';
 environ.baseBackoff = parseInt(process.env['SDK_BASE_BACKOFF'] || '300', 10);
+environ.connectionTimeout = parseInt(process.env['SDK_CONNECTION_TIMEOUT_MS'] || '0', 10);
+environ.requestTimeout = parseInt(process.env['SDK_REQUEST_TIMEOUT_MS'] || '0', 10);
 environ.maxRetries = parseInt(process.env['SDK_MAX_RETRIES'] || '30', 10);
 environ.httpsProxy = process.env['HTTPS_PROXY'];
 
