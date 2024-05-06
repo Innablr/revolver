@@ -98,7 +98,7 @@ export class ErrorTrackingLogger<LogObj> extends Logger<LogObj> {
   constructor(settings?: ISettingsParam<LogObj>, logObj?: LogObj) {
     super(settings, logObj);
     this.attachTransport((logObj) => {
-      this.hasError = this.hasError || logObj._meta.logLevelId >= logLevels['error'];
+      this.hasError ||= logObj._meta.logLevelId >= logLevels['error'];
     });
   }
 }
