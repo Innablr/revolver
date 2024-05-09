@@ -58,14 +58,14 @@ class InstrumentedEc2 extends ToolingInterface {
   }
 
   tag(key: string) {
-    const tag = this.resource.Tags.find((xt: Tag) => xt.Key === key);
+    const tag = (this.resource.Tags || []).find((xt: Tag) => xt.Key === key);
     if (tag !== undefined) {
       return tag.Value;
     }
   }
 
   ebsTag(key: string) {
-    const tag = this.resource.Tags.find((xt: Tag) => xt.Key === key);
+    const tag = (this.resource.Tags || []).find((xt: Tag) => xt.Key === key);
     if (tag !== undefined) {
       return tag.Value;
     }
