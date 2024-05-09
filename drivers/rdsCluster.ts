@@ -60,7 +60,7 @@ class InstrumentedRdsCluster extends ToolingInterface {
   }
 
   tag(key: string) {
-    const tag = this.resource.TagList.find((xt: Tag) => xt.Key === key);
+    const tag = (this.resource.TagList || []).find((xt: Tag) => xt.Key === key);
     return tag?.Value;
   }
   get resourceTags(): { [key: string]: string } {
