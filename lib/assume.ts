@@ -27,24 +27,25 @@ class RemoteCredentials {
     return accountId;
   }
 
-  async connectTo(remoteRole: string, region?: string): Promise<Credentials | Provider<Credentials>> {
-    logger.debug(`Requested connection via ${remoteRole}`);
+  async connectTo(remoteRole: string): Promise<Credentials | Provider<Credentials>> {
     if (remoteRole === undefined || remoteRole.endsWith('/none')) {
       return fromNodeProviderChain();
     }
 
     if (remoteRole in this.creds) {
-      if (this.creds[remoteRole].expiration > DateTime.now().setZone('UTC')) {
-        logger.debug(`Role ${remoteRole} is cached, will expire at ${this.creds[remoteRole].expiration}`);
+      const expiration = this.creds[remoteRole].expiration;
+      if (expiration > DateTime.now().setZone('UTC')) {
+        logger.debug(`Role ${remoteRole} is cached, will expire at ${expiration}`);
         return this.creds[remoteRole].creds;
       }
-      logger.debug(
-        `Cached role ${remoteRole} expired at ${this.creds[remoteRole].expiration}, requesting new creds...`,
-      );
+      logger.debug(`Cached role ${remoteRole} expired at ${expiration}, requesting new creds...`);
     }
 
-    logger.debug(`Assuming role ${remoteRole}...`);
-    const awsConfig = getAwsConfig(region || 'ap-southeast-2');
+    // Use the following environment variables to determine which region to use for the STS service.
+    // See https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-runtime
+    const region = process.env['AWS_REGION'] || process.env['AWS_DEFAULT_REGION'] || 'ap-southeast-2'; // provide a default
+    const awsConfig = getAwsConfig(region);
+    logger.debug(`Assuming role ${remoteRole} in ${region}...`);
     const sts = new STS(awsConfig);
     const creds = await sts
       .assumeRole({

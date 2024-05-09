@@ -38,7 +38,7 @@ type Ctor<U> = new (stuff: object) => U;
 
 // Helper function to get a specific AWS client for the given role/region
 async function getAwsClient<T>(ctor: Ctor<T>, remoteRole: string, region: string): Promise<T> {
-  const creds = await assume.connectTo(remoteRole, region);
+  const creds = await assume.connectTo(remoteRole);
   const config = getAwsConfig(region, creds);
   return new ctor(config);
 }
