@@ -42,6 +42,9 @@ function unique<T>(array: T[]): T[] {
 
 // Convert a list of Tags in AWS format to an object
 function makeResourceTags(tagList: any): { [key: string]: string } {
+  if (tagList === undefined) {
+    return {};
+  }
   return tagList.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
 }
 

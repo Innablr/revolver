@@ -26,6 +26,7 @@ class InstrumentedEc2 extends ToolingInterface {
   constructor(resource: Instance, instanceARN: string) {
     super(resource);
     this.instanceARN = instanceARN;
+    this.metadata.tags = this.resourceTags;
   }
 
   get resourceId() {

@@ -19,6 +19,7 @@ class InstrumentedRdsCluster extends ToolingInterface {
     super(awsResource);
     // Add the IDs of DBClusterMembers to the Cluster metadata
     this.metadata.members = awsResource.DBClusterMembers.map((member: any) => member.DBInstanceIdentifier);
+    this.metadata.tags = this.resourceTags;
   }
 
   get resourceId() {
