@@ -1,4 +1,4 @@
-import { Logger } from 'tslog';
+import { Logger, ISettingsParam } from 'tslog';
 import environ from './environ';
 
 const logLevels: { [key: string]: number } = {
@@ -90,7 +90,20 @@ function restructureJsonLog(log: any) {
   );
 }
 
-export const logger = new Logger<RevolverLogObject>({
+/**
+ * A Logger that keeps track of whether a log of level 'error' or greater has been emitted.
+ */
+export class ErrorTrackingLogger<LogObj> extends Logger<LogObj> {
+  public hasError = false;
+  constructor(settings?: ISettingsParam<LogObj>, logObj?: LogObj) {
+    super(settings, logObj);
+    this.attachTransport((logObj) => {
+      this.hasError ||= logObj._meta.logLevelId >= logLevels['error'];
+    });
+  }
+}
+
+export const logger = new ErrorTrackingLogger<RevolverLogObject>({
   name: 'revolver',
   type: environ.logFormat,
   stylePrettyLogs: environ.stylePrettyLogs,
