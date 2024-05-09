@@ -382,9 +382,11 @@ export class ActionAuditTable implements DataTable {
       'ACTION',
       'STATUS',
       'REASON',
+      'METADATA',
     ]);
   }
   data(): string[][] {
+    const removed = { matches: undefined, actionNames: undefined }; // Remove some values from e.metadata
     return this.entries.map((e) =>
       (this.includeTime ? [e.time.toString()] : []).concat([
         e.accountId,
@@ -396,6 +398,7 @@ export class ActionAuditTable implements DataTable {
         e.action,
         e.status,
         e.reason,
+        JSON.stringify(Object.assign({}, e?.metadata, removed)),
       ]),
     );
   }
