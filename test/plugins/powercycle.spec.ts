@@ -84,7 +84,7 @@ describe('Run powercycle full cycle', function () {
         expect(rdsClusterMeta.tags.trustlevel).equals(undefined);
 
         // Check an EC2 record also
-        const ec2Record = recordsById["i-01531c2e601f21910"];
+        const ec2Record = recordsById['i-01531c2e601f21910'];
         const ec2Meta = JSON.parse(ec2Record.METADATA);
         expect(ec2Meta.tags.category).equals('workload');
         expect(ec2Meta.tags.trustlevel).equals(undefined);

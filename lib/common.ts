@@ -40,7 +40,6 @@ function unique<T>(array: T[]): T[] {
   return uniqueBy(array, (x: T) => x);
 }
 
-//
 /**
  * Convert a list of Tags in AWS format to an object with key/value.
  * @param tagList - an AWS-formatted list of tags
