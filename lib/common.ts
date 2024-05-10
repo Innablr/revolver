@@ -40,10 +40,18 @@ function unique<T>(array: T[]): T[] {
   return uniqueBy(array, (x: T) => x);
 }
 
-// Convert a list of Tags in AWS format to an object
-function makeResourceTags(tagList: any): { [key: string]: string } {
+/**
+ * Convert a list of Tags in AWS format to an object with key/value.
+ * @param tagList - an AWS-formatted list of tags
+ * @param filterTags - (optional) a list of tag names to include, default to all tags
+ * @returns a string:string object
+ */
+function makeResourceTags(tagList: any, filterTags?: string[]): { [key: string]: string } {
   if (tagList === undefined) {
     return {};
+  }
+  if (filterTags !== undefined) {
+    tagList = tagList.filter((tag: any) => filterTags.includes(tag.Key));
   }
   return tagList.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
 }

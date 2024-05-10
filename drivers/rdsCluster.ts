@@ -149,7 +149,9 @@ class RdsClusterDriver extends DriverInterface {
     return instrumentedClusters;
   }
   resource(obj: InstrumentedResource): ToolingInterface {
-    return new InstrumentedRdsCluster(obj.resource);
+    const res = new InstrumentedRdsCluster(obj.resource);
+    res.metadata.tags = makeResourceTags(obj.resource.TagList, this.accountConfig.includeResourceTags);
+    return res;
   }
 }
 

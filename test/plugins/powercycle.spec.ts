@@ -5,6 +5,7 @@ import { Context, EventBridgeEvent } from 'aws-lambda';
 import { handler as revolverHandle } from '../../revolver';
 import environ from '../../lib/environ';
 import * as fs from 'fs';
+import { parse } from 'csv-parse/sync';
 
 const LOCAL_CONFIG = path.join(__dirname, 'powercycle.config.yaml');
 const OUTPUT_AUDIT_CSV_FILE = path.join(__dirname, 'audit.csv');
@@ -65,6 +66,28 @@ describe('Run powercycle full cycle', function () {
         expect(auditCsvText).to.include('i-0c688d35209d7f436,setTag,pretend,ReasonSchedule:Availability 0x7');
         expect(auditCsvText).to.include('i-01531c2e601f21910,start,pretend,Availability 24x7');
         // expect(auditCsvText).to.not.include(',ec2,ec2,i-05b6baf37fc8f9454,stop,');
+
+        // Parse the audit CSV back into records
+        const records = parse(auditCsvText, { bom: true, columns: true });
+        expect(records.length).to.equal(12);
+        const recordsById = Object.assign({}, ...records.map((x: any) => ({ [x.ID]: x })));
+        // Check one record (the RDS Cluster)
+        const rdsClusterRecord = recordsById['revolver-test-rds-cluster'];
+        expect(rdsClusterRecord.DRIVER).equals('rdsCluster');
+        expect(rdsClusterRecord.PLUGIN).equals('powercycle');
+        expect(rdsClusterRecord.STATUS).equals('pretend');
+        expect(rdsClusterRecord.TYPE).equals('rds');
+        const rdsClusterMeta = JSON.parse(rdsClusterRecord.METADATA);
+        expect(rdsClusterMeta.members.length).equals(2);
+        // Only tags in the includeResourceTags list should be included
+        expect(rdsClusterMeta.tags.category).equals('workload');
+        expect(rdsClusterMeta.tags.trustlevel).equals(undefined);
+
+        // Check an EC2 record also
+        const ec2Record = recordsById['i-01531c2e601f21910'];
+        const ec2Meta = JSON.parse(ec2Record.METADATA);
+        expect(ec2Meta.tags.category).equals('workload');
+        expect(ec2Meta.tags.trustlevel).equals(undefined);
 
         // TODO: validate resources.csv
         // logger.info(`TEST validating ${OUTPUT_RESOURCES_CSV_FILE}`);

@@ -124,6 +124,7 @@ const Settings = z.object({
     })
     .optional(),
   excludeResources: z.union([z.array(Filters), Filters]).optional(),
+  includeResourceTags: z.array(z.string()).optional(), // if not specified, include all Tags
 });
 
 const ConfigSchema = z
