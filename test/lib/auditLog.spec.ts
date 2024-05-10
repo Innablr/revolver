@@ -4,6 +4,7 @@ import { ActionAuditEntry } from '../../actions/audit';
 import { DateTime } from 'luxon';
 import { randomBytes } from 'node:crypto';
 import * as fs from 'fs';
+import { parse } from 'csv-parse/sync';
 
 // A dummy AWS resource for testing
 class FakeActionAuditEntry implements ActionAuditEntry {
@@ -36,6 +37,7 @@ const AUDIT_LOG_CONFIG = {
   csv: {
     file: 'auditlog-out.csv',
     reportTags: ['F1', 'F2'],
+    append: true,
   },
 };
 
@@ -47,6 +49,8 @@ const ACCOUNT_CONFIG = {
 
 describe('Validate auditLog', function () {
   it('Check ObjectLogCsv audit', async function () {
+    fs.rmSync(AUDIT_LOG_CONFIG.csv.file, { force: true });
+
     const entries = [
       new FakeActionAuditEntry('red', 'dosomething', 'just because'),
       new FakeActionAuditEntry('green', 'dosomething', 'another reason'),
@@ -65,5 +69,33 @@ describe('Validate auditLog', function () {
     expect(auditCsvText).to.include('dosomething,red,just because');
     expect(auditCsvText).to.include('dosomething,green,another reason');
     expect(auditCsvText).to.include('dosomething else,blue,random');
+
+    // Parse the audit CSV back into records
+    const records = parse(auditCsvText, { bom: true, columns: true });
+    expect(records.length).to.equal(3);
+    expect(records[0].STATUS).to.equal('red');
+    expect(records[0].REASON).to.equal('just because');
+
+    const r0_metadata = JSON.parse(records[0].METADATA);
+    expect(r0_metadata.something).to.equal('happened');
+
+    // Add some records and write (append)
+    const entries2 = [
+      new FakeActionAuditEntry('orange', 'dosomething', 'test1'),
+      new FakeActionAuditEntry('pink', 'dosomething', 'test2'),
+    ];
+    await new ObjectLogCsv(
+      new ActionAuditTable(ACCOUNT_CONFIG, entries2, true),
+      AUDIT_LOG_CONFIG.csv,
+      ACCOUNT_CONFIG.settings,
+    ).process();
+
+    // Check append
+    expect(fs.existsSync(AUDIT_LOG_CONFIG.csv.file)).to.be.true;
+    const auditCsvText2 = fs.readFileSync(AUDIT_LOG_CONFIG.csv.file, 'utf-8');
+    const records2 = parse(auditCsvText2, { bom: true, columns: true });
+    expect(records2.length).to.equal(5);
+    expect(records2[3].STATUS).to.equal('orange');
+    expect(records2[4].STATUS).to.equal('pink');
   });
 });
