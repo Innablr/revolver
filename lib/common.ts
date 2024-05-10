@@ -43,16 +43,16 @@ function unique<T>(array: T[]): T[] {
 //
 /**
  * Convert a list of Tags in AWS format to an object with key/value.
- * @param tagList
- * @param filter (optional) a list of tag names to include, default to all tags
+ * @param tagList - an AWS-formatted list of tags
+ * @param filterTags - (optional) a list of tag names to include, default to all tags
  * @returns a string:string object
  */
-function makeResourceTags(tagList: any, filter?: string[]): { [key: string]: string } {
+function makeResourceTags(tagList: any, filterTags?: string[]): { [key: string]: string } {
   if (tagList === undefined) {
     return {};
   }
-  if (filter !== undefined) {
-    tagList = tagList.filter((tag:any) => filter.includes(tag.Key));
+  if (filterTags !== undefined) {
+    tagList = tagList.filter((tag: any) => filterTags.includes(tag.Key));
   }
   return tagList.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
 }

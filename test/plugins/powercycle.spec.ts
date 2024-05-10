@@ -79,7 +79,15 @@ describe('Run powercycle full cycle', function () {
         expect(rdsClusterRecord.TYPE).equals('rds');
         const rdsClusterMeta = JSON.parse(rdsClusterRecord.METADATA);
         expect(rdsClusterMeta.members.length).equals(2);
+        // Only tags in the includeResourceTags list should be included
         expect(rdsClusterMeta.tags.category).equals('workload');
+        expect(rdsClusterMeta.tags.trustlevel).equals(undefined);
+
+        // Check an EC2 record also
+        const ec2Record = recordsById["i-01531c2e601f21910"];
+        const ec2Meta = JSON.parse(ec2Record.METADATA);
+        expect(ec2Meta.tags.category).equals('workload');
+        expect(ec2Meta.tags.trustlevel).equals(undefined);
 
         // TODO: validate resources.csv
         // logger.info(`TEST validating ${OUTPUT_RESOURCES_CSV_FILE}`);

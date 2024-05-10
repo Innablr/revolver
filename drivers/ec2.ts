@@ -26,7 +26,6 @@ class InstrumentedEc2 extends ToolingInterface {
   constructor(resource: Instance, instanceARN: string) {
     super(resource);
     this.instanceARN = instanceARN;
-    this.metadata.tags = this.resourceTags;
   }
 
   get resourceId() {
@@ -226,7 +225,9 @@ class Ec2Driver extends DriverInterface {
   }
 
   resource(obj: InstrumentedResource): ToolingInterface {
-    return new InstrumentedEc2(obj.resource, obj.resourceArn);
+    const res = new InstrumentedEc2(obj.resource, obj.resourceArn);
+    res.metadata.tags = makeResourceTags(obj.resource.Tags, this.accountConfig.includeResourceTags);
+    return res;
   }
 }
 

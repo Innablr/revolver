@@ -19,7 +19,6 @@ class InstrumentedRdsCluster extends ToolingInterface {
     super(awsResource);
     // Add the IDs of DBClusterMembers to the Cluster metadata
     this.metadata.members = awsResource.DBClusterMembers.map((member: any) => member.DBInstanceIdentifier);
-    this.metadata.tags = this.resourceTags;
   }
 
   get resourceId() {
@@ -150,7 +149,9 @@ class RdsClusterDriver extends DriverInterface {
     return instrumentedClusters;
   }
   resource(obj: InstrumentedResource): ToolingInterface {
-    return new InstrumentedRdsCluster(obj.resource);
+    const res = new InstrumentedRdsCluster(obj.resource);
+    res.metadata.tags = makeResourceTags(obj.resource.TagList, this.accountConfig.includeResourceTags);
+    return res;
   }
 }
 

@@ -52,6 +52,9 @@ accounts:
     - accountId: "112233445566"
       settings:
         name: whatdev
+        includeResourceTags:
+          - appservice-number
+          - category
   # excludeList: []
 #     - accountId: "333333333333"
 #       settings:
