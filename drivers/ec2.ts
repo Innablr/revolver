@@ -64,12 +64,6 @@ class InstrumentedEc2 extends ToolingInterface {
     }
   }
 
-  ebsTag(key: string) {
-    const tag = (this.resource.Tags || []).find((xt: Tag) => xt.Key === key);
-    if (tag !== undefined) {
-      return tag.Value;
-    }
-  }
   get resourceTags(): { [key: string]: string } {
     return makeResourceTags(this.resource.Tags);
   }
@@ -227,10 +221,7 @@ class Ec2Driver extends DriverInterface {
       }
     }
 
-    return ec2Instances.map(
-      (xi) =>
-        new InstrumentedEc2(xi, `arn:aws:ec2:${this.accountConfig.region}:${this.accountId}:volume/${xi.InstanceId}`),
-    );
+    return ec2Instances.map(this.resource);
   }
 
   resource(obj: InstrumentedResource): ToolingInterface {
