@@ -8,6 +8,7 @@ import { ActionAuditEntry } from '../actions/audit';
 import dateTime from './dateTime';
 import { htmlTableReport } from './templater';
 import zlib from 'node:zlib';
+import { stringify } from 'csv-stringify/sync';
 
 /**
  * Used by the writers to structure table style data
@@ -205,19 +206,15 @@ export class ObjectLogCsv extends AbstractOutputWriter {
     this.dataTable = dataTable;
   }
 
-  private sanitizeRow(row: string[]): string[] {
-    return row.map((v) => (v || '').replaceAll('"', '""')).map((v) => (v.includes(',') ? `"${v}"` : v));
-  }
-
   getOutput(): string {
     // Return the dataTable as a CSV with headers unless this.skipHeaders
-    const rows: string[][] = this.skipHeaders ? [] : [this.dataTable.header()];
-    const rowsText = rows
-      .concat(this.dataTable.data())
-      .map((row) => this.sanitizeRow(row).join(','))
-      .join('\n');
-    // Add a trailing newline only if output included rows or headers
-    return this.prependOutput + rowsText + (rowsText === '' ? '' : '\n');
+    return (
+      this.prependOutput +
+      stringify(this.dataTable.data(), {
+        header: !this.skipHeaders,
+        columns: this.dataTable.header(),
+      })
+    );
   }
 
   protected async writeFile() {
