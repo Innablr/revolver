@@ -8,7 +8,7 @@
   },
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "test": "mocha --require ts-node/register --require source-map-support/register --recursive --exit test",
+    "test": "LOG_LEVEL=error mocha --require ts-node/register --require source-map-support/register --recursive --exit test",
     "coverage": "nyc npm run test; rimraf .nyc_output",
     "build": "tsc --build ./tsconfig.json",
     "watch": "tsc --build ./tsconfig.json --watch",
