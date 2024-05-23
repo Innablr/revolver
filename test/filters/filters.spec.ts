@@ -482,12 +482,12 @@ const filterTests = [
 ];
 
 describe('filter', function () {
-  dateTime.freezeTime('2024-02-19T21:56Z');
   for (const filterTest of filterTests) {
     describe(filterTest.name, async function () {
       for (const t of filterTest.tests) {
         it(t.name, async function () {
           const filter = await buildFilter(t.filter);
+          dateTime.freezeTime('2024-02-19T21:56Z');
           expect(filter.matches(new TestingResource(t.resource))).to.be.equal(t.matches);
         });
       }
