@@ -5,6 +5,7 @@ import { buildFilter } from '../../plugins/filters';
 import { ToolingInterface } from '../../drivers/instrumentedResource';
 import { DateTime } from 'luxon';
 import { makeResourceTags } from '../../lib/common';
+import dateTime from '../../lib/dateTime';
 
 chai.use(chaiAsPromised);
 
@@ -437,9 +438,41 @@ const filterTests = [
       },
     ],
   },
+  {
+    // time is frozen at '2024-02-19T21:56Z'
+    name: 'matchWindow',
+    tests: [
+      { name: 'null match', filter: { matchWindow: {} }, resource: basicEc2, matches: true },
+      { name: 'match from', filter: { matchWindow: { from: '2024-02-05' } }, resource: basicEc2, matches: true },
+      { name: 'match from', filter: { matchWindow: { from: '2024-02-05' } }, resource: basicEc2, matches: true },
+      { name: 'match from no', filter: { matchWindow: { from: '2024-02-22' } }, resource: basicEc2, matches: false },
+      { name: 'match to no', filter: { matchWindow: { to: '2024-02-10' } }, resource: basicEc2, matches: false },
+      { name: 'match to yes', filter: { matchWindow: { to: '2024-02-28' } }, resource: basicEc2, matches: true },
+      {
+        name: 'in early',
+        filter: { matchWindow: { from: '2024-02-05', to: '2024-02-07' } },
+        resource: basicEc2,
+        matches: false,
+      },
+      {
+        name: 'in late',
+        filter: { matchWindow: { from: '2024-03-05', to: '2024-03-07' } },
+        resource: basicEc2,
+        matches: false,
+      },
+      {
+        name: 'in ok',
+        filter: { matchWindow: { from: '2024-02-15', to: '2024-02-25' } },
+        resource: basicEc2,
+        matches: true,
+      },
+      // TODO: check time/boundary conditions
+    ],
+  },
 ];
 
 describe('filter', function () {
+  dateTime.freezeTime('2024-02-19T21:56Z');
   for (const filterTest of filterTests) {
     describe(filterTest.name, async function () {
       for (const t of filterTest.tests) {
