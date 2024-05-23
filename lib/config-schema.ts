@@ -46,6 +46,12 @@ const BaseFilters = z
           .strict(),
       ])
       .optional(),
+    matchWindow: z
+      .object({
+        from: z.string().optional(),
+        to: z.string().optional(),
+      })
+      .optional(),
   })
   .strict();
 

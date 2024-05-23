@@ -439,9 +439,9 @@ const filterTests = [
     ],
   },
   {
-    // time is frozen at '2024-02-19T21:56Z'
     name: 'matchWindow',
     tests: [
+      // Time is frozen at '2024-02-19T21:56Z'.  Dates with no timezone specified will be resolved in local timezone.
       { name: 'null match', filter: { matchWindow: {} }, resource: basicEc2, matches: false }, // no start, no end
       { name: 'match from yes', filter: { matchWindow: { from: '2024-02-05' } }, resource: basicEc2, matches: true },
       { name: 'match from no', filter: { matchWindow: { from: '2024-02-22' } }, resource: basicEc2, matches: false },
@@ -466,7 +466,7 @@ const filterTests = [
         matches: true,
       },
 
-      // time is frozen at '2024-02-19T21:56Z'
+      // Time is frozen at '2024-02-19T21:56Z'
       { name: 'fine1', filter: { matchWindow: { from: '2024-02-19T21:00Z' } }, resource: basicEc2, matches: true },
       { name: 'fine2', filter: { matchWindow: { from: '2024-02-19T22:00Z' } }, resource: basicEc2, matches: false },
       { name: 'fine3', filter: { matchWindow: { from: '2024-02-19T21:00+10:00' } }, resource: basicEc2, matches: true }, // 11:00
