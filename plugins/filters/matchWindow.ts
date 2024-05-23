@@ -26,16 +26,23 @@ export default class FilterMatchWindowStart implements Filter, FilterCtor {
       if (Array.isArray(config)) {
         resolve(arrayToOr(FilterMatchWindowStart.FILTER_NAME, config));
       } else {
-        this.startTime = config.from ? LuxonDateTime.fromISO(config.from).toUTC() : undefined;
-        if (this.startTime && !this.startTime.isValid) {
-          logger.warn('MatchWindow "from" %s is invalid', config.from);
+        let invalid = false;
+        if (config.from) {
+          this.startTime = LuxonDateTime.fromISO(config.from).toUTC();
+          if (!this.startTime.isValid) {
+            logger.warn('MatchWindow "from" %s is invalid', config.from);
+            invalid = true;
+          }
         }
-        this.endTime = config.to ? LuxonDateTime.fromISO(config.to).toUTC() : undefined;
-        if (this.endTime && !this.endTime.isValid) {
-          logger.warn('MatchWindow "to" %s is invalid', config.to);
+        if (config.to) {
+          this.endTime = LuxonDateTime.fromISO(config.to).toUTC();
+          if (!this.endTime.isValid) {
+            logger.warn('MatchWindow "to" %s is invalid', config.to);
+            invalid = true;
+          }
         }
         // filters with invalid times never match
-        if ((this.startTime && !this.startTime.isValid) || (this.endTime && !this.endTime.isValid)) {
+        if (invalid) {
           this.startTime = undefined;
           this.endTime = undefined;
         }
