@@ -465,7 +465,18 @@ const filterTests = [
         resource: basicEc2,
         matches: true,
       },
-      // TODO: check time/boundary conditions
+
+      // time is frozen at '2024-02-19T21:56Z'
+      { name: 'fine1', filter: { matchWindow: { from: '2024-02-19T21:00Z' } }, resource: basicEc2, matches: true },
+      { name: 'fine2', filter: { matchWindow: { from: '2024-02-19T22:00Z' } }, resource: basicEc2, matches: false },
+      { name: 'fine3', filter: { matchWindow: { from: '2024-02-19T21:00+10:00' } }, resource: basicEc2, matches: true }, // 11:00
+      { name: 'fine4', filter: { matchWindow: { from: '2024-02-19T23:00+02:00' } }, resource: basicEc2, matches: true }, // 21:00
+      {
+        name: 'fine5',
+        filter: { matchWindow: { from: '2024-02-19T23:00+01:00' } },
+        resource: basicEc2,
+        matches: false,
+      }, // 22:00
     ],
   },
 ];
