@@ -35,6 +35,9 @@ export default class FilterMatchWindowStart implements Filter, FilterCtor {
     if (this.endTime && now > this.endTime) {
       return false; // too late
     }
+    if (! this.startTime && ! this.endTime ) {
+      return false; // no start, and no end = no match
+    }
     return true;
   }
 }

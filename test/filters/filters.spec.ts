@@ -442,12 +442,11 @@ const filterTests = [
     // time is frozen at '2024-02-19T21:56Z'
     name: 'matchWindow',
     tests: [
-      { name: 'null match', filter: { matchWindow: {} }, resource: basicEc2, matches: true },
-      { name: 'match from', filter: { matchWindow: { from: '2024-02-05' } }, resource: basicEc2, matches: true },
-      { name: 'match from', filter: { matchWindow: { from: '2024-02-05' } }, resource: basicEc2, matches: true },
+      { name: 'null match', filter: { matchWindow: {} }, resource: basicEc2, matches: false }, // no start, no end
+      { name: 'match from yes', filter: { matchWindow: { from: '2024-02-05' } }, resource: basicEc2, matches: true },
       { name: 'match from no', filter: { matchWindow: { from: '2024-02-22' } }, resource: basicEc2, matches: false },
-      { name: 'match to no', filter: { matchWindow: { to: '2024-02-10' } }, resource: basicEc2, matches: false },
       { name: 'match to yes', filter: { matchWindow: { to: '2024-02-28' } }, resource: basicEc2, matches: true },
+      { name: 'match to no', filter: { matchWindow: { to: '2024-02-10' } }, resource: basicEc2, matches: false },
       {
         name: 'in early',
         filter: { matchWindow: { from: '2024-02-05', to: '2024-02-07' } },
