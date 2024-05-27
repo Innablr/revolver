@@ -221,7 +221,10 @@ class Ec2Driver extends DriverInterface {
       }
     }
 
-    return ec2Instances.map(this.resource);
+    return ec2Instances.map(
+      (xi) =>
+        new InstrumentedEc2(xi, `arn:aws:ec2:${this.accountConfig.region}:${this.accountId}:instance/${xi.InstanceId}`),
+    );
   }
 
   resource(obj: InstrumentedResource): ToolingInterface {
