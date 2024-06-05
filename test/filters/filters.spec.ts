@@ -5,6 +5,7 @@ import { buildFilter } from '../../plugins/filters';
 import { ToolingInterface } from '../../drivers/instrumentedResource';
 import { DateTime } from 'luxon';
 import { makeResourceTags } from '../../lib/common';
+import dateTime from '../../lib/dateTime';
 
 chai.use(chaiAsPromised);
 
@@ -437,6 +438,47 @@ const filterTests = [
       },
     ],
   },
+  {
+    name: 'matchWindow',
+    tests: [
+      // Time is frozen at '2024-02-19T21:56Z'.  Dates with no timezone specified will be resolved in local timezone.
+      { name: 'null match', filter: { matchWindow: {} }, resource: basicEc2, matches: false }, // no start, no end
+      { name: 'match from yes', filter: { matchWindow: { from: '2024-02-05' } }, resource: basicEc2, matches: true },
+      { name: 'match from no', filter: { matchWindow: { from: '2024-02-22' } }, resource: basicEc2, matches: false },
+      { name: 'match to yes', filter: { matchWindow: { to: '2024-02-28' } }, resource: basicEc2, matches: true },
+      { name: 'match to no', filter: { matchWindow: { to: '2024-02-10' } }, resource: basicEc2, matches: false },
+      {
+        name: 'in early',
+        filter: { matchWindow: { from: '2024-02-05', to: '2024-02-07' } },
+        resource: basicEc2,
+        matches: false,
+      },
+      {
+        name: 'in late',
+        filter: { matchWindow: { from: '2024-03-05', to: '2024-03-07' } },
+        resource: basicEc2,
+        matches: false,
+      },
+      {
+        name: 'in ok',
+        filter: { matchWindow: { from: '2024-02-15', to: '2024-02-25' } },
+        resource: basicEc2,
+        matches: true,
+      },
+
+      // Time is frozen at '2024-02-19T21:56Z'
+      { name: 'fine1', filter: { matchWindow: { from: '2024-02-19T21:00Z' } }, resource: basicEc2, matches: true },
+      { name: 'fine2', filter: { matchWindow: { from: '2024-02-19T22:00Z' } }, resource: basicEc2, matches: false },
+      { name: 'fine3', filter: { matchWindow: { from: '2024-02-19T21:00+10:00' } }, resource: basicEc2, matches: true }, // 11:00
+      { name: 'fine4', filter: { matchWindow: { from: '2024-02-19T23:00+02:00' } }, resource: basicEc2, matches: true }, // 21:00
+      {
+        name: 'fine5',
+        filter: { matchWindow: { from: '2024-02-19T23:00+01:00' } },
+        resource: basicEc2,
+        matches: false,
+      }, // 22:00
+    ],
+  },
 ];
 
 describe('filter', function () {
@@ -445,6 +487,7 @@ describe('filter', function () {
       for (const t of filterTest.tests) {
         it(t.name, async function () {
           const filter = await buildFilter(t.filter);
+          dateTime.freezeTime('2024-02-19T21:56Z');
           expect(filter.matches(new TestingResource(t.resource))).to.be.equal(t.matches);
         });
       }

@@ -42,11 +42,24 @@ defaults:
           matchers:
             # TEST RUNS AT '2024-02-22T23:45:19.521Z' # Thursday 11:45pm UTC
 
+            - name: 'everything on during window, but missing period'
+              filter:
+                - type: ec2
+                - accountId: '112233445566'
+                - matchWindow:
+                    from: '2021-01-01'
+                    to: '2022-01-01'
+              schedule: '24x7'
+              priority: 50
+
             # EC2 instance
             - name: 'everything off (p1)'
               filter:
                 - type: ec2
                 - accountId: '112233445566'
+                - matchWindow:
+                    from: '2024-01-01'
+                    to: '2025-01-01'
               schedule: '0x7'
               priority: 1
             - name: vm3on
