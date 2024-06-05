@@ -63,6 +63,9 @@ describe('Validate test config', function () {
     expect(config.defaults.settings.auditLog?.json?.sqs?.url).to.equal('http://some.sqs.url/queue');
     expect(config.defaults.settings.auditLog?.json?.sqs?.attributes?.thing).to.equal('some value');
 
+    expect(config.defaults.settings.auditLog?.json?.sns?.url).to.equal('TOPIC_ARN');
+    expect(config.defaults.settings.auditLog?.json?.sns?.attributes?.thing).to.equal('some other value');
+
     // second yaml doc
     expect(config.defaults.settings.resourceLog?.json?.file).to.equal('override.json');
     expect(config.accounts.includeList[2].accountId).to.equal('123456789012');
