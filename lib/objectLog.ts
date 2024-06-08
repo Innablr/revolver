@@ -108,7 +108,7 @@ abstract class AbstractOutputWriter {
 
   /**
    * Generate attributes and payload for sending a SNS/SQS message.
-   * @param settings - settings and attibute key-value for the output message
+   * @param settings - settings and attribute key-value for the output message
    * @returns [attributes, output]
    */
   private generateMessageOutput(settings?: MessageWriteOptons): [Record<string, MessageAttributeValue>, string] {
@@ -147,7 +147,7 @@ abstract class AbstractOutputWriter {
   }
 
   protected async writeSQS() {
-    const config = getAwsConfig();
+    const config = getAwsConfig(this.context?.region);
     const sqs = new SQSClient(Object.assign(config, { useQueueUrlAsEndpoint: false }));
     const [attributes, output] = this.generateMessageOutput(this.options.sqs);
     this.logger.info(`Sending message to sqs ${this.options.sqs?.url}`);
@@ -161,11 +161,14 @@ abstract class AbstractOutputWriter {
   }
 
   protected async writeSNS() {
-    const config = getAwsConfig();
-    // const sqs = new SQSClient(Object.assign(config, { useQueueUrlAsEndpoint: false }));
-    const sns = new SNSClient(config);
     const [attributes, output] = this.generateMessageOutput(this.options.sqs);
-    this.logger.info(`Sending message to SNS ${this.options.sqs?.url}`);
+    if (output === undefined || output === '' || output === '[]') {
+      return; // don't send empty SNS messages
+    }
+
+    const config = getAwsConfig(this.context?.region);
+    const sns = new SNSClient(config);
+    this.logger.info(`Sending message to SNS ${this.options.sns?.url}`);
     return sns.send(
       new PublishCommand({
         TopicArn: this.options.sns?.url,
