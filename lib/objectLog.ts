@@ -147,10 +147,10 @@ abstract class AbstractOutputWriter {
   }
 
   protected async writeSQS() {
+    const [attributes, output] = this.generateMessageOutput(this.options.sqs);
     const config = getAwsConfig(this.context?.region);
     const sqs = new SQSClient(Object.assign(config, { useQueueUrlAsEndpoint: false }));
-    const [attributes, output] = this.generateMessageOutput(this.options.sqs);
-    this.logger.info(`Sending message to sqs ${this.options.sqs?.url}`);
+    this.logger.info(`Sending message to SQS ${this.options.sqs?.url}`);
     return sqs.send(
       new SendMessageCommand({
         QueueUrl: this.options.sqs?.url,
