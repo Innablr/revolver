@@ -174,6 +174,7 @@ const ConfigSchema = z
                       schedule: z.string(),
                       priority: z.number().default(0),
                       filter: z.union([z.array(Filters), Filters]),
+                      pretend: z.boolean().default(false),
                     }),
                   ),
                 }),

@@ -11,6 +11,7 @@ interface Matcher {
   filter: Filter | any;
   schedule: string;
   priority: number;
+  pretend: boolean;
 }
 
 /**
@@ -58,6 +59,7 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
           filter: filter,
           schedule: resolvedSchedule ? resolvedSchedule : matcher.schedule,
           priority: matcher.priority,
+          pretend: matcher.pretend,
         };
       }),
     );
@@ -118,6 +120,7 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
         filter: undefined,
         schedule: taggedSchedule,
         priority: this.scheduleTagPriority,
+        pretend: false,
       };
     }
 
@@ -135,11 +138,11 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
         break;
       case 'START':
         logger.debug(`Resource should be started: ${reason}`);
-        resource.addAction(new StartAction(this, `[${highestMatch.name}]: ${reason}`));
+        resource.addAction(new StartAction(this, `[${highestMatch.name}]: ${reason}`, highestMatch.pretend));
         break;
       case 'STOP':
         logger.debug(`Resource should be stopped: ${reason}`);
-        resource.addAction(new StopAction(this, `[${highestMatch.name}]: ${reason}`));
+        resource.addAction(new StopAction(this, `[${highestMatch.name}]: ${reason}`, highestMatch.pretend));
         break;
       case 'NOOP':
         logger.debug(`Resource should be left alone: ${reason}`);

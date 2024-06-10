@@ -7,6 +7,7 @@ export abstract class RevolverAction {
   public reason: string;
   public done: boolean = false;
   public changesState: boolean = false;
+  public pretend: boolean = false;
 
   constructor(who: RevolverPlugin, what: string) {
     this.who = who;
@@ -117,20 +118,22 @@ export class UnsetTagAction extends RevolverActionWithTags {
 export class StopAction extends RevolverAction {
   public changesState: boolean;
 
-  constructor(who: RevolverPlugin, reason: string) {
+  constructor(who: RevolverPlugin, reason: string, pretend: boolean = false) {
     super(who, 'stop');
     this.changesState = true;
     this.reason = reason;
+    this.pretend = pretend;
   }
 }
 
 export class StartAction extends RevolverAction {
   public changesState: boolean;
 
-  constructor(who: RevolverPlugin, reason: string) {
+  constructor(who: RevolverPlugin, reason: string, pretend: boolean = false) {
     super(who, 'start');
     this.changesState = true;
     this.reason = reason;
+    this.pretend = pretend;
   }
 }
 
