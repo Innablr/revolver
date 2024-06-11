@@ -20,6 +20,10 @@ defaults:
           url: 'http://some.sqs.url/queue'
           attributes:
             thing: "some value"
+        sns:
+          url: 'TOPIC_ARN'
+          attributes:
+            thing: "some other value"
     excludeResources:
       - tag: 'Schedule|ignore'
 

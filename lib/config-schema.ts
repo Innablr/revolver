@@ -77,6 +77,13 @@ const ObjectLogOptions = z.object({
       attributes: z.record(z.string(), z.string()).optional(),
     })
     .optional(),
+  sns: z
+    .object({
+      url: z.string(),
+      compress: z.boolean().default(true),
+      attributes: z.record(z.string(), z.string()).optional(),
+    })
+    .optional(),
   s3: z
     .object({
       bucket: z.string(),

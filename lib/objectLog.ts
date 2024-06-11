@@ -9,6 +9,7 @@ import dateTime from './dateTime';
 import { htmlTableReport } from './templater';
 import zlib from 'node:zlib';
 import { stringify } from 'csv-stringify/sync';
+import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
 
 /**
  * Used by the writers to structure table style data
@@ -17,6 +18,15 @@ export interface DataTable {
   header(): string[];
   data(): string[][];
 }
+
+/**
+ * Configuration for SNS or SQS writers.
+ */
+type MessageWriteOptons = {
+  url: string; // a SQS QueueUrl or a SNS TopicArn
+  compress: boolean;
+  attributes?: { [key: string]: string };
+};
 
 /**
  * Configures AbstractOutputWriter options
@@ -31,11 +41,8 @@ type WriteOptions = {
     region: string;
     path: string;
   };
-  sqs?: {
-    url: string;
-    compress: boolean;
-    attributes?: { [key: string]: string };
-  };
+  sqs?: MessageWriteOptons;
+  sns?: MessageWriteOptons;
 };
 
 /**
@@ -99,13 +106,15 @@ abstract class AbstractOutputWriter {
     return zlib.inflateSync(Buffer.from(compressedB64, 'base64')).toString('utf-8');
   }
 
-  protected async writeSQS() {
-    const config = getAwsConfig();
-    const sqs = new SQSClient(Object.assign(config, { useQueueUrlAsEndpoint: false }));
-
+  /**
+   * Generate attributes and payload for sending a SNS/SQS message.
+   * @param settings - settings and attribute key-value for the output message
+   * @returns [attributes, output]
+   */
+  private generateMessageOutput(settings?: MessageWriteOptons): [Record<string, MessageAttributeValue>, string] {
     const attributes: Record<string, MessageAttributeValue> = {};
 
-    Object.entries(this.options.sqs?.attributes || {}).forEach((e) => {
+    Object.entries(settings?.attributes || {}).forEach((e) => {
       attributes[e[0]] = {
         DataType: 'String',
         StringValue: e[1],
@@ -122,9 +131,9 @@ abstract class AbstractOutputWriter {
       StringValue: 'none',
     };
 
-    if (this.options.sqs?.compress) {
+    if (settings?.compress) {
       output = AbstractOutputWriter.compress(output);
-      this.logger.debug(`compressed sqs message size: ${output.length}`);
+      this.logger.debug(`compressed message size: ${output.length}`);
       attributes['compression'] = {
         DataType: 'String',
         StringValue: 'zlib',
@@ -134,12 +143,36 @@ abstract class AbstractOutputWriter {
         StringValue: 'base64',
       };
     }
+    return [attributes, output];
+  }
 
-    this.logger.info(`Sending message to sqs ${this.options.sqs?.url}`);
+  protected async writeSQS() {
+    const [attributes, output] = this.generateMessageOutput(this.options.sqs);
+    const config = getAwsConfig(this.context?.region);
+    const sqs = new SQSClient(Object.assign(config, { useQueueUrlAsEndpoint: false }));
+    this.logger.info(`Sending message to SQS ${this.options.sqs?.url}`);
     return sqs.send(
       new SendMessageCommand({
         QueueUrl: this.options.sqs?.url,
         MessageBody: output,
+        MessageAttributes: attributes,
+      }),
+    );
+  }
+
+  protected async writeSNS() {
+    const [attributes, output] = this.generateMessageOutput(this.options.sqs);
+    if (output === undefined || output === '' || output === '[]') {
+      return; // don't send empty SNS messages
+    }
+
+    const config = getAwsConfig(this.context?.region);
+    const sns = new SNSClient(config);
+    this.logger.info(`Sending message to SNS ${this.options.sns?.url}`);
+    return sns.send(
+      new PublishCommand({
+        TopicArn: this.options.sns?.url,
+        Message: output,
         MessageAttributes: attributes,
       }),
     );
@@ -188,6 +221,9 @@ abstract class AbstractOutputWriter {
     }
     if (this.options.sqs) {
       promises.push(this.writeSQS());
+    }
+    if (this.options.sns) {
+      promises.push(this.writeSNS());
     }
     return Promise.all(promises);
   }
