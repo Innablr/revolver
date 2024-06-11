@@ -129,7 +129,7 @@ export abstract class DriverInterface {
             (xxr.metadata.actionNames ??= []).push(xa.constructor.name);
           });
 
-          if (this.driverConfig.pretend !== false) {
+          if (this.driverConfig.pretend !== false || xa.pretend) {
             this.appendAuditLog(xa, allWithAction, 'pretend');
             return this.pretendAction(allWithAction, xa);
           }
