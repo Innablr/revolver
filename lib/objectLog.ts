@@ -201,7 +201,7 @@ abstract class AbstractOutputWriter {
     }
     // If filename contains any %xxx tokens (same character is repeated) attempt to use Luxon to resolve (date/time) tokens.
     path = path.replace(/%(\w)\1*(?!\w)/g, (match) => {
-      return dateTime.getTime().toFormat(match.replace('%', ''));
+      return dateTime.getTime(this.context?.timezone).toFormat(match.replace('%', ''));
     });
 
     // unmatched tokens will be retained as `%token`
