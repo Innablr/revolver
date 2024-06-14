@@ -168,7 +168,7 @@ class RdsInstanceDriver extends DriverInterface {
 
   collect() {
     const logger = this.logger;
-    logger.debug(`RDS module collecting account: this.accountConfig.name`);
+    logger.debug(`RDS module collecting account: ${this.accountConfig.name}`);
     return getAwsClientForAccount(RDSClient, this.accountConfig)
       .then((rds) => rds.send(new DescribeDBInstancesCommand({})))
       .then((r) => r.DBInstances!.map((xr) => new InstrumentedRdsInstance(xr)))
