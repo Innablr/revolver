@@ -72,7 +72,7 @@ const ACCOUNT_CONFIG = {
 };
 
 describe('Validate filename tokens', function () {
-  const writer = new ObjectLogJson([], {}, { name: 'NAME', accountId: '123' });
+  const writer = new ObjectLogJson([], {}, { name: 'NAME', accountId: '123', timezone: 'Australia/Melbourne' });
   const timeStamp = '2024-02-19T04:40:44.526Z';
   dateTime.freezeTime(timeStamp);
 
@@ -85,6 +85,7 @@ describe('Validate filename tokens', function () {
   expect(writer.resolveFilename('file.%LLLL.txt')).to.equal('file.February.txt');
   expect(writer.resolveFilename('file.%yyyy%LL%dd.txt')).to.equal('file.20240219.txt');
   expect(writer.resolveFilename('file.%c%L.txt')).to.equal('file.12.txt'); // day of week, month
+  expect(writer.resolveFilename('file.%HH%mm.txt')).to.equal('file.1540.txt'); // hours:minutes (in Australia timezone!)
 
   // Context tokens
   expect(writer.resolveFilename('file.%name.%accountId.txt')).to.equal('file.NAME.123.txt');
