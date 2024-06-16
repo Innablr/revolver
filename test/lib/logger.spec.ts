@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { logger } from '../../lib/logger';
+import { logger } from '../../lib/logger.js';
 
 // TODO: validate JSON format, including restructure
 // TODO: validate metadata

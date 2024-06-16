@@ -1,8 +1,9 @@
 {
   "name": "revolver",
   "version": "2.0.0",
+  "type": "module",
   "description": "Multipurpose AWS idler script",
-  "main": "invoke.ts",
+  "exports": "./invoke.ts",
   "engines": {
     "node": ">=20.0.0"
   },

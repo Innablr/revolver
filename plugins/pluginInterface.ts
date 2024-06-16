@@ -1,6 +1,6 @@
 import { Logger } from 'tslog';
-import { logger } from '../lib/logger';
-import { ToolingInterface } from '../drivers/instrumentedResource';
+import { logger } from '../lib/logger.js';
+import { ToolingInterface } from '../drivers/instrumentedResource.js';
 
 /**
  * Abstract class representing a Plugin for Revolver, which selects resources, and generates Actions, based on

@@ -1,12 +1,12 @@
-import { ToolingInterface } from '../drivers/instrumentedResource';
-import { logger } from './logger';
+import { ToolingInterface } from '../drivers/instrumentedResource.js';
+import { logger } from './logger.js';
 import { existsSync, promises as fs } from 'fs';
-import { getAwsConfig } from './awsConfig';
+import { getAwsConfig } from './awsConfig.js';
 import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { SendMessageCommand, SQSClient, MessageAttributeValue } from '@aws-sdk/client-sqs';
-import { ActionAuditEntry } from '../actions/audit';
-import dateTime from './dateTime';
-import { htmlTableReport } from './templater';
+import { ActionAuditEntry } from '../actions/audit.js';
+import dateTime from './dateTime.js';
+import { htmlTableReport } from './templater.js';
 import zlib from 'node:zlib';
 import { stringify } from 'csv-stringify/sync';
 import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';

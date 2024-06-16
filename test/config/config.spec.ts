@@ -1,6 +1,10 @@
 import { expect } from 'chai';
-import { RevolverConfig } from '../../lib/config';
+import { RevolverConfig } from '../../lib/config.js';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 
 const EXAMPLE_CONFIG = path.join(__dirname, '..', '..', 'revolver-config-example.yaml');
 const SAMPLE_CONFIG_1 = path.join(__dirname, 'revolver-config1.yaml');

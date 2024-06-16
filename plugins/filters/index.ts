@@ -1,7 +1,7 @@
-import { ToolingInterface } from '../../drivers/instrumentedResource';
+import { ToolingInterface } from '../../drivers/instrumentedResource.js';
 
-import FilterAnd from './and';
-import FilterOr from './or';
+import FilterAnd from './and.js';
+import FilterOr from './or.js';
 
 export interface Filter {
   /**
@@ -28,7 +28,7 @@ export async function buildFilter(config: any): Promise<Filter> {
   } else {
     // otherwise load the filter as normal
     const name = Object.keys(config)[0];
-    const i = await require(`./${name}`);
+    const i = await import(`./${name}.js`);
     return new i.default(config[name]).ready();
   }
 }

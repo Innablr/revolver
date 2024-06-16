@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { ActionAuditTable, ObjectLogCsv } from '../../lib/objectLog';
-import { ActionAuditEntry } from '../../actions/audit';
+import { ActionAuditTable, ObjectLogCsv } from '../../lib/objectLog.js';
+import { ActionAuditEntry } from '../../actions/audit.js';
 import { DateTime } from 'luxon';
 import { randomBytes } from 'node:crypto';
 import * as fs from 'fs';

@@ -1,8 +1,8 @@
 import { Logger } from 'tslog';
-import { RevolverLogObject } from '../lib/logger';
-import { ToolingInterface } from './instrumentedResource';
-import { RevolverActionWithTags } from '../actions/actions';
-import { chunkArray, unique } from '../lib/common';
+import { RevolverLogObject } from '../lib/logger.js';
+import { ToolingInterface } from './instrumentedResource.js';
+import { RevolverActionWithTags } from '../actions/actions.js';
+import { chunkArray, unique } from '../lib/common.js';
 import { EC2Client, CreateTagsCommand, DeleteTagsCommand } from '@aws-sdk/client-ec2';
 import { AddTagsToResourceCommand, RDSClient, RemoveTagsFromResourceCommand } from '@aws-sdk/client-rds';
 

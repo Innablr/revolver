@@ -1,11 +1,11 @@
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
-import { buildFilter } from '../../plugins/filters';
-import { ToolingInterface } from '../../drivers/instrumentedResource';
+import { buildFilter } from '../../plugins/filters/index.js';
+import { ToolingInterface } from '../../drivers/instrumentedResource.js';
 import { DateTime } from 'luxon';
-import { makeResourceTags } from '../../lib/common';
-import dateTime from '../../lib/dateTime';
+import { makeResourceTags } from '../../lib/common.js';
+import dateTime from '../../lib/dateTime.js';
 
 chai.use(chaiAsPromised);
 

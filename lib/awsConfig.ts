@@ -1,8 +1,8 @@
-import environ from './environ';
+import environ from './environ.js';
 import { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import assume from '../lib/assume';
+import assume from '../lib/assume.js';
 
 // In version 3 , there is no longer a global configuration managed by the SDK
 function getAwsConfig(region?: string, credentials?: Credentials | Provider<Credentials>) {

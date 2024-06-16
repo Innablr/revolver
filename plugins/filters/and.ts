@@ -1,5 +1,5 @@
-import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { Filter, FilterCtor } from './index';
+import { ToolingInterface } from '../../drivers/instrumentedResource.js';
+import { Filter, FilterCtor } from './index.js';
 
 export default class FilterAnd implements Filter, FilterCtor {
   private elements: Filter[];
@@ -15,7 +15,7 @@ export default class FilterAnd implements Filter, FilterCtor {
       Promise.all(
         config.map(async (elem: any): Promise<Filter> => {
           const name = Object.keys(elem)[0];
-          const i = await require(`./${name}`);
+          const i = await import(`./${name}.js`);
           return await new i.default(elem[name]).ready();
         }),
       ).then((results) => {

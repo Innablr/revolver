@@ -1,7 +1,7 @@
-import getParser from '../../../plugins/parsers';
+import getParser from '../../../plugins/parsers/index.js';
 import { expect } from 'chai';
 import { DateTime } from 'luxon';
-import { reasonDateFormat } from '../../../plugins/parsers/strict';
+import { reasonDateFormat } from '../../../plugins/parsers/strict.js';
 
 const startBarriers: { [key: string]: DateTime } = {
   monday629: DateTime.fromJSDate(new Date('2017-06-05 06:29')),

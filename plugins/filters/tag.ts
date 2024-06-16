@@ -1,5 +1,5 @@
-import { ToolingInterface } from '../../drivers/instrumentedResource';
-import { arrayToOr, Filter, FilterCtor, StringCompareOptions } from './index';
+import { ToolingInterface } from '../../drivers/instrumentedResource.js';
+import { arrayToOr, Filter, FilterCtor, StringCompareOptions } from './index.js';
 
 export default class FilterTag implements Filter, FilterCtor {
   static readonly FILTER_NAME = 'tag';

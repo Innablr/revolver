@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import dateTime from '../../lib/dateTime';
+import dateTime from '../../lib/dateTime.js';
 import { FixedOffsetZone } from 'luxon';
 
 describe('Validate DateTime', function () {
