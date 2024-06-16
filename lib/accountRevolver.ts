@@ -3,7 +3,7 @@ import { InstrumentedResource, ToolingInterface } from '../drivers/instrumentedR
 import { RevolverPlugin } from '../plugins/pluginInterface.js';
 import { logger } from './logger.js';
 import path from 'node:path';
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 import { buildFilter } from '../plugins/filters/index.js';
 import {
   ActionAuditTable,

@@ -1,5 +1,5 @@
 import { logger } from './logger.js';
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 import path = require('node:path');
 import yaml from 'js-yaml';
 import { Organizations, paginateListAccounts } from '@aws-sdk/client-organizations';

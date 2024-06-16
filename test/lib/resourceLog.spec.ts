@@ -3,7 +3,7 @@ import { ObjectLogHtml, ObjectLogTable, ObjectLogCsv, ObjectLogJson, ResourceTab
 import { ToolingInterface } from '../../drivers/instrumentedResource.js';
 import { DateTime } from 'luxon';
 import { randomBytes } from 'node:crypto';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import dateTime from '../../lib/dateTime.js';
 
 // A dummy AWS resource for testing

@@ -4,7 +4,7 @@ import path from 'path';
 import { Context, EventBridgeEvent } from 'aws-lambda';
 import { handler as revolverHandle } from '../../revolver.js';
 import environ from '../../lib/environ.js';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import { parse } from 'csv-parse/sync';
 import { fileURLToPath } from 'url';
 
