@@ -1,5 +1,5 @@
 import { Logger, ISettingsParam } from 'tslog';
-import environ from './environ';
+import environ from './environ.js';
 
 const logLevels: { [key: string]: number } = {
   silly: 0,

@@ -1,11 +1,15 @@
 import { expect } from 'chai';
-import { logger } from '../../lib/logger';
+import { logger } from '../../lib/logger.js';
 import path from 'path';
 import { Context, EventBridgeEvent } from 'aws-lambda';
-import { handler as revolverHandle } from '../../revolver';
-import environ from '../../lib/environ';
-import * as fs from 'fs';
+import { handler as revolverHandle } from '../../revolver.js';
+import environ from '../../lib/environ.js';
+import * as fs from 'node:fs';
 import { parse } from 'csv-parse/sync';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 
 const LOCAL_CONFIG = path.join(__dirname, 'powercycle.config.yaml');
 const OUTPUT_AUDIT_CSV_FILE = path.join(__dirname, 'audit.csv');

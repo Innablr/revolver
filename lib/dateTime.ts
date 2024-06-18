@@ -1,5 +1,5 @@
 import { DateTime as LuxonDateTime } from 'luxon';
-import { logger } from './logger';
+import { logger } from './logger.js';
 
 /**
  * A class for using a consistent time during execution of a cycle of Revolver.

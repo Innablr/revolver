@@ -1,8 +1,7 @@
-const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const webpack = require('webpack')
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import webpack from 'webpack';
 
-module.exports = {
+const config = {
   mode: 'production',
   entry: './revolver.ts',
   target: 'node',
@@ -23,7 +22,7 @@ module.exports = {
     library: {
       type: 'commonjs2',
     },
-    path: path.resolve(__dirname, 'dist'),
+    // path: path.resolve(__dirname, 'dist'),
   },
   plugins: [
     new CopyWebpackPlugin({
@@ -36,3 +35,5 @@ module.exports = {
     }),
   ],
 };
+
+export default config;

@@ -1,7 +1,11 @@
 import path from 'path';
-import { handler as revolverHandle } from '../../revolver';
-import environ from '../../lib/environ';
+import { handler as revolverHandle } from '../../revolver.js';
+import environ from '../../lib/environ.js';
 import { Context, EventBridgeEvent } from 'aws-lambda';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 
 const LOCAL_CONFIG = path.join(__dirname, 'powercycleOrg.config.yaml');
 // const OUTPUT_RESOURCES_JSON_FILE = path.join(__dirname, 'resources.json');

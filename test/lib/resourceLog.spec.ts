@@ -1,10 +1,10 @@
 import { expect } from 'chai';
-import { ObjectLogHtml, ObjectLogTable, ObjectLogCsv, ObjectLogJson, ResourceTable } from '../../lib/objectLog';
-import { ToolingInterface } from '../../drivers/instrumentedResource';
+import { ObjectLogHtml, ObjectLogTable, ObjectLogCsv, ObjectLogJson, ResourceTable } from '../../lib/objectLog.js';
+import { ToolingInterface } from '../../drivers/instrumentedResource.js';
 import { DateTime } from 'luxon';
 import { randomBytes } from 'node:crypto';
-import * as fs from 'fs';
-import dateTime from '../../lib/dateTime';
+import * as fs from 'node:fs';
+import dateTime from '../../lib/dateTime.js';
 
 // A dummy AWS resource for testing
 class FakeResource extends ToolingInterface {

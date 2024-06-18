@@ -1,4 +1,4 @@
-import getParser from '../../../plugins/parsers';
+import getParser from '../../../plugins/parsers/index.js';
 import { expect } from 'chai';
 import { DateTime } from 'luxon';
 

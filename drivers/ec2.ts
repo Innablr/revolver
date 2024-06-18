@@ -13,12 +13,12 @@ import {
   StopInstancesCommand,
   paginateDescribeInstances,
 } from '@aws-sdk/client-ec2';
-import { InstrumentedResource, ToolingInterface } from './instrumentedResource';
-import { DriverInterface } from './driverInterface';
-import { RevolverAction, RevolverActionWithTags } from '../actions/actions';
-import { chunkArray, makeResourceTags, paginateAwsCall } from '../lib/common';
-import { ec2Tagger } from './tags';
-import { getAwsClientForAccount } from '../lib/awsConfig';
+import { InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
+import { DriverInterface } from './driverInterface.js';
+import { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
+import { chunkArray, makeResourceTags, paginateAwsCall } from '../lib/common.js';
+import { ec2Tagger } from './tags.js';
+import { getAwsClientForAccount } from '../lib/awsConfig.js';
 
 class InstrumentedEc2 extends ToolingInterface {
   private instanceARN: string;

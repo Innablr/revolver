@@ -1,15 +1,15 @@
-import { logger } from './logger';
-import { promises as fs } from 'fs';
+import { logger } from './logger.js';
+import { promises as fs } from 'node:fs';
 import path = require('node:path');
 import yaml from 'js-yaml';
 import { Organizations, paginateListAccounts } from '@aws-sdk/client-organizations';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-import { paginateAwsCall } from './common';
+import { paginateAwsCall } from './common.js';
 import { merge } from 'ts-deepmerge';
-import { getAwsConfig } from './awsConfig';
-import { ConfigSchema } from './config-schema';
+import { getAwsConfig } from './awsConfig.js';
+import { ConfigSchema } from './config-schema.js';
 import { ZodError, ZodIssueCode, ZodInvalidUnionIssue, ZodInvalidArgumentsIssue, ZodInvalidReturnTypeIssue } from 'zod';
-import { ObjectLogJson } from './objectLog';
+import { ObjectLogJson } from './objectLog.js';
 
 function flattenZodErrors(ze: ZodError, depth: number): string[] {
   let lines: string[] = [];

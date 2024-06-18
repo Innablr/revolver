@@ -1,10 +1,10 @@
-import { DriverInterface } from '../drivers/driverInterface';
-import { InstrumentedResource, ToolingInterface } from '../drivers/instrumentedResource';
-import { RevolverPlugin } from '../plugins/pluginInterface';
-import { logger } from './logger';
+import { DriverInterface } from '../drivers/driverInterface.js';
+import { InstrumentedResource, ToolingInterface } from '../drivers/instrumentedResource.js';
+import { RevolverPlugin } from '../plugins/pluginInterface.js';
+import { logger } from './logger.js';
 import path from 'node:path';
-import { promises as fs } from 'fs';
-import { buildFilter } from '../plugins/filters/index';
+import { promises as fs } from 'node:fs';
+import { buildFilter } from '../plugins/filters/index.js';
 import {
   ActionAuditTable,
   ObjectLogTable,
@@ -13,7 +13,7 @@ import {
   ResourceTable,
   ObjectLogHtml,
   resetFileLogger,
-} from './objectLog';
+} from './objectLog.js';
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -54,7 +54,7 @@ export class AccountRevolver {
       activePlugins.flatMap((xs: string) => {
         this.logger.info(`Configuring plugin ${xs}...`);
         return this.config.plugins[xs].configs.map(async (xp: any) => {
-          const PluginModule = await require(`../plugins/${xs}`);
+          const PluginModule = await import(`../plugins/${xs}.js`);
           return new PluginModule['default'](this.config, xs, xp);
         });
       }),
@@ -66,7 +66,7 @@ export class AccountRevolver {
         .filter((xd: any) => this.supportedDrivers.indexOf(xd.name) > -1)
         .map(async (xd: any) => {
           this.logger.info(`Configuring driver ${xd.name}...`);
-          const DriverModule = await require(`../drivers/${xd.name}`);
+          const DriverModule = await import(`../drivers/${xd.name}.js`);
           return new DriverModule.default(this.config, xd);
         }),
     );

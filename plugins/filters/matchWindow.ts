@@ -1,8 +1,8 @@
-import { ToolingInterface } from '../../drivers/instrumentedResource';
-import dateTime from '../../lib/dateTime';
-import { arrayToOr, Filter, FilterCtor } from './index';
+import { ToolingInterface } from '../../drivers/instrumentedResource.js';
+import dateTime from '../../lib/dateTime.js';
+import { arrayToOr, Filter, FilterCtor } from './index.js';
 import { DateTime as LuxonDateTime } from 'luxon';
-import { logger } from '../../lib/logger';
+import { logger } from '../../lib/logger.js';
 
 /**
  * A Filter that compares a given from/to datetime to the current time.
