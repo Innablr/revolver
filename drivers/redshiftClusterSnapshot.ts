@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import {
   Cluster,
   CreateTagsCommand,
@@ -16,6 +15,7 @@ import { DriverInterface } from './driverInterface.js';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';
 import { makeResourceTags } from '../lib/common.js';
+import dateTime from '../lib/dateTime.js';
 
 class InstrumentedRedshiftClusterSnapshot extends ToolingInterface {
   public tags: Tag[] = [];
@@ -35,7 +35,7 @@ class InstrumentedRedshiftClusterSnapshot extends ToolingInterface {
   }
 
   get launchTimeUtc() {
-    return DateTime.fromISO(this.resource.SnapshotCreateTime).setZone('UTC');
+    return dateTime.getUtcDateTime(this.resource.SnapshotCreateTime);
   }
 
   get resourceState() {

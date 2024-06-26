@@ -29,6 +29,18 @@ class DateTime {
     }
     return this.currentTime;
   }
+
+  /**
+   * Convert either a String or a JSDate to a LuxonDateTime in UTC
+   * @param from - either a Date or a String that looks like a date
+   * @returns a Luxon DateTime
+   */
+  getUtcDateTime(from: string | Date): LuxonDateTime {
+    if (typeof from == 'object') {
+      return LuxonDateTime.fromJSDate(from).setZone('utc');
+    }
+    return LuxonDateTime.fromISO(from).setZone('utc');
+  }
 }
 
 const dateTime = new DateTime();

@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import {
   DescribeDBClustersCommand,
   DescribeDBInstancesCommand,
@@ -13,6 +12,7 @@ import { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
 import { rdsTagger } from './tags.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';
 import { makeResourceTags } from '../lib/common.js';
+import dateTime from '../lib/dateTime.js';
 
 class InstrumentedRdsCluster extends ToolingInterface {
   constructor(awsResource: any) {
@@ -34,7 +34,7 @@ class InstrumentedRdsCluster extends ToolingInterface {
   }
 
   get launchTimeUtc() {
-    return DateTime.fromISO(this.resource.ClusterCreateTime).setZone('UTC');
+    return dateTime.getUtcDateTime(this.resource.ClusterCreateTime);
   }
 
   get resourceState() {

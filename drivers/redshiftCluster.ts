@@ -34,7 +34,7 @@ class InstrumentedRedshiftCluster extends ToolingInterface {
   }
 
   get launchTimeUtc() {
-    return DateTime.fromISO(this.resource.ClusterCreateTime).setZone('UTC');
+    return dateTime.getUtcDateTime(this.resource.ClusterCreateTime);
   }
 
   get nodes() {
