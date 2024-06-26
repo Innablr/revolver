@@ -35,7 +35,7 @@
     "@aws-sdk/client-sts": "^3.511.0",
     "@aws-sdk/credential-providers": "^3.598.0",
     "@aws-sdk/types": "^3.511.0",
-    "@smithy/node-http-handler": "^3.0.1",
+    "@smithy/node-http-handler": "^3.1.0",
     "csv-stringify": "^6.5.0",
     "https-proxy-agent": "^7.0.4",
     "jmespath": "^0.16.0",
