@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import {
   DescribeDBInstancesCommand,
   ListTagsForResourceCommand,
@@ -13,6 +12,7 @@ import { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
 import { rdsTagger } from './tags.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';
 import { makeResourceTags } from '../lib/common.js';
+import dateTime from '../lib/dateTime.js';
 
 class InstrumentedRdsInstance extends ToolingInterface {
   public tags: Tag[] = [];
@@ -40,7 +40,7 @@ class InstrumentedRdsInstance extends ToolingInterface {
   }
 
   get launchTimeUtc() {
-    return DateTime.fromISO(this.resource.InstanceCreateTime).setZone('UTC');
+    return dateTime.getUtcDateTime(this.resource.InstanceCreateTime);
   }
 
   get isAvailable() {

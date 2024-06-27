@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import {
   AutoScalingClient,
   ResumeProcessesCommand,
@@ -19,6 +18,7 @@ import { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
 import { chunkArray, makeResourceTags, paginateAwsCall } from '../lib/common.js';
 import { ec2Tagger } from './tags.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';
+import dateTime from '../lib/dateTime.js';
 
 class InstrumentedEc2 extends ToolingInterface {
   private instanceARN: string;
@@ -26,6 +26,9 @@ class InstrumentedEc2 extends ToolingInterface {
   constructor(resource: Instance, instanceARN: string) {
     super(resource);
     this.instanceARN = instanceARN;
+    if (this.resourceState == 'running') {
+      this.metadata.uptime = dateTime.calculateUptime(this.launchTimeUtc).toFixed(2);
+    }
   }
 
   get resourceId() {
@@ -41,7 +44,8 @@ class InstrumentedEc2 extends ToolingInterface {
   }
 
   get launchTimeUtc() {
-    return DateTime.fromISO(this.resource.LaunchTime).setZone('utc');
+    // If a resource is stopped, this still contains the original launch time
+    return dateTime.getUtcDateTime(this.resource.LaunchTime);
   }
 
   get resourceState() {

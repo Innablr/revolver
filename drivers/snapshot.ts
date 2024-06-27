@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import {
   EC2Client,
   Tag,
@@ -12,6 +11,7 @@ import { RevolverActionWithTags } from '../actions/actions.js';
 import { makeResourceTags, paginateAwsCall } from '../lib/common.js';
 import { ec2Tagger } from './tags.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';
+import dateTime from '../lib/dateTime.js';
 
 class InstrumentedSnapshot extends ToolingInterface {
   get resourceId() {
@@ -23,7 +23,7 @@ class InstrumentedSnapshot extends ToolingInterface {
   }
 
   get launchTimeUtc() {
-    return DateTime.fromISO(this.resource.StartTime).setZone('utc');
+    return dateTime.getUtcDateTime(this.resource.StartTime);
   }
 
   get resourceState() {
