@@ -1,6 +1,5 @@
 import { logger } from './logger.js';
 import { STS } from '@aws-sdk/client-sts';
-import dateTime from './dateTime.js';
 import { DateTime } from 'luxon';
 import { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
@@ -50,7 +49,7 @@ class RemoteCredentials {
     const creds = await sts
       .assumeRole({
         RoleArn: remoteRole,
-        RoleSessionName: `Revolver_${dateTime.getTime().toFormat('yyyyLLddHHmmss')}`,
+        RoleSessionName: 'Revolver',
       })
       .then((r) => r.Credentials);
 
