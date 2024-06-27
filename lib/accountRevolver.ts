@@ -14,6 +14,7 @@ import {
   ObjectLogHtml,
   resetFileLogger,
 } from './objectLog.js';
+import dateTime from './dateTime.js';
 
 export class AccountRevolver {
   readonly supportedDrivers = [
@@ -188,7 +189,9 @@ export class AccountRevolver {
             break;
           case 'csv':
             await new ObjectLogCsv(
-              new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags),
+              new ResourceTable(this.config, this.resources, resourceLogConfig?.reportTags, {
+                TIME: dateTime.getTime().toISO(),
+              }),
               resourceLogConfig,
               context,
             ).process();

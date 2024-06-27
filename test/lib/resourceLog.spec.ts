@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import { randomBytes } from 'node:crypto';
 import * as fs from 'node:fs';
 import dateTime from '../../lib/dateTime.js';
+import { parse } from 'csv-parse/sync';
 
 // A dummy AWS resource for testing
 class FakeResource extends ToolingInterface {
@@ -117,14 +118,29 @@ describe('Validate ResourceLog', function () {
   it('Check ObjectLogCsv resources', async function () {
     if (fs.existsSync(RESOURCE_LOG_CONFIG.csv.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.csv.file);
     await new ObjectLogCsv(
-      new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags),
+      new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags, { SPAM: '123' }),
       RESOURCE_LOG_CONFIG.csv,
       ACCOUNT_CONFIG.settings,
     ).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.csv.file)).to.be.true;
-    // TODO: check the contents of RESOURCE_LOG_CONFIG.csv.file
-    const resourceCsvText = fs.readFileSync(RESOURCE_LOG_CONFIG.csv.file, 'utf-8');
-    expect((resourceCsvText.match(/DoThis\|DoThat/g) || []).length).to.equal(4); // number of rows
+    // Check the contents of RESOURCE_LOG_CONFIG.csv.file
+    const auditCsvText = fs.readFileSync(RESOURCE_LOG_CONFIG.csv.file, 'utf-8');
+    const records = parse(auditCsvText, { bom: true, columns: true });
+    expect(records.length).to.equal(4);
+    expect(records[0].SPAM).to.equal('123');
+    expect(records[0].ID).to.equal('donkey1');
+    expect(records[0].TYPE).to.equal('donkey');
+    expect(records[0].STATE).to.equal('running');
+    // Check CSV append
+    const newConfig = Object.assign({}, RESOURCE_LOG_CONFIG.csv, { append: true });
+    await new ObjectLogCsv(
+      new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, newConfig.reportTags, { SPAM: '123' }),
+      newConfig,
+      ACCOUNT_CONFIG.settings,
+    ).process();
+    const auditCsvText2 = fs.readFileSync(newConfig.file, 'utf-8');
+    const records2 = parse(auditCsvText2, { bom: true, columns: true });
+    expect(records2.length).to.equal(8);
   });
 
   it('Check ObjectLogJson', async function () {
