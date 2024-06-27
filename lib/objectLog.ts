@@ -364,20 +364,23 @@ export class ResourceTable implements DataTable {
   private readonly reportTags: string[];
   private readonly entries: ToolingInterface[];
   private readonly accountConfig: any;
-  constructor(accountConfig: any, entries: ToolingInterface[], reportTags: string[]) {
+  private readonly staticValues: any;
+  constructor(accountConfig: any, entries: ToolingInterface[], reportTags: string[], staticValues = {}) {
     this.accountConfig = accountConfig;
     this.reportTags = reportTags || [];
     this.entries = entries;
+    this.staticValues = staticValues;
   }
 
   header(): string[] {
-    return ['ACCOUNT_ID', 'ACCOUNT_NAME', 'REGION', 'TYPE', 'ID', 'STATE', 'ACTIONS'].concat(
-      this.reportTags.map((t) => `TAG:${t}`),
-    );
+    const columnNames = ['ACCOUNT_ID', 'ACCOUNT_NAME', 'REGION', 'TYPE', 'ID', 'STATE', 'ACTIONS'];
+    const tagColumns = this.reportTags.map((t) => `TAG:${t}`);
+    return [...Object.keys(this.staticValues), ...columnNames, ...tagColumns];
   }
   data(): string[][] {
     return this.entries.map((e) => {
       return [
+        ...Object.values(this.staticValues),
         e.accountId,
         this.accountConfig.settings.name,
         e.region,
