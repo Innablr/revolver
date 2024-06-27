@@ -31,15 +31,29 @@ class DateTime {
   }
 
   /**
-   * Convert either a String or a JSDate to a LuxonDateTime in UTC
+   * Convert a String|JSDate|LuxonDateTime to a LuxonDateTime in UTC
    * @param from - either a Date or a String that looks like a date
    * @returns a Luxon DateTime
    */
-  getUtcDateTime(from: string | Date): LuxonDateTime {
-    if (typeof from == 'object') {
+  getUtcDateTime(from: string | Date | LuxonDateTime | null): LuxonDateTime {
+    if (from === null) {
+      return LuxonDateTime.invalid('null');
+    } else if (from instanceof LuxonDateTime) {
+      return from.setZone('utc');
+    } else if (from instanceof Date) {
       return LuxonDateTime.fromJSDate(from).setZone('utc');
+    } else {
+      return LuxonDateTime.fromISO(from).setZone('utc');
     }
-    return LuxonDateTime.fromISO(from).setZone('utc');
+  }
+
+  /**
+   * Calculate the uptime between the given date and now/frozen time, in hours.
+   * @param from - the time a resource was started
+   * @returns the uptime since then in hours
+   */
+  calculateUptime(from: LuxonDateTime): number {
+    return this.currentTime.diff(from).as('hours');
   }
 }
 
