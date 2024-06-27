@@ -131,6 +131,16 @@ describe('Validate ResourceLog', function () {
     expect(records[0].ID).to.equal('donkey1');
     expect(records[0].TYPE).to.equal('donkey');
     expect(records[0].STATE).to.equal('running');
+    // Check CSV append
+    const newConfig = Object.assign({}, RESOURCE_LOG_CONFIG.csv, { append: true });
+    await new ObjectLogCsv(
+      new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, newConfig.reportTags, { SPAM: '123' }),
+      newConfig,
+      ACCOUNT_CONFIG.settings,
+    ).process();
+    const auditCsvText2 = fs.readFileSync(newConfig.file, 'utf-8');
+    const records2 = parse(auditCsvText2, { bom: true, columns: true });
+    expect(records2.length).to.equal(8);
   });
 
   it('Check ObjectLogJson', async function () {
