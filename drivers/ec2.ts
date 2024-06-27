@@ -26,6 +26,9 @@ class InstrumentedEc2 extends ToolingInterface {
   constructor(resource: Instance, instanceARN: string) {
     super(resource);
     this.instanceARN = instanceARN;
+    if (this.resourceState == 'running') {
+      this.metadata.uptime = dateTime.calculateUptime(this.launchTimeUtc).toFixed(2);
+    }
   }
 
   get resourceId() {
@@ -41,6 +44,7 @@ class InstrumentedEc2 extends ToolingInterface {
   }
 
   get launchTimeUtc() {
+    // If a resource is stopped, this still contains the original launch time
     return dateTime.getUtcDateTime(this.resource.LaunchTime);
   }
 
