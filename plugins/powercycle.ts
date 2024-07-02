@@ -51,6 +51,7 @@ export default class PowerCyclePlugin extends RevolverPlugin {
 
     logger.debug(`Checking availability ${scheduleTag}`);
     const [r, reason] = this.parser(scheduleTag, localTimeNow);
+    resource.metadata.highestMatch = `Tag:${this.scheduleTagName} (${scheduleTag})`;
 
     switch (r) {
       case 'UNPARSEABLE':
