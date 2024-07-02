@@ -373,10 +373,11 @@ export class ResourceTable implements DataTable {
   }
 
   header(): string[] {
-    const columnNames = ['ACCOUNT_ID', 'ACCOUNT_NAME', 'REGION', 'TYPE', 'ID', 'STATE', 'ACTIONS'];
+    const columnNames = ['ACCOUNT_ID', 'ACCOUNT_NAME', 'REGION', 'TYPE', 'ID', 'STATE', 'MATCHER', 'ACTIONS'];
     const tagColumns = this.reportTags.map((t) => `TAG:${t}`);
     return [...Object.keys(this.staticValues), ...columnNames, ...tagColumns];
   }
+
   data(): string[][] {
     return this.entries.map((e) => {
       return [
@@ -387,6 +388,7 @@ export class ResourceTable implements DataTable {
         e.resourceType,
         e.resourceId,
         e.resourceState,
+        e?.metadata?.highestMatch,
         (e?.metadata?.actionNames || []).join('|'),
       ].concat(this.reportTags.map((t) => e.tag(t) || ''));
     });
