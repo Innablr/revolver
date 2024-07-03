@@ -126,7 +126,9 @@ describe('Run powercycleCentral full cycle', function () {
         const a1_resourcecsv_file = getOutputFilename(0, OutputFiles.ResourcesCsv);
         const a1_resourcecsv_text = fs.readFileSync(a1_resourcecsv_file, 'utf-8');
         expect(a1_resourcecsv_text).to.include(',TAG:Name,TAG:Schedule');
-        expect(a1_resourcecsv_text).to.include('i-0c688d35209d7f436,running,StopAction,junk-vm-2-on,0x7');
+        expect(a1_resourcecsv_text).to.include(
+          'i-0c688d35209d7f436,running,Tag:Schedule (0x7),StopAction,junk-vm-2-on,0x7',
+        );
         expect(a1_resourcecsv_text).to.not.include('777777777777,'); // don't include excluded account
         expect(a1_resourcecsv_text).to.not.include('888888888888,'); // under different filename
         expect(a1_resourcecsv_text).to.not.include(',i-B7781A749688DAD2,'); // under different filename
@@ -137,12 +139,13 @@ describe('Run powercycleCentral full cycle', function () {
         const a1_resources_by_id = Object.fromEntries(a1_resources.map((r: any) => [r.resourceId, r]));
         expect(a1_resources.length).to.equal(10); // number of resources, in first account
         expect(a1_resources_by_id['i-0c688d35209d7f436'].resourceState).to.equal('running');
-        expect(a1_resources_by_id['i-0c688d35209d7f436'].metadata.matches.length).to.equal(1);
-        expect(a1_resources_by_id['i-0c688d35209d7f436'].metadata.matches[0].name).to.equal('everything off (p1)');
+        expect(a1_resources_by_id['i-0c688d35209d7f436'].metadata.highestMatch).to.equal('Tag:Schedule (0x7)');
         expect(a1_resources_by_id['i-0c688d35209d7f436'].metadata.actionNames.length).to.equal(1);
         expect(a1_resources_by_id['i-0c688d35209d7f436'].metadata.actionNames[0]).to.equal('StopAction');
         expect(a1_resources_by_id['i-05b6baf37fc8f9454'].resourceState).to.equal('running');
-        expect(a1_resources_by_id['i-05b6baf37fc8f9454'].metadata.matches.length).to.equal(2);
+        expect(a1_resources_by_id['i-05b6baf37fc8f9454'].metadata.highestMatch).to.equal(
+          'first asg (Start=08:00|mon-fri;Stop=18:00|mon-fri)',
+        );
         expect(a1_resources_by_id['i-05b6baf37fc8f9454'].metadata.actionNames).to.equal(undefined);
 
         // validate account 2 resources file
