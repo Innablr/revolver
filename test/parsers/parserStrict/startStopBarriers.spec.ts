@@ -45,7 +45,7 @@ describe('Strict parser handles start/stop barriers', async function () {
   const strictParser = await getParser('strict');
   describe('Strict parser handles start barrier', function () {
     const tag = 'Start=06:30;Override=off';
-    ['monday629', ].forEach(function (c) {
+    ['monday629'].forEach(function (c) {
       it(`not start at ${startBarriers[c]}`, function () {
         const [action, reason] = strictParser(tag, startBarriers[c]);
         expect(action).to.equal('NOOP');
