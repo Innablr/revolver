@@ -47,10 +47,7 @@ it('Strict parser calculates coverage correctly', async function () {
 });
 
 it('Check Luxon Interval Edges', async function () {
-  const interval = Interval.fromDateTimes(
-    DateTime.fromISO('2024-02-19T10:00'),
-    DateTime.fromISO('2024-02-19T11:00'),
-  );
+  const interval = Interval.fromDateTimes(DateTime.fromISO('2024-02-19T10:00'), DateTime.fromISO('2024-02-19T11:00'));
   // Validate Luxon Interval includes the lower range, and excludes the upper range
   expect(interval.contains(DateTime.fromISO('2024-02-19T09:59:59.999'))).to.be.false;
   expect(interval.contains(DateTime.fromISO('2024-02-19T10:00'))).to.be.true;
