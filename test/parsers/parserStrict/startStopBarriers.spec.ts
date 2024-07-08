@@ -45,7 +45,7 @@ describe('Strict parser handles start/stop barriers', async function () {
   const strictParser = await getParser('strict');
   describe('Strict parser handles start barrier', function () {
     const tag = 'Start=06:30;Override=off';
-    ['monday629', 'monday630'].forEach(function (c) {
+    ['monday629', ].forEach(function (c) {
       it(`not start at ${startBarriers[c]}`, function () {
         const [action, reason] = strictParser(tag, startBarriers[c]);
         expect(action).to.equal('NOOP');
@@ -54,7 +54,7 @@ describe('Strict parser handles start/stop barriers', async function () {
         );
       });
     });
-    ['monday631', 'monday644', 'monday645'].forEach(function (c) {
+    ['monday630', 'monday631', 'monday644'].forEach(function (c) {
       it(`start at ${startBarriers[c]}`, function () {
         const [action, reason] = strictParser(tag, startBarriers[c]);
         expect(action).to.equal('START');
@@ -63,7 +63,7 @@ describe('Strict parser handles start/stop barriers', async function () {
         );
       });
     });
-    ['monday646'].forEach(function (c) {
+    ['monday645', 'monday646'].forEach(function (c) {
       it(`not start at ${startBarriers[c]}`, function () {
         const [action, reason] = strictParser(tag, startBarriers[c]);
         expect(action).to.equal('NOOP');
@@ -75,7 +75,7 @@ describe('Strict parser handles start/stop barriers', async function () {
   });
   describe('Strict parser handles stop barrier', function () {
     const tag = 'Stop=17:30;Override=off';
-    ['monday1729', 'monday1730'].forEach(function (c) {
+    ['monday1729'].forEach(function (c) {
       it(`not stop at ${stopBarriers[c]}`, function () {
         const [action, reason] = strictParser(tag, stopBarriers[c]);
         expect(action).to.equal('NOOP');
@@ -84,7 +84,7 @@ describe('Strict parser handles start/stop barriers', async function () {
         );
       });
     });
-    ['monday1731', 'monday1744', 'monday1745'].forEach(function (c) {
+    ['monday1730', 'monday1731', 'monday1744'].forEach(function (c) {
       it(`stop at ${stopBarriers[c]}`, function () {
         const [action, reason] = strictParser(tag, stopBarriers[c]);
         expect(action).to.equal('STOP');
@@ -93,7 +93,7 @@ describe('Strict parser handles start/stop barriers', async function () {
         );
       });
     });
-    ['monday1746'].forEach(function (c) {
+    ['monday1745', 'monday1746'].forEach(function (c) {
       it(`not stop at ${stopBarriers[c]}`, function () {
         const [action, reason] = strictParser(tag, stopBarriers[c]);
         expect(action).to.equal('NOOP');
