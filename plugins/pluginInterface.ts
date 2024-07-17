@@ -1,5 +1,5 @@
 import { Logger } from 'tslog';
-import { logger } from '../lib/logger.js';
+import { getSubLogger } from '../lib/logger.js';
 import { ToolingInterface } from '../drivers/instrumentedResource.js';
 
 /**
@@ -18,10 +18,7 @@ export abstract class RevolverPlugin {
     this.accountId = accountConfig.accountId;
     this.pluginConfig = pluginConfig;
     this.pluginConfig.name = pluginName;
-    this.logger = logger.getSubLogger(
-      { name: this.accountConfig.name },
-      { accountId: this.accountId, accountName: this.accountConfig.name, pluginName },
-    );
+    this.logger = getSubLogger(this.accountConfig.name, this.accountId, { pluginName: pluginName });
     this.logger.debug(`Initialising plugin ${this.name} for account ${this.accountConfig.name}`);
   }
 

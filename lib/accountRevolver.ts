@@ -1,7 +1,7 @@
 import { DriverInterface } from '../drivers/driverInterface.js';
 import { InstrumentedResource, ToolingInterface } from '../drivers/instrumentedResource.js';
 import { RevolverPlugin } from '../plugins/pluginInterface.js';
-import { logger } from './logger.js';
+import { getSubLogger } from './logger.js';
 import path from 'node:path';
 import { promises as fs } from 'node:fs';
 import { buildFilter } from '../plugins/filters/index.js';
@@ -37,10 +37,7 @@ export class AccountRevolver {
 
   constructor(accountConfig: any) {
     this.config = accountConfig;
-    this.logger = logger.getSubLogger(
-      { name: 'accountRevolver' },
-      { accountId: this.config.accountId, accountName: this.config.settings.name },
-    );
+    this.logger = getSubLogger(this.config.settings.name, this.config.accountId);
   }
 
   async initialise(): Promise<void> {
@@ -159,10 +156,10 @@ export class AccountRevolver {
             ).process();
             break;
           default:
-            logger.warn(`no implementation for audit log format ${auditFormat}`);
+            this.logger.warn(`no implementation for audit log format ${auditFormat}`);
         }
       } catch (e: any) {
-        logger.error(`failed to write auditLog ${auditFormat}: ${e.message}`);
+        this.logger.error(`failed to write auditLog ${auditFormat}: ${e.message}`);
       }
     }
   }
@@ -197,11 +194,11 @@ export class AccountRevolver {
             ).process();
             break;
           default:
-            logger.warn(`no implementation for resource log format ${logFormat}`);
+            this.logger.warn(`no implementation for resource log format ${logFormat}`);
         }
       } catch (e: any) {
-        logger.error(e);
-        logger.error(`failed to write resourcesLog ${logFormat}: ${e.message}`);
+        this.logger.error(e);
+        this.logger.error(`failed to write resourcesLog ${logFormat}: ${e.message}`);
       }
     }
   }

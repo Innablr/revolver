@@ -91,6 +91,19 @@ function restructureJsonLog(log: any) {
 }
 
 /**
+ * Return a sub-logger with the given accountName and accountId, and any other attributes.
+ * @param accountName - an accountConfig.name
+ * @param accountId - an AWS account ID
+ * @param extra - a object contain other properties to add to the context, eg pluginName, driverName
+ * @returns a child logger based on the settings above
+ */
+export function getSubLogger(accountName: string, accountId: string, extra?: object) {
+  return logger.getSubLogger(
+    { name: `${accountName}(${accountId})` },
+    { accountId: accountId, accountName: accountName, ...extra },
+  );
+}
+/**
  * A Logger that keeps track of whether a log of level 'error' or greater has been emitted.
  */
 export class ErrorTrackingLogger<LogObj> extends Logger<LogObj> {

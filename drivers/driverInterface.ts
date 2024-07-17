@@ -1,5 +1,5 @@
 import { Logger } from 'tslog';
-import { logger, RevolverLogObject } from '../lib/logger.js';
+import { RevolverLogObject, getSubLogger } from '../lib/logger.js';
 import { InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
 import { RevolverAction } from '../actions/actions.js';
 import { ActionAuditEntry } from '../actions/audit.js';
@@ -17,10 +17,7 @@ export abstract class DriverInterface {
     this.accountConfig = accountConfig.settings;
     this.driverConfig = driverConfig;
     this.accountId = accountConfig.accountId;
-    this.logger = logger.getSubLogger(
-      { name: `${this.accountConfig.name}(${this.accountId})` },
-      { accountId: this.accountId, accountName: this.accountConfig.name, driverName: this.name },
-    );
+    this.logger = getSubLogger(this.accountConfig.name, this.accountId, { driverName: this.name });
     this.logger.debug(`Initialising driver ${this.name} for account ${this.accountConfig.name}`);
     this.actionAuditLog = [];
   }
