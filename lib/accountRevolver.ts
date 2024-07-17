@@ -1,7 +1,7 @@
 import { DriverInterface } from '../drivers/driverInterface.js';
 import { InstrumentedResource, ToolingInterface } from '../drivers/instrumentedResource.js';
 import { RevolverPlugin } from '../plugins/pluginInterface.js';
-import { logger } from './logger.js';
+import { logger, getSubLogger } from './logger.js';
 import path from 'node:path';
 import { promises as fs } from 'node:fs';
 import { buildFilter } from '../plugins/filters/index.js';
@@ -37,10 +37,7 @@ export class AccountRevolver {
 
   constructor(accountConfig: any) {
     this.config = accountConfig;
-    this.logger = logger.getSubLogger(
-      { name: 'accountRevolver' },
-      { accountId: this.config.accountId, accountName: this.config.settings.name },
-    );
+    this.logger = getSubLogger(this.config.settings.name, this.config.accountId);
   }
 
   async initialise(): Promise<void> {
