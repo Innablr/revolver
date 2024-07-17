@@ -1,5 +1,5 @@
 import { ToolingInterface } from '../drivers/instrumentedResource.js';
-import { logger } from './logger.js';
+import { getSubLogger } from './logger.js';
 import { existsSync, promises as fs } from 'node:fs';
 import { getAwsConfig } from './awsConfig.js';
 import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
@@ -61,12 +61,12 @@ type WriterContext = {
 abstract class AbstractOutputWriter {
   protected readonly options: WriteOptions;
   protected readonly logger;
-  protected readonly context;
+  protected readonly context: WriterContext | undefined;
 
   static filesWritten: string[] = [];
 
   protected constructor(options: WriteOptions, context?: WriterContext) {
-    this.logger = logger;
+    this.logger = getSubLogger(context?.name || 'unknown', context?.accountId || 'unknown');
     this.options = options;
     this.context = context;
   }
