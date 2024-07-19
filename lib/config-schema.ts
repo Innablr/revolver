@@ -98,6 +98,7 @@ const Settings = z.object({
   region: z.string().optional(),
   timezone: z.string().default('utc'),
   timezoneTag: z.string().default('Timezone'),
+  concurrency: z.number().default(0),
   organizationRoleName: z.string(),
   revolverRoleName: z.string(),
   resourceLog: z
