@@ -7,6 +7,7 @@ import { RevolverConfig } from './lib/config.js';
 import dateTime from './lib/dateTime.js';
 import assume from './lib/assume.js';
 import zlib from 'node:zlib';
+import { PromisePool } from '@supercharge/promise-pool';
 
 // Specify a SQS message attribute to log out to the console
 const sqsLogAttribute = process.env['SQS_LOG_ATTRIBUTE'];
@@ -106,7 +107,15 @@ async function main(config: any) {
 
   await Promise.all(revolvers.map((revolver) => revolver.initialise()));
 
-  await Promise.all(revolvers.map((revolver) => revolver.revolve()));
+  const concurrency = config.defaults.settings.concurrency;
+  if (concurrency > 0) {
+    logger.info('Limiting revolver concurrency to %d', concurrency);
+    await PromisePool.for(revolvers)
+      .withConcurrency(concurrency)
+      .process((revolver) => revolver.revolve());
+  } else {
+    await Promise.all(revolvers.map((revolver) => revolver.revolve()));
+  }
 
   logger.info('One revolution done.');
   if (logger.hasError) {
