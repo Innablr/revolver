@@ -18,6 +18,14 @@ class TestingResource extends ToolingInterface {
     if (this.topResource['tags'] === undefined) this.topResource['tags'] = {};
   }
   get launchTimeUtc(): DateTime {
+    if (this.resourceType == 'ec2' && this.resource.LaunchTime !== undefined) {
+      // EC2 - If a resource is stopped, this still contains the original launch time
+      return dateTime.getUtcDateTime(this.resource.LaunchTime);
+    } else if (this.resourceType == 'rdsInstance' && this.resource.LaunchTime !== undefined) {
+      // RDS - Not actually "uptime"
+      return dateTime.getUtcDateTime(this.resource.ClusterCreateTime);
+    }
+    // We couldn't determine a real launchTime, so we'll just use now
     return DateTime.now();
   }
 
@@ -61,6 +69,7 @@ const basicEc2 = {
       AvailabilityZone: 'ap-southeast-2c',
       Tenancy: 'default',
     },
+    LaunchTime: '2024-02-19T19:50Z', // Test is frozen at 2024-02-19T21:56Z so uptime=2.1h
   },
 };
 
@@ -198,6 +207,18 @@ const filterTests = [
         resource: basicEc2,
         matches: false,
       },
+    ],
+  },
+  {
+    name: 'uptime',
+    tests: [
+      { name: 'match gt yes', filter: { uptime: '> 1.5' }, resource: basicEc2, matches: true },
+      { name: 'match gt no', filter: { uptime: '> 5' }, resource: basicEc2, matches: false },
+      { name: 'match lt yes', filter: { uptime: '< 5' }, resource: basicEc2, matches: true },
+      { name: 'match lt no', filter: { uptime: '< 1' }, resource: basicEc2, matches: false },
+      { name: 'match between yes', filter: { uptime: 'between 1 and 5' }, resource: basicEc2, matches: true },
+      { name: 'match between no1', filter: { uptime: 'between 0 and 1' }, resource: basicEc2, matches: false },
+      { name: 'match between no1', filter: { uptime: 'between 5 and 10' }, resource: basicEc2, matches: false },
     ],
   },
   {
