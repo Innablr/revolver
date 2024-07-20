@@ -24,11 +24,16 @@ export default class FilterUptime implements Filter, FilterCtor {
         } else if (s.startsWith('>')) {
           this.minValue = parseFloat(s.substring(1));
         } else {
-          const regexp = /between ([\d.]+) and ([\d.]+)/;
-          const matches = regexp.exec(s);
+          const matches = /between ([\d.]+) and ([\d.]+)/.exec(s);
           if (matches) {
             this.minValue = parseFloat(matches[1]);
             this.maxValue = parseFloat(matches[2]);
+          } else {
+            const matches = /([\d.]+)-([\d.]+)/.exec(s);
+            if (matches) {
+              this.minValue = parseFloat(matches[1]);
+              this.maxValue = parseFloat(matches[2]);
+            }
           }
         }
         // default undefined/undefined doesn't match anything

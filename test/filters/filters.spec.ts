@@ -218,7 +218,10 @@ const filterTests = [
       { name: 'match lt no', filter: { uptime: '< 1' }, resource: basicEc2, matches: false },
       { name: 'match between yes', filter: { uptime: 'between 1 and 5' }, resource: basicEc2, matches: true },
       { name: 'match between no1', filter: { uptime: 'between 0 and 1' }, resource: basicEc2, matches: false },
-      { name: 'match between no1', filter: { uptime: 'between 5 and 10' }, resource: basicEc2, matches: false },
+      { name: 'match between no2', filter: { uptime: 'between 5 and 10' }, resource: basicEc2, matches: false },
+      { name: 'match dash yes', filter: { uptime: '1-5' }, resource: basicEc2, matches: true },
+      { name: 'match dash no1', filter: { uptime: '0-1' }, resource: basicEc2, matches: false },
+      { name: 'match dash no2', filter: { uptime: '5-10' }, resource: basicEc2, matches: false },
     ],
   },
   {
