@@ -1,6 +1,6 @@
 import { ToolingInterface } from '../../drivers/instrumentedResource.js';
 import dateTime from '../../lib/dateTime.js';
-import { arrayToOr, Filter, FilterCtor, StringCompareOptions } from './index.js';
+import { arrayToOr, Filter, FilterCtor } from './index.js';
 
 export default class FilterUptime implements Filter, FilterCtor {
   static readonly FILTER_NAME = 'uptime';
