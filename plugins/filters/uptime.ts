@@ -17,23 +17,17 @@ export default class FilterUptime implements Filter, FilterCtor {
       if (Array.isArray(config)) {
         resolve(arrayToOr(FilterUptime.FILTER_NAME, config));
       } else {
-        // Simple parser for '<nnn' and '>nnn' and 'between nnn and nnn' strings
+        // Simple parser for '<x' and '>y' and 'x-y' strings
         const s = config.trim().toLowerCase();
         if (s.startsWith('<')) {
           this.maxValue = parseFloat(s.substring(1));
         } else if (s.startsWith('>')) {
           this.minValue = parseFloat(s.substring(1));
         } else {
-          const matches = /between ([\d.]+) and ([\d.]+)/.exec(s);
+          const matches = /([\d.]+)-([\d.]+)/.exec(s);
           if (matches) {
             this.minValue = parseFloat(matches[1]);
             this.maxValue = parseFloat(matches[2]);
-          } else {
-            const matches = /([\d.]+)-([\d.]+)/.exec(s);
-            if (matches) {
-              this.minValue = parseFloat(matches[1]);
-              this.maxValue = parseFloat(matches[2]);
-            }
           }
         }
         // default undefined/undefined doesn't match anything
@@ -44,7 +38,7 @@ export default class FilterUptime implements Filter, FilterCtor {
 
   matches(resource: ToolingInterface): boolean {
     if (resource.resourceState !== 'running') {
-      return false;
+      return true; // only consider running resources
     }
     const uptime = dateTime.calculateUptime(resource.launchTimeUtc);
     if (this.minValue !== undefined && uptime < this.minValue) {
