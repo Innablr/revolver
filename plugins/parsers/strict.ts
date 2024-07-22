@@ -78,8 +78,8 @@ class ParsedComponent {
     return this.dayFrom! <= d && d <= this.dayTo!;
   }
 
-  timePast(t: DateTime) {
-    return t.set({ hour: this.timeHour, minute: this.timeMinute }) < t;
+  timeEqualOrPast(t: DateTime) {
+    return t.set({ hour: this.timeHour, minute: this.timeMinute }) <= t;
   }
 }
 
@@ -207,7 +207,7 @@ function startOrStop(tag: string, timeNow: DateTime) {
   if (t.start.isSet) {
     const r = `It's now ${timeNow.toFormat(reasonDateFormat)}, resource starts at ${t.start.time} ${t.days ? t.days : 'all week'}`;
     if (t.dayIn(timeNow)) {
-      if (t.start.timePast(timeNow) && !t.start.timePast(timeNow.minus({ minutes: 15 }))) {
+      if (t.start.timeEqualOrPast(timeNow) && !t.start.timeEqualOrPast(timeNow.minus({ minutes: 15 }))) {
         return ['START', r];
       }
     }
@@ -217,7 +217,7 @@ function startOrStop(tag: string, timeNow: DateTime) {
   if (t.stop.isSet) {
     const r = `It's now ${timeNow.toFormat(reasonDateFormat)}, resource stops at ${t.stop.time} ${t.days ? t.days : 'all week'}`;
     if (t.dayIn(timeNow)) {
-      if (t.stop.timePast(timeNow) && !t.stop.timePast(timeNow.minus({ minutes: 15 }))) {
+      if (t.stop.timeEqualOrPast(timeNow) && !t.stop.timeEqualOrPast(timeNow.minus({ minutes: 15 }))) {
         return ['STOP', r];
       }
     }
