@@ -3,9 +3,10 @@ import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
 import { buildFilter } from '../../plugins/filters/index.js';
 import { ToolingInterface } from '../../drivers/instrumentedResource.js';
-import { DateTime } from 'luxon';
+import { DateTime, Interval } from 'luxon';
 import { makeResourceTags } from '../../lib/common.js';
 import dateTime from '../../lib/dateTime.js';
+import getParser from '../../plugins/parsers/index.js';
 
 chai.use(chaiAsPromised);
 
@@ -18,6 +19,14 @@ class TestingResource extends ToolingInterface {
     if (this.topResource['tags'] === undefined) this.topResource['tags'] = {};
   }
   get launchTimeUtc(): DateTime {
+    if (this.resourceType == 'ec2' && this.resource.LaunchTime !== undefined) {
+      // EC2 - If a resource is stopped, this still contains the original launch time
+      return dateTime.getUtcDateTime(this.resource.LaunchTime);
+    } else if (this.resourceType == 'rdsInstance' && this.resource.LaunchTime !== undefined) {
+      // RDS - Not actually "uptime"
+      return dateTime.getUtcDateTime(this.resource.ClusterCreateTime);
+    }
+    // We couldn't determine a real launchTime, so we'll just use now
     return DateTime.now();
   }
 
@@ -61,6 +70,7 @@ const basicEc2 = {
       AvailabilityZone: 'ap-southeast-2c',
       Tenancy: 'default',
     },
+    LaunchTime: '2024-02-19T19:50Z', // Test is frozen at 2024-02-19T21:56Z so uptime=2.1h
   },
 };
 
@@ -198,6 +208,18 @@ const filterTests = [
         resource: basicEc2,
         matches: false,
       },
+    ],
+  },
+  {
+    name: 'uptime',
+    tests: [
+      { name: 'match gt yes', filter: { uptime: '> 1.5' }, resource: basicEc2, matches: true },
+      { name: 'match gt no', filter: { uptime: '> 5' }, resource: basicEc2, matches: false },
+      { name: 'match lt yes', filter: { uptime: '< 5' }, resource: basicEc2, matches: true },
+      { name: 'match lt no', filter: { uptime: '< 1' }, resource: basicEc2, matches: false },
+      { name: 'match between yes', filter: { uptime: '1-5' }, resource: basicEc2, matches: true },
+      { name: 'match between no1', filter: { uptime: '0-1' }, resource: basicEc2, matches: false },
+      { name: 'match between no2', filter: { uptime: '5-10' }, resource: basicEc2, matches: false },
     ],
   },
   {
@@ -491,6 +513,83 @@ describe('filter', function () {
           expect(filter.matches(new TestingResource(t.resource))).to.be.equal(t.matches);
         });
       }
+    });
+  }
+});
+
+const uptimeTests = [
+  { name: 'no require 5 hour', schedule: 'Start=09:00;Stop=10:00', filter: { type: 'ec2' }, uptime: 1 },
+  {
+    name: 'require 0.5 hour',
+    schedule: 'Start=09:00;Stop=10:00',
+    filter: [{ type: 'ec2' }, { uptime: '> 0.5' }],
+    uptime: 1,  // schedule is sufficient to meet uptime requirements
+  },
+  {
+    name: 'require 1 hour',
+    schedule: 'Start=09:00;Stop=10:00',
+    filter: [{ type: 'ec2' }, { uptime: '> 1' }],
+    uptime: 1, // schedule is sufficient to meet uptime requirements
+  },
+  {
+    name: 'require 5 hour',
+    schedule: 'Start=09:00;Stop=10:00',
+    filter: [{ type: 'ec2' }, { uptime: '> 5' }],
+    uptime: 5, // cannot stop until 5 hours have elapsed since start
+  },
+  {
+    name: 'require 2-3 hour',
+    schedule: 'Start=09:00;Stop=10:00',
+    filter: [{ type: 'ec2' }, { uptime: '2-3' }],
+    uptime: 2,  // cannot stop until at least 2 hours have elapsed since start
+  },
+];
+
+describe('Filter with uptime stops correctly', function () {
+  // Test that a filter with "uptime" delays stopping newly started resources
+  const testInterval = 15; // number of minutes between samples
+  const timeNow = DateTime.fromISO('2024-02-19T00:00Z').toUTC();
+  const interval = Interval.fromDateTimes(timeNow, timeNow.plus({ days: 1 }));
+  const startTimes = interval.splitBy({ minutes: testInterval }).map((d) => d.start);
+
+  for (const uptimeTest of uptimeTests) {
+    it(uptimeTest.name, async function () {
+      // Start every test at midnight with stopped resources
+      const resource = { ...basicEc2, LaunchTime: undefined };
+      resource.resourceState = 'stopped';
+
+      const strictParser = await getParser('strict');
+      const filter = await buildFilter(uptimeTest.filter);
+
+      // For every time-slot in the window, check if the filter matches, start/stop, and count uptime
+      let uptime = 0; // in hours
+      for (const currentTime of startTimes) {
+        dateTime.freezeTime(currentTime!.toISO());
+        const matches = filter.matches(new TestingResource(resource));
+        if (matches) {
+          // if the filter matches, then "apply" the action for next cycle
+          const [action] = strictParser(uptimeTest.schedule, currentTime);
+          if (action == 'START') {
+            if (resource.resourceState == 'stopped') {
+              resource.resourceState = 'running';
+              if (currentTime !== null) {
+                resource.resource.LaunchTime = currentTime.toISO();
+                // logger.error(`Now ${currentTime} starting`);
+              }
+            }
+          } else if (action == 'STOP') {
+            // if (resource.resourceState == 'running') {
+            //   logger.error(`Now ${currentTime} stopping`);
+            // }
+            resource.resourceState = 'stopped';
+          }
+        }
+        // logger.error(`Now ${currentTime} ==> ${matches} (currently ${resource.resourceState})`);
+        if (resource.resourceState == 'running') {
+          uptime += testInterval / 60;
+        }
+      }
+      expect(uptime, 'Calculated uptime matches predicted').to.be.equal(uptimeTest.uptime);
     });
   }
 });

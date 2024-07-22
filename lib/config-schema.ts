@@ -52,6 +52,7 @@ const BaseFilters = z
         to: z.string().optional(),
       })
       .optional(),
+    uptime: z.union([z.array(z.string()), z.string()]).optional(),
   })
   .strict();
 

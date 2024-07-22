@@ -84,6 +84,7 @@ defaults:
               filter:
                 - name: 'junk-asg-3-day'
                 - type: ec2
+                - uptime: '>200'
               schedule: 'Start=11:00|mon-fri;Stop=13:00|mon-fri'
               priority: 10
             # RDS
