@@ -221,7 +221,7 @@ class Ec2Driver extends DriverInterface {
       );
       xi.AutoScalingGroupName = asg ? asg.AutoScalingGroupName : undefined;
       if (xi.AutoScalingGroupName !== undefined) {
-        logger.info(`Instance ${xi.InstanceId} is member of ASG ${xi.AutoScalingGroupName}`);
+        logger.debug(`Instance ${xi.InstanceId} is member of ASG ${xi.AutoScalingGroupName}`);
       }
     }
 
