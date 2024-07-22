@@ -523,19 +523,25 @@ const uptimeTests = [
     name: 'require 0.5 hour',
     schedule: 'Start=09:00;Stop=10:00',
     filter: [{ type: 'ec2' }, { uptime: '> 0.5' }],
-    uptime: 1,
+    uptime: 1,  // schedule is sufficient to meet uptime requirements
   },
   {
     name: 'require 1 hour',
     schedule: 'Start=09:00;Stop=10:00',
     filter: [{ type: 'ec2' }, { uptime: '> 1' }],
-    uptime: 1,
+    uptime: 1, // schedule is sufficient to meet uptime requirements
   },
   {
     name: 'require 5 hour',
     schedule: 'Start=09:00;Stop=10:00',
     filter: [{ type: 'ec2' }, { uptime: '> 5' }],
-    uptime: 5,
+    uptime: 5, // cannot stop until 5 hours have elapsed since start
+  },
+  {
+    name: 'require 2-3 hour',
+    schedule: 'Start=09:00;Stop=10:00',
+    filter: [{ type: 'ec2' }, { uptime: '2-3' }],
+    uptime: 2,  // cannot stop until at least 2 hours have elapsed since start
   },
 ];
 
