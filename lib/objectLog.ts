@@ -97,7 +97,10 @@ abstract class AbstractOutputWriter {
     const config = getAwsConfig(this.options.s3?.region);
     const s3 = new S3Client(config);
     const path = this.resolveFilename(this.options.s3?.path);
-    if (this.options.overwrite === false && await AbstractOutputWriter.s3ExistsSync(s3, this.options.s3!.bucket, path)) {
+    if (
+      this.options.overwrite === false &&
+      (await AbstractOutputWriter.s3ExistsSync(s3, this.options.s3!.bucket, path))
+    ) {
       return; // skip PutObject if object exists and overwrite is false
     }
     this.logFileOutput(`s3://${this.options.s3?.bucket}/${path}`);

@@ -151,8 +151,8 @@ describe('Validate ResourceLog', function () {
     // Execute the ObjectLogJson process (overwrite=false)
     await new ObjectLogJson(
       TEST_RESOURCES,
-      { ...RESOURCE_LOG_CONFIG.json, overwrite: false},
-      ACCOUNT_CONFIG.settings
+      { ...RESOURCE_LOG_CONFIG.json, overwrite: false },
+      ACCOUNT_CONFIG.settings,
     ).process();
     const contents = fs.readFileSync(RESOURCE_LOG_CONFIG.json.file).toString('utf-8');
     expect(contents).to.equal(originalContent);
@@ -186,7 +186,7 @@ describe('Validate ResourceLog', function () {
     // Execute the ObjectLogCsv process (overwrite=false)
     await new ObjectLogCsv(
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags, { SPAM: '123' }),
-      { ...RESOURCE_LOG_CONFIG.csv, overwrite: false},
+      { ...RESOURCE_LOG_CONFIG.csv, overwrite: false },
       ACCOUNT_CONFIG.settings,
     ).process();
 
@@ -197,7 +197,7 @@ describe('Validate ResourceLog', function () {
     // Execute the ObjectLogCsv process (overwrite=undefined)
     await new ObjectLogCsv(
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags, { SPAM: '123' }),
-      { ...RESOURCE_LOG_CONFIG.csv},
+      { ...RESOURCE_LOG_CONFIG.csv },
       ACCOUNT_CONFIG.settings,
     ).process();
 
