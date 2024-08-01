@@ -144,10 +144,25 @@ describe('Validate ResourceLog', function () {
   });
 
   it('Check ObjectLogJson', async function () {
+    // Write some known content to the output file before starting
+    const originalContent = 'test-content';
+    fs.writeFileSync(RESOURCE_LOG_CONFIG.json.file, originalContent);
+
+    // Execute the ObjectLogJson process (overwrite=false)
+    await new ObjectLogJson(
+      TEST_RESOURCES,
+      { ...RESOURCE_LOG_CONFIG.json, overwrite: false},
+      ACCOUNT_CONFIG.settings
+    ).process();
+    const contents = fs.readFileSync(RESOURCE_LOG_CONFIG.json.file).toString('utf-8');
+    expect(contents).to.equal(originalContent);
+
     if (fs.existsSync(RESOURCE_LOG_CONFIG.json.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.json.file);
     await new ObjectLogJson(TEST_RESOURCES, RESOURCE_LOG_CONFIG.json, ACCOUNT_CONFIG.settings).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.json.file)).to.be.true;
     // TODO: check the contents of RESOURCE_LOG_CONFIG.json.file
+    const contents2 = fs.readFileSync(RESOURCE_LOG_CONFIG.json.file).toString('utf-8');
+    expect(contents2).to.not.equal(originalContent);
   });
 
   it('Check ObjectLogHtml', async function () {
