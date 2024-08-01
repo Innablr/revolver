@@ -62,6 +62,7 @@ describe('Validate test config', function () {
     expect(config.accounts.includeList[0].accountId).to.equal('002222222222');
     expect(config.accounts.excludeList).to.deep.equal([{ accountId: '000000000789', settings: { name: 'whatprod' } }]);
     expect(config.defaults.settings.resourceLog?.csv?.reportTags).to.contain.all.members(['Name', 'Schedule']);
+    expect(config.defaults.settings.resourceLog?.csv?.overwrite).to.be.false;
     expect(config.defaults.settings.auditLog?.csv?.file).to.equal('audit.csv');
 
     expect(config.defaults.settings.auditLog?.json?.sqs?.url).to.equal('http://some.sqs.url/queue');

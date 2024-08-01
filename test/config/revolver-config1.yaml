@@ -11,6 +11,7 @@ defaults:
         file: resources.json
       csv:
         file: resources.csv
+        overwrite: false
         reportTags: ["Name", "Schedule"]
     auditLog:
       csv:

@@ -108,6 +108,7 @@ const Settings = z.object({
       csv: z
         .object({
           append: z.boolean().default(false),
+          overwrite: z.boolean().default(true),
           reportTags: z.array(z.string()).optional(),
         })
         .merge(ObjectLogOptions)
