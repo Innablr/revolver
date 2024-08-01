@@ -197,7 +197,7 @@ describe('Validate ResourceLog', function () {
     // Execute the ObjectLogCsv process (overwrite=undefined)
     await new ObjectLogCsv(
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags, { SPAM: '123' }),
-      { ...RESOURCE_LOG_CONFIG.csv },
+      RESOURCE_LOG_CONFIG.csv,
       ACCOUNT_CONFIG.settings,
     ).process();
 
