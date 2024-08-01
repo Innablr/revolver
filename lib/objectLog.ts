@@ -2,7 +2,7 @@ import { ToolingInterface } from '../drivers/instrumentedResource.js';
 import { getSubLogger } from './logger.js';
 import { existsSync, promises as fs } from 'node:fs';
 import { getAwsConfig } from './awsConfig.js';
-import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client, HeadObjectCommand } from '@aws-sdk/client-s3';
 import { SendMessageCommand, SQSClient, MessageAttributeValue } from '@aws-sdk/client-sqs';
 import { ActionAuditEntry } from '../actions/audit.js';
 import dateTime from './dateTime.js';
@@ -34,6 +34,7 @@ type MessageWriteOptons = {
  */
 type WriteOptions = {
   append?: boolean; // file and S3
+  overwrite?: boolean; // file and S3
   console?: null;
   file?: string;
   s3?: {
@@ -85,6 +86,9 @@ abstract class AbstractOutputWriter {
 
   protected async writeFile() {
     const filename = this.resolveFilename(this.options.file);
+    if (this.options.overwrite === false && existsSync(filename)) {
+      return; // skip writeFile if file exists and overwrite is false
+    }
     this.logFileOutput(filename);
     return fs.writeFile(filename, this.getOutput(), { flag: this.options.append ? 'a' : 'w' });
   }
@@ -93,8 +97,24 @@ abstract class AbstractOutputWriter {
     const config = getAwsConfig(this.options.s3?.region);
     const s3 = new S3Client(config);
     const path = this.resolveFilename(this.options.s3?.path);
+    if (this.options.overwrite === false && await AbstractOutputWriter.s3ExistsSync(s3, this.options.s3!.bucket, path)) {
+      return; // skip PutObject if object exists and overwrite is false
+    }
     this.logFileOutput(`s3://${this.options.s3?.bucket}/${path}`);
     return s3.send(new PutObjectCommand({ Bucket: this.options.s3?.bucket, Key: path, Body: this.getOutput() }));
+  }
+
+  private static async s3ExistsSync(s3: S3Client, bucket: string, path: string): Promise<boolean> {
+    // Check if the given S3 bucket+path exists. Watch out for race conditions.
+    try {
+      await s3.send(new HeadObjectCommand({ Bucket: bucket, Key: path }));
+      return true;
+    } catch (error) {
+      if (!(error instanceof NoSuchKey)) {
+        throw error;
+      }
+    }
+    return false;
   }
 
   private static compress(data: string): string {
