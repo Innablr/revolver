@@ -103,11 +103,17 @@ const Settings = z.object({
   revolverRoleName: z.string(),
   resourceLog: z
     .object({
-      json: ObjectLogOptions.optional(),
+      json: z
+        .object({
+          overwrite: z.boolean().default(true),
+        })
+        .merge(ObjectLogOptions)
+        .optional(),
       html: ObjectLogOptions.optional(),
       csv: z
         .object({
           append: z.boolean().default(false),
+          overwrite: z.boolean().default(true),
           reportTags: z.array(z.string()).optional(),
         })
         .merge(ObjectLogOptions)
