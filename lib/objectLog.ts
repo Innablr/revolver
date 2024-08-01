@@ -2,7 +2,14 @@ import { ToolingInterface } from '../drivers/instrumentedResource.js';
 import { getSubLogger } from './logger.js';
 import { existsSync, promises as fs } from 'node:fs';
 import { getAwsConfig } from './awsConfig.js';
-import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client, HeadObjectCommand, NotFound } from '@aws-sdk/client-s3';
+import {
+  GetObjectCommand,
+  NoSuchKey,
+  PutObjectCommand,
+  S3Client,
+  HeadObjectCommand,
+  NotFound,
+} from '@aws-sdk/client-s3';
 import { SendMessageCommand, SQSClient, MessageAttributeValue } from '@aws-sdk/client-sqs';
 import { ActionAuditEntry } from '../actions/audit.js';
 import dateTime from './dateTime.js';
