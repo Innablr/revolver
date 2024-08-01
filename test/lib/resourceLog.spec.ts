@@ -162,4 +162,32 @@ describe('Validate ResourceLog', function () {
       expect(contents).to.contain(t.resourceId);
     }
   });
+
+  it('Check ObjectLogCsv overwrite', async function () {
+    // Write some known content to the output file before starting
+    const originalContent = 'test-content';
+    fs.writeFileSync(RESOURCE_LOG_CONFIG.csv.file, originalContent);
+
+    // Execute the ObjectLogCsv process (overwrite=false)
+    await new ObjectLogCsv(
+      new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags, { SPAM: '123' }),
+      { ...RESOURCE_LOG_CONFIG.csv, overwrite: false},
+      ACCOUNT_CONFIG.settings,
+    ).process();
+
+    // Check original content is intact
+    const contents = fs.readFileSync(RESOURCE_LOG_CONFIG.csv.file).toString('utf-8');
+    expect(contents).to.equal(originalContent);
+
+    // Execute the ObjectLogCsv process (overwrite=undefined)
+    await new ObjectLogCsv(
+      new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags, { SPAM: '123' }),
+      { ...RESOURCE_LOG_CONFIG.csv},
+      ACCOUNT_CONFIG.settings,
+    ).process();
+
+    // Check original content is gone
+    const contents2 = fs.readFileSync(RESOURCE_LOG_CONFIG.csv.file).toString('utf-8');
+    expect(contents2).to.not.equal(originalContent);
+  });
 });
