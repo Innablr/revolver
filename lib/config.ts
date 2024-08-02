@@ -39,6 +39,7 @@ function flattenZodErrors(ze: ZodError, depth: number): string[] {
   return lines;
 }
 
+// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
 export class RevolverConfig {
   /**
    * Validate JSON configuration conforms to the schema and return a configuration object.
@@ -109,7 +110,7 @@ export class RevolverConfig {
         const accounts = await paginateAwsCall(paginateListAccounts, client, 'Accounts');
         accounts.forEach((account) => {
           account.accountId = account.Id;
-          delete account.Id;
+          account.Id = undefined;
           account.settings = {
             name: account.Name,
             region: cr.settings.region,
@@ -160,7 +161,7 @@ export class RevolverConfig {
       .filter((xa: any) => {
         // the orgId is part of the account Arn: "arn:aws:organizations::ORG_NUMBER:account/ORG_ID/ACCOUNT_ID",
         const orgNumber = xa.Arn.split(':')[4];
-        return orgAccountNameRegex[orgNumber] == undefined || orgAccountNameRegex[orgNumber].test(xa.Name);
+        return orgAccountNameRegex[orgNumber] === undefined || orgAccountNameRegex[orgNumber].test(xa.Name);
       })
       .concat(config.accounts.includeList);
     // exclude accounts specified in excludeList, and non-active accounts

@@ -37,9 +37,9 @@ it('Strict parser calculates coverage correctly', async function () {
     let isRunning = startRunning;
     const numMinutes = testTimes.reduce((uptime, t) => {
       const [action] = strictParser(tag, t);
-      if (action == 'START') {
+      if (action === 'START') {
         isRunning = true;
-      } else if (action == 'STOP') {
+      } else if (action === 'STOP') {
         isRunning = false;
       }
       logger.error(`XXXXX [${t?.toFormat("ccc DD: T")}] ${tag} -> ${action} (${isRunning ? 'running' : 'stopped'})`);

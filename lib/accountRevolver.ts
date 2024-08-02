@@ -97,7 +97,7 @@ export class AccountRevolver {
           }
         }),
       )
-    ).flatMap((xr) => xr);
+    ).flat();
 
     if (this.config.settings.excludeResources) {
       const excludeFilter = await buildFilter(this.config.settings.excludeResources);

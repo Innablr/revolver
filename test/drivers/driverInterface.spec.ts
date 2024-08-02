@@ -48,7 +48,7 @@ describe('check toLimitedString', function () {
       const resources20 = Array(20).fill(new RandomInstrumentedResource(undefined));
       const s20 = RandomDriver.toLimitedString(resources20);
       expect(s20.split(',').length).is.lessThan(10); // don't be too sensitive about the limit
-      expect(s20).to.contain(`(20)`);
+      expect(s20).to.contain('(20)');
     }
 
     collect(): Promise<ToolingInterface[]> {

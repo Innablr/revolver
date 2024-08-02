@@ -9,7 +9,7 @@ import zlib from 'node:zlib';
 import { PromisePool } from '@supercharge/promise-pool';
 
 // Specify a SQS message attribute to log out to the console
-const sqsLogAttribute = process.env['SQS_LOG_ATTRIBUTE'];
+const sqsLogAttribute = process.env.SQS_LOG_ATTRIBUTE;
 
 export const handlerSQS: SQSHandler = async (event: SQSEvent) => {
   for (const record of event.Records) {

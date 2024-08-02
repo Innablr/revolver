@@ -84,9 +84,9 @@ function template(title: string, content: string): string {
  * @param depth - how deep to traverse into the object when rendering
  */
 function objectToTable(obj: any[], depth: number): string {
-  if (!Array.isArray(obj) || obj.length == 0) return `${obj}`;
+  if (!Array.isArray(obj) || obj.length === 0) return `${obj}`;
   const headers = Object.keys(obj[0]);
-  let s = `<table>`;
+  let s = '<table>';
   s += `
   <thead>
     <tr>
@@ -110,7 +110,7 @@ function objectToTable(obj: any[], depth: number): string {
       .join('')}
   </tbody>`;
 
-  s += `</table>`;
+  s += '</table>';
 
   return s;
 }
@@ -122,10 +122,10 @@ function objectToTable(obj: any[], depth: number): string {
  */
 function objectToHtml(obj: any, depth: number): string {
   if (Array.isArray(obj)) {
-    let s = `<details ${depth != 1 && (depth == 0 || obj.length < 5) ? 'open' : ''}><summary></summary><table>`;
+    let s = `<details ${depth !== 1 && (depth === 0 || obj.length < 5) ? 'open' : ''}><summary></summary><table>`;
     s += obj
       .map((i) => {
-        if (typeof i == 'object' && Object.keys(i).length === 1) {
+        if (typeof i === 'object' && Object.keys(i).length === 1) {
           const f = Object.keys(i)[0];
           return `<tr><th>${f}</th><td>${i[f]}</td>`;
         } else {
@@ -133,16 +133,16 @@ function objectToHtml(obj: any, depth: number): string {
         }
       })
       .join('');
-    s += `</table></details>`;
+    s += '</table></details>';
     return s;
-  } else if (obj != undefined && typeof obj === 'object') {
-    let s = `<details ${depth != 1 && (depth == 0 || Object.keys(obj).length < 5) ? 'open' : ''}><summary></summary><table>`;
+  } else if (obj !== undefined && typeof obj === 'object') {
+    let s = `<details ${depth !== 1 && (depth === 0 || Object.keys(obj).length < 5) ? 'open' : ''}><summary></summary><table>`;
     s += Object.keys(obj)
       .map((k) => {
         return `<tr><th>${k}</th><td>${objectToHtml(obj[k], depth + 1)}</td></tr>`;
       })
       .join('');
-    s += `</table></details>`;
+    s += '</table></details>';
     return s;
   } else {
     return `${obj}`;
