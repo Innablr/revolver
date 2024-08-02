@@ -22,8 +22,7 @@ export abstract class RevolverAction {
     return this.what;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  swallow(other: RevolverAction) {
+  swallow(_other: RevolverAction) {
     return false;
   }
 }

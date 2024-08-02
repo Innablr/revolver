@@ -85,7 +85,7 @@ function unlinkIfExists(filename: string) {
 }
 
 function clearFiles() {
-  ACCOUNTS.forEach((account, accountIndex) => {
+  ACCOUNTS.forEach((_account, accountIndex) => {
     unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.Audit));
     unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.ResourcesCsv));
     unlinkIfExists(getOutputFilename(accountIndex, OutputFiles.ResourcesJson));

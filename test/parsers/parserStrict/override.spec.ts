@@ -34,8 +34,7 @@ describe('Strict parser detects override', async function () {
     ];
     cases.forEach(function (c) {
       it(`in ${c}`, function () {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const [action, reason] = strictParser(c, timeNow);
+        const [_action, reason] = strictParser(c, timeNow);
         expect(reason).to.not.equal('Availability override');
       });
     });

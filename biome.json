@@ -2,7 +2,7 @@
   "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
   "organizeImports": { "enabled": false },
   "linter": {
-    "enabled": false,
+    "enabled": true,
     "rules": {
       "recommended": false,
       "complexity": {
@@ -58,7 +58,7 @@
         "noDuplicateClassMembers": "error",
         "noDuplicateObjectKeys": "error",
         "noDuplicateParameters": "error",
-        "noEmptyBlockStatements": "error",
+        "noEmptyBlockStatements": "off",
         "noExplicitAny": "off",
         "noExtraNonNullAssertion": "error",
         "noFallthroughSwitchClause": "error",

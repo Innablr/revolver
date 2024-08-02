@@ -15,8 +15,7 @@ describe('Strict parser handles different corner cases', async function () {
     const er = strictParser('start=08:30;stop=17:30;override=no', timeNow);
     cases.forEach(function (c) {
       it(`for ${c}`, function () {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const [action, reason] = strictParser(c, timeNow);
+        const [_action, _reason] = strictParser(c, timeNow);
         expect(strictParser(c, timeNow)).to.have.ordered.members(er);
       });
     });

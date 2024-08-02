@@ -51,8 +51,7 @@ export default class FilterMatchWindowStart implements Filter, FilterCtor {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  matches(resource: ToolingInterface): boolean {
+  matches(_resource: ToolingInterface): boolean {
     const now = dateTime.getTime();
     if (this.startTime && now < this.startTime) {
       return false; // too early

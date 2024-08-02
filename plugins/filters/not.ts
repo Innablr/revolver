@@ -13,7 +13,6 @@ export default class FilterNot implements Filter, FilterCtor {
   constructor(config: any) {
     this.isReady = new Promise((resolve) => {
       const name = Object.keys(config)[0];
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const i = require(`./${name}`);
       new i.default(config[name]).ready().then((filter: Filter) => {
         this.element = filter;
