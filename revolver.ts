@@ -41,10 +41,9 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   dateTime.freezeTime(event.time);
   logger.info(`Got time ${dateTime.getTime()}`);
 
-  const config = await (
-    environ.configPath
-      ? RevolverConfig.readConfigFromFile(environ.configPath)
-      : RevolverConfig.readConfigFromS3(environ.configBucket!, environ.configKey!)
+  const config = await (environ.configPath
+    ? RevolverConfig.readConfigFromFile(environ.configPath)
+    : RevolverConfig.readConfigFromS3(environ.configBucket!, environ.configKey!)
   ).catch(function (e: Error) {
     throw new Error(`Unable to parse config object: ${e}. Exiting.`);
   });
