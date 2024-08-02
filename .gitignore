@@ -27,5 +27,3 @@ cdk.context.json
 # Resource file output
 resources.json
 *.csv
-
-.nyc_output
