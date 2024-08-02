@@ -8,7 +8,7 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "lint": "eslint . --ext .ts",
+    "lint": "biome check",
     "test": "LOG_LEVEL=error mocha --require ts-node/register --require source-map-support/register --recursive --exit test",
     "coverage": "c8 npm run test; rimraf ./coverage",
     "build": "tsc --build ./tsconfig.json",
@@ -49,6 +49,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
     "@types/aws-lambda": "^8.10.142",
     "@types/chai": "^4.3.16",
     "@types/chai-as-promised": "^7.1.8",
@@ -58,21 +59,12 @@
     "@types/jsonfile": "^6.1.4",
     "@types/luxon": "^3.4.2",
     "@types/node": "^22.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.17.0",
     "c8": "^10.1.2",
     "chai": "^5.1.1",
     "chai-as-promised": "^8.0.0",
     "copy-webpack-plugin": "^12.0.2",
     "csv-parse": "^5.5.6",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^5.2.1",
-    "eslint-plugin-tsdoc": "^0.2.17",
     "mocha": "^10.7.0",
-    "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
     "source-map-support": "^0.5.21",
     "ts-loader": "^9.5.1",
