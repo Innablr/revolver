@@ -83,8 +83,7 @@
       "**/coverage",
       "**/cdk.json",
       "**/.cdk.staging",
-      "**/cdk.out",
-      ".vscode"
+      "**/cdk.out"
     ]
   },
   "overrides": [
