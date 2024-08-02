@@ -123,6 +123,7 @@ export abstract class DriverInterface {
 
           // push the list of actions actually run into the resource
           allWithAction.forEach((xxr) => {
+            // biome-ignore lint/suspicious/noAssignInExpressions: OK
             (xxr.metadata.actionNames ??= []).push(xa.constructor.name);
           });
 

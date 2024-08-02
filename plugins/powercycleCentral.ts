@@ -45,7 +45,6 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
   }
 
   async initialise(): Promise<PowerCycleCentralPlugin> {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     this.parser = await getParser(this.pluginConfig.parser || 'strict');
     const localTimeNow = dateTime.getTime('utc');
 

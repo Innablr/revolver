@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import { EventBridgeEvent, SQSEvent, ScheduledEvent, ScheduledHandler, SQSHandler } from 'aws-lambda';
 import environ from './lib/environ.js';
 import { AccountRevolver } from './lib/accountRevolver.js';
