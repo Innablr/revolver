@@ -114,7 +114,7 @@ export class StringCompareOptions {
       return [
         key,
         {
-          [this.defaultCompare]: tokens.slice(1).join('|'),
+          [StringCompareOptions.defaultCompare]: tokens.slice(1).join('|'),
         },
       ];
     }
@@ -126,7 +126,7 @@ export class StringCompareOptions {
     const tokens = value.split('|');
     if (tokens.length < 2) {
       return {
-        [this.defaultCompare]: tokens[0],
+        [StringCompareOptions.defaultCompare]: tokens[0],
       };
     }
     return {

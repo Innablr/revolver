@@ -87,7 +87,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
           SnapshotIdentifier: snapshot.resourceId,
           AvailabilityZone: snapshot.resource.AvailabilityZone,
           ClusterSubnetGroupName: snapshot.tag('revolver/cluster_subnet_group_name'),
-          Port: parseInt(snapshot.tag('revolver/cluster_port') || '0', 10),
+          Port: Number.parseInt(snapshot.tag('revolver/cluster_port') || '0', 10),
           VpcSecurityGroupIds: [] as string[],
         };
         if (sgTag !== undefined) {

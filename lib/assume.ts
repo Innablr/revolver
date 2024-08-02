@@ -57,7 +57,7 @@ class RemoteCredentials {
       throw new Error(`Unable to assume role ${remoteRole}, got empty creds`);
     }
     if (creds.Expiration === undefined) {
-      throw new Error(`Credentials have no expiry time`);
+      throw new Error('Credentials have no expiry time');
     }
     const expireAt = DateTime.fromJSDate(creds.Expiration).setZone('UTC').minus({ seconds: 5 });
     // TODO: deal with undefined better

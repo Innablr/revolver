@@ -24,8 +24,8 @@ if (process.argv.length < 4) {
   process.exit(1);
 }
 // 0 and 1 are node program and script
-let jsonFile = process.argv[2];
-let jmesPathVal = process.argv[3];
+const jsonFile = process.argv[2];
+const jmesPathVal = process.argv[3];
 
 let data = '';
 try {

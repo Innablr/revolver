@@ -16,7 +16,7 @@ class DateTime {
   }
 
   freezeTimeUnix(t: string) {
-    this.currentTime = LuxonDateTime.fromMillis(parseInt(t)).toUTC();
+    this.currentTime = LuxonDateTime.fromMillis(Number.parseInt(t)).toUTC();
     logger.debug(`Freezing time Unix: ${t} -> ${this.currentTime}`);
     if (this.currentTime.invalidReason) {
       logger.warn(`Invalid time: ${this.currentTime.invalidReason}: ${this.currentTime.invalidExplanation}`);

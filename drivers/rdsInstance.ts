@@ -82,16 +82,10 @@ class RdsInstanceDriver extends DriverInterface {
     if (resource.resource.ReadReplicaSourceDBInstanceIdentifier) {
       return `RDS instance ${resource.resource.DBInstanceIdentifier} is a read replica of ${resource.resource.ReadReplicaSourceDBInstanceIdentifier}`;
     }
-    if (
-      resource.resource.ReadReplicaDBInstanceIdentifiers !== undefined &&
-      resource.resource.ReadReplicaDBInstanceIdentifiers.length
-    ) {
+    if (resource.resource.ReadReplicaDBInstanceIdentifiers?.length) {
       return `RDS instance ${resource.resource.DBInstanceIdentifier} has read replicas`;
     }
-    if (
-      resource.resource.ReadReplicaDBClusterIdentifiers !== undefined &&
-      resource.resource.ReadReplicaDBClusterIdentifiers.length
-    ) {
+    if (resource.resource.ReadReplicaDBClusterIdentifiers?.length) {
       return `RDS instance ${resource.resource.DBInstanceIdentifier} has read replica clusters`;
     }
     if (!resource.isStopped) {
@@ -125,16 +119,10 @@ class RdsInstanceDriver extends DriverInterface {
     if (resource.resource.ReadReplicaSourceDBInstanceIdentifier) {
       return `RDS instance ${resource.resource.DBInstanceIdentifier} is a read replica of ${resource.resource.ReadReplicaSourceDBInstanceIdentifier}`;
     }
-    if (
-      resource.resource.ReadReplicaDBInstanceIdentifiers !== undefined &&
-      resource.resource.ReadReplicaDBInstanceIdentifiers.length
-    ) {
+    if (resource.resource.ReadReplicaDBInstanceIdentifiers?.length) {
       return `RDS instance ${resource.resource.DBInstanceIdentifier} has read replicas`;
     }
-    if (
-      resource.resource.ReadReplicaDBClusterIdentifiers !== undefined &&
-      resource.resource.ReadReplicaDBClusterIdentifiers.length
-    ) {
+    if (resource.resource.ReadReplicaDBClusterIdentifiers?.length) {
       return `RDS instance ${resource.resource.DBInstanceIdentifier} has read replica clusters`;
     }
     if (!resource.isAvailable) {

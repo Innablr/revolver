@@ -27,7 +27,7 @@ class FakeResource extends ToolingInterface {
     return this.myResourceType;
   }
   get resourceArn(): string {
-    return 'arn:aws:ec2:ap-southeast-2:112233445566:volume/' + randomBytes(20).toString('hex');
+    return `arn:aws:ec2:ap-southeast-2:112233445566:volume/${randomBytes(20).toString('hex')}`;
   }
   get launchTimeUtc(): DateTime<boolean> {
     return DateTime.fromISO('2024-02-13T22:43:49.000Z').setZone('utc');

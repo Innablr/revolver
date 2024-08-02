@@ -223,7 +223,7 @@ abstract class AbstractOutputWriter {
     }
     // Replace all tokens from this.context
     if (this.context && Object.keys(this.context).length) {
-      const re = new RegExp('%(' + Object.keys(this.context).join('|') + ')', 'g');
+      const re = new RegExp(`%(${Object.keys(this.context).join('|')})`, 'g');
       path = path.replace(re, (match) => {
         const key = match.replace('%', '');
         return this.context![key as keyof WriterContext] || '??';
