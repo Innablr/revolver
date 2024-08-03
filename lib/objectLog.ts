@@ -222,20 +222,21 @@ abstract class AbstractOutputWriter {
       return '';
     }
     // Replace all tokens from this.context
+    let usePath = path;
     if (this.context && Object.keys(this.context).length) {
       const re = new RegExp(`%(${Object.keys(this.context).join('|')})`, 'g');
-      path = path.replace(re, (match) => {
+      usePath = usePath.replace(re, (match) => {
         const key = match.replace('%', '');
         return this.context![key as keyof WriterContext] || '??';
       });
     }
     // If filename contains any %xxx tokens (same character is repeated) attempt to use Luxon to resolve (date/time) tokens.
-    path = path.replace(/%(\w)\1*(?!\w)/g, (match) => {
+    usePath = usePath.replace(/%(\w)\1*(?!\w)/g, (match) => {
       return dateTime.getTime(this.context?.timezone).toFormat(match.replace('%', ''));
     });
 
     // unmatched tokens will be retained as `%token`
-    return path;
+    return usePath;
   }
 
   process(): any {
