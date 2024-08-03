@@ -17,10 +17,8 @@
         "useImportType": "off",
         "noUselessElse": "off",
         "noNonNullAssertion": "off",
-        "useTemplate": "info",
         "noInferrableTypes": "off",
-        "useEnumInitializers": "off",
-        "noParameterAssign": "warn"
+        "useEnumInitializers": "off"
       },
       "performance": {
         "noAccumulatingSpread": "off"
@@ -64,13 +62,7 @@
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
-      "indentStyle": "space",
       "lineWidth": 120
-    }
-  },
-  "json": {
-    "formatter": {
-      "indentStyle": "space"
     }
   }
 }
