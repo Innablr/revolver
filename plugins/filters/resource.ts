@@ -41,7 +41,7 @@ export default class FilterResource implements Filter, FilterCtor {
       }
 
       // can't validate path as it depends on the input
-      this.resourcePath = appliedConfig['path'];
+      this.resourcePath = appliedConfig.path;
       this.compareOptions = new StringCompareOptions(appliedConfig);
 
       resolve(this);

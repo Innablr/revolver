@@ -58,15 +58,15 @@ export class StringCompareOptions {
   endswith: string | undefined;
 
   constructor(config: any) {
-    this.equals = config['equals'];
-    this.iequals = config['iequals'];
-    this.contains = config['contains'];
-    this.startswith = config['startswith'];
-    this.endswith = config['endswith'];
+    this.equals = config.equals;
+    this.iequals = config.iequals;
+    this.contains = config.contains;
+    this.startswith = config.startswith;
+    this.endswith = config.endswith;
 
-    if (config['regexp'] !== undefined) {
+    if (config.regexp !== undefined) {
       // will throw on failure to compile
-      this.regexp = new RegExp(config['regexp']);
+      this.regexp = new RegExp(config.regexp);
     }
   }
 

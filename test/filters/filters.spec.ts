@@ -15,33 +15,33 @@ class TestingResource extends ToolingInterface {
     super(resource.resource);
     this.topResource = resource;
     // delete resource['resource'];
-    if (this.topResource['tags'] === undefined) this.topResource['tags'] = {};
+    if (this.topResource.tags === undefined) this.topResource.tags = {};
   }
   get launchTimeUtc(): DateTime {
     return DateTime.now();
   }
 
   get resourceArn(): string {
-    return this.topResource['resourceArn'];
+    return this.topResource.resourceArn;
   }
 
   get resourceId(): string {
-    return this.topResource['resourceId'];
+    return this.topResource.resourceId;
   }
 
   get resourceState(): string {
-    return this.topResource['resourceState'];
+    return this.topResource.resourceState;
   }
 
   get resourceType(): string {
-    return this.topResource['resourceType'];
+    return this.topResource.resourceType;
   }
 
   tag(key: string): string | undefined {
-    return this.topResource['tags'][key];
+    return this.topResource.tags[key];
   }
   get resourceTags(): { [key: string]: string } {
-    return makeResourceTags(this.topResource['tags']);
+    return makeResourceTags(this.topResource.tags);
   }
 }
 

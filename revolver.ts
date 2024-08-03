@@ -23,7 +23,7 @@ export const handlerSQS: SQSHandler = async (event: SQSEvent) => {
     let body = record.body;
 
     // assumed base64 encoding since this is a text field
-    if (record.messageAttributes['compression']?.stringValue === 'zlib') {
+    if (record.messageAttributes.compression?.stringValue === 'zlib') {
       body = zlib.inflateSync(Buffer.from(record.body, 'base64')).toString('utf-8');
     }
 

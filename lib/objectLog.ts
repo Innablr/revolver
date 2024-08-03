@@ -152,11 +152,11 @@ abstract class AbstractOutputWriter {
     });
 
     let output = this.getOutput();
-    attributes['compression'] = {
+    attributes.compression = {
       DataType: 'String',
       StringValue: 'none',
     };
-    attributes['encoding'] = {
+    attributes.encoding = {
       DataType: 'String',
       StringValue: 'none',
     };
@@ -164,11 +164,11 @@ abstract class AbstractOutputWriter {
     if (settings?.compress) {
       output = AbstractOutputWriter.compress(output);
       this.logger.debug(`compressed message size: ${output.length}`);
-      attributes['compression'] = {
+      attributes.compression = {
         DataType: 'String',
         StringValue: 'zlib',
       };
-      attributes['encoding'] = {
+      attributes.encoding = {
         DataType: 'String',
         StringValue: 'base64',
       };
