@@ -86,7 +86,7 @@ class Ec2Driver extends DriverInterface {
 
   async start(resources: InstrumentedEc2[]) {
     const logger = this.logger;
-    const autoscaling: AutoScalingClient = await getAwsClientForAccount(AutoScalingClient, this.accountConfig);
+    const autoscaling = await getAwsClientForAccount(AutoScalingClient, this.accountConfig);
     const ec2 = await getAwsClientForAccount(EC2Client, this.accountConfig);
 
     const resourceChunks = chunkArray(resources, 200);
