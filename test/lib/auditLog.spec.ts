@@ -23,8 +23,8 @@ class FakeActionAuditEntry implements ActionAuditEntry {
     this.accountId = randomBytes(20).toString('hex');
     this.plugin = 'fakeplugin';
     this.driver = 'fakedriver';
-    this.resourceType = 'type_' + randomBytes(20).toString('hex');
-    this.resourceId = 'id_' + randomBytes(20).toString('hex');
+    this.resourceType = `type_${randomBytes(20).toString('hex')}`;
+    this.resourceId = `id_${randomBytes(20).toString('hex')}`;
     this.status = status;
     this.action = action;
     this.reason = reason;
