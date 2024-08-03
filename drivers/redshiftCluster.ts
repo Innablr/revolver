@@ -57,7 +57,7 @@ class InstrumentedRedshiftCluster extends ToolingInterface {
   }
 
   get isSingleNode() {
-    return this.singleNode ? true : false;
+    return !!this.singleNode; // double-NOT returns truthiness
   }
 
   get resourceArn() {
