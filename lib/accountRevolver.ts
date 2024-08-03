@@ -53,7 +53,7 @@ export class AccountRevolver {
         this.logger.info(`Configuring plugin ${xs}...`);
         return this.config.plugins[xs].configs.map(async (xp: any) => {
           const PluginModule = await import(`../plugins/${xs}.js`);
-          return new PluginModule['default'](this.config, xs, xp);
+          return new PluginModule.default(this.config, xs, xp);
         });
       }),
     );

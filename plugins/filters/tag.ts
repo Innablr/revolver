@@ -37,7 +37,7 @@ export default class FilterTag implements Filter, FilterCtor {
           ...opts,
         };
       }
-      this.tagName = appliedConfig['name'];
+      this.tagName = appliedConfig.name;
       this.compareOptions = new StringCompareOptions(appliedConfig);
       resolve(this);
     });

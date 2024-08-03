@@ -8,7 +8,6 @@
       "complexity": {
         "useArrowFunction": "off",
         "noForEach": "off",
-        "useLiteralKeys": "off",
         "noUselessTernary": "off"
       },
       "suspicious": {

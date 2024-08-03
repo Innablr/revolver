@@ -42,7 +42,7 @@ class RemoteCredentials {
 
     // Use the following environment variables to determine which region to use for the STS service.
     // See https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-runtime
-    const region = process.env['AWS_REGION'] || process.env['AWS_DEFAULT_REGION'] || 'ap-southeast-2'; // provide a default
+    const region = process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'ap-southeast-2'; // provide a default
     const awsConfig = getAwsConfig(region);
     logger.debug(`Assuming role ${remoteRole} in ${region}...`);
     const sts = new STS(awsConfig);
