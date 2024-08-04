@@ -1151,12 +1151,7 @@
       "DBInstanceArn": "arn:aws:rds:ap-southeast-2:112233445566:db:mysql-day",
       "IAMDatabaseAuthenticationEnabled": false,
       "PerformanceInsightsEnabled": false,
-      "EnabledCloudwatchLogsExports": [
-        "audit",
-        "error",
-        "general",
-        "slowquery"
-      ],
+      "EnabledCloudwatchLogsExports": ["audit", "error", "general", "slowquery"],
       "DeletionProtection": false,
       "AssociatedRoles": [],
       "TagList": [
@@ -1460,11 +1455,7 @@
     "resourceState": "stopped",
     "resource": {
       "AllocatedStorage": 1,
-      "AvailabilityZones": [
-        "ap-southeast-2a",
-        "ap-southeast-2b",
-        "ap-southeast-2c"
-      ],
+      "AvailabilityZones": ["ap-southeast-2a", "ap-southeast-2b", "ap-southeast-2c"],
       "BackupRetentionPeriod": 1,
       "DatabaseName": "revolvertestdb",
       "DBClusterIdentifier": "revolver-test-rds-cluster",

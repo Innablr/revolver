@@ -56,7 +56,9 @@
     "ignore": [],
     "attributePosition": "auto",
     "indentStyle": "space",
-    "indentWidth": 2
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 120
   },
   "javascript": {
     "formatter": {
