@@ -42,7 +42,7 @@
     "jmespath": "^0.16.0",
     "js-yaml": "^4.1.0",
     "jsonfile": "^6.1.0",
-    "luxon": "^3.4.4",
+    "luxon": "^3.5.0",
     "proxy-agent": "^6.4.0",
     "ts-deepmerge": "^7.0.1",
     "tslog": "^4.9.3",
