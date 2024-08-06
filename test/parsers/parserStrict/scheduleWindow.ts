@@ -1,6 +1,7 @@
 import getParser from '../../../plugins/parsers/index.js';
 import { expect } from 'chai';
 import { DateTime, Interval } from 'luxon';
+import { logger } from '../../../lib/logger.js';
 
 it('Strict parser calculates coverage correctly', async function () {
   const testInterval = 15; // number of minutes between samples
@@ -28,6 +29,7 @@ it('Strict parser calculates coverage correctly', async function () {
     // ['Start=08:30|mon,thu-fri;Stop=09:00|mon,thu-fri', 30 * 3],
     // ['Start=08:30|mon-tue,thu-fri;Stop=09:00|mon-tue,thu-fri', 30 * 4],
     // ['Start=08:30|mon-wed,fri;Stop=09:00|mon-tue,thu-fri', 30 * 4],
+    ['Stop=08:45|tue-tue;Start=13:00|tue-tue', 24 * 7 * 60 - 4.25 * 50, true],
   ];
 
   const strictParser = await getParser('strict');
@@ -40,6 +42,7 @@ it('Strict parser calculates coverage correctly', async function () {
       } else if (action == 'STOP') {
         isRunning = false;
       }
+      logger.error(`XXXXX [${t?.toFormat("ccc DD: T")}] ${tag} -> ${action} (${isRunning ? 'running' : 'stopped'})`);
       return isRunning ? uptime + testInterval : uptime;
     }, 0);
     expect(numMinutes).to.equal(answer, `Checking >${tag}<`);
