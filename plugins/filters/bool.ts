@@ -16,8 +16,7 @@ export default class FilterBool implements Filter, FilterCtor {
       resolve(this);
     });
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  matches(resource: ToolingInterface): boolean {
+  matches(_resource: ToolingInterface): boolean {
     return this.yes;
   }
 }

@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import { EventBridgeEvent, Context } from 'aws-lambda';
 import { handler as revolverHandle } from './revolver.js';
 

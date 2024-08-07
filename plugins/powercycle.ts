@@ -31,7 +31,6 @@ export default class PowerCyclePlugin extends RevolverPlugin {
   }
 
   async initialise(): Promise<PowerCyclePlugin> {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     this.parser = await getParser(this.pluginConfig.tagging || 'strict');
     return Promise.resolve(this);
   }
