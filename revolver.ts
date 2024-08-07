@@ -9,7 +9,7 @@ import zlib from 'node:zlib';
 import { PromisePool } from '@supercharge/promise-pool';
 
 // Specify a SQS message attribute to log out to the console
-const sqsLogAttribute = process.env['SQS_LOG_ATTRIBUTE'];
+const sqsLogAttribute = process.env.SQS_LOG_ATTRIBUTE;
 
 export const handlerSQS: SQSHandler = async (event: SQSEvent) => {
   for (const record of event.Records) {
@@ -23,7 +23,7 @@ export const handlerSQS: SQSHandler = async (event: SQSEvent) => {
     let body = record.body;
 
     // assumed base64 encoding since this is a text field
-    if (record.messageAttributes['compression']?.stringValue === 'zlib') {
+    if (record.messageAttributes.compression?.stringValue === 'zlib') {
       body = zlib.inflateSync(Buffer.from(record.body, 'base64')).toString('utf-8');
     }
 

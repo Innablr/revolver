@@ -26,7 +26,7 @@ class InstrumentedEc2 extends ToolingInterface {
   constructor(resource: Instance, instanceARN: string) {
     super(resource);
     this.instanceARN = instanceARN;
-    if (this.resourceState == 'running') {
+    if (this.resourceState === 'running') {
       this.metadata.uptime = dateTime.calculateUptime(this.launchTimeUtc).toFixed(2);
     }
   }

@@ -35,8 +35,8 @@ export interface RevolverLogObject {
  * to object keys if they have a ':' separator. Splits out string messages and object messages to message and data.
  */
 function restructureJsonLog(log: any) {
-  if (log == undefined) return;
-  const positionalEntries: string[] = Object.keys(log).filter((k: any) => !isNaN(k));
+  if (log === undefined) return;
+  const positionalEntries: string[] = Object.keys(log).filter((k: any) => !Number.isNaN(k));
 
   const prefixEntries: string[] = positionalEntries.slice(0, logger.settings.prefix.length);
   const processedPrefix: { [key: string]: boolean } = {};
@@ -111,7 +111,7 @@ export class ErrorTrackingLogger<LogObj> extends Logger<LogObj> {
   constructor(settings?: ISettingsParam<LogObj>, logObj?: LogObj) {
     super(settings, logObj);
     this.attachTransport((logObj) => {
-      this.hasError ||= logObj._meta.logLevelId >= logLevels['error'];
+      this.hasError ||= logObj._meta.logLevelId >= logLevels.error;
     });
   }
 }

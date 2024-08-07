@@ -1,7 +1,7 @@
 import { EventBridgeEvent, Context } from 'aws-lambda';
 import { handler as revolverHandle } from './revolver.js';
 
-const timeStamp = process.env['CURRENT_TIME'] || new Date().toISOString();
+const timeStamp = process.env.CURRENT_TIME || new Date().toISOString();
 
 const event: EventBridgeEvent<'Scheduled Event', 'test-event'> = {
   id: '0',

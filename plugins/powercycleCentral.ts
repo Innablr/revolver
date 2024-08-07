@@ -38,8 +38,8 @@ export default class PowerCycleCentralPlugin extends RevolverPlugin {
 
     // todo explicit type conversion
     this.matchers = pluginConfig.matchers.sort((a: Matcher, b: Matcher) => {
-      if (isNaN(b.priority)) b.priority = 0;
-      if (isNaN(a.priority)) a.priority = 0;
+      if (Number.isNaN(b.priority)) b.priority = 0;
+      if (Number.isNaN(a.priority)) a.priority = 0;
       return b.priority - a.priority;
     });
   }

@@ -53,7 +53,7 @@ export class AccountRevolver {
         this.logger.info(`Configuring plugin ${xs}...`);
         return this.config.plugins[xs].configs.map(async (xp: any) => {
           const PluginModule = await import(`../plugins/${xs}.js`);
-          return new PluginModule['default'](this.config, xs, xp);
+          return new PluginModule.default(this.config, xs, xp);
         });
       }),
     );
@@ -97,7 +97,7 @@ export class AccountRevolver {
           }
         }),
       )
-    ).flatMap((xr) => xr);
+    ).flat();
 
     if (this.config.settings.excludeResources) {
       const excludeFilter = await buildFilter(this.config.settings.excludeResources);
