@@ -23,15 +23,7 @@
         "noAccumulatingSpread": "off"
       }
     },
-    "ignore": [
-      "**/*.js",
-      "**/*.d.ts",
-      "**/docs",
-      "**/coverage",
-      "**/cdk.json",
-      "**/.cdk.staging",
-      "**/cdk.out"
-    ]
+    "ignore": ["**/*.js", "**/*.d.ts", "**/docs", "**/coverage", "**/cdk.json", "**/.cdk.staging", "**/cdk.out"]
   },
   "overrides": [
     {
