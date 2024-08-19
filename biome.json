@@ -23,7 +23,7 @@
         "noAccumulatingSpread": "off"
       }
     },
-    "ignore": ["**/*.js", "**/*.d.ts", "**/docs", "**/coverage", "**/cdk.json", "**/.cdk.staging", "**/cdk.out"]
+    "ignore": ["**/*.js", "**/*.d.ts", "**/docs", "**/coverage", "**/cdk.json", "**/.cdk.staging", "**/cdk.out", "output"]
   },
   "overrides": [
     {
@@ -56,6 +56,14 @@
     "formatter": {
       "quoteStyle": "single",
       "lineWidth": 120
+    }
+  },
+  "json": {
+    "linter": {
+      "enabled": false
+    },
+    "formatter": {
+      "enabled": false
     }
   }
 }
