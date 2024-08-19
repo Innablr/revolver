@@ -3,7 +3,7 @@ import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
 import { buildFilter } from '../../plugins/filters/index.js';
 import { ToolingInterface } from '../../drivers/instrumentedResource.js';
-import { DateTime } from 'luxon';
+import { DateTime, Interval } from 'luxon';
 import { makeResourceTags } from '../../lib/common.js';
 import dateTime from '../../lib/dateTime.js';
 
@@ -493,4 +493,24 @@ describe('filter', function () {
       }
     });
   }
+});
+
+describe('filter matchWindow', function () {
+  it('matchWindow', async function () {
+    const fromTime = DateTime.utc(2024, 2, 19, 21, 0, 0, 0);
+    const filter = await buildFilter({ matchWindow: { from: fromTime.toISO() } });
+
+    const startTime = DateTime.local(2024, 2, 18, 0, 0, 0, 0);
+    const interval = Interval.fromDateTimes(startTime, startTime.plus({ days: 4 }));
+    const testTimes = interval.splitBy({ minutes: 60 }).map((d) => d.start);
+
+    // validate that the filter doesn't match until the fromTime
+    for (const t of testTimes) {
+      if (t === null) continue; // shut up typescript
+      dateTime.freezeTime(t.toString());
+      const matches = filter.matches(new TestingResource(basicEc2));
+      // console.log('%s (%s) = %s', t, t.toUTC(), matches);
+      expect(matches).to.be.equal(t >= fromTime);
+    }
+  });
 });
