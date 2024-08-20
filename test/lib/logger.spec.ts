@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { logger } from '../../lib/logger.js';
+import { ErrorTrackingLogger, logger, restructureJsonLog, RevolverLogObject } from '../../lib/logger.js';
 
 // TODO: validate JSON format, including restructure
 // TODO: validate metadata
@@ -27,4 +27,24 @@ describe('Validate ErrorTrackingLogger behaviour', function () {
   expect(logger.hasError).to.be.true;
 
   logger.hasError = false; // reset
+});
+
+describe('Validate JSON logging', function () {
+  const jsonLogger = new ErrorTrackingLogger<RevolverLogObject>({
+    name: 'revolver',
+    type: 'json',
+    // stylePrettyLogs: environ.stylePrettyLogs,
+    // prettyLogTimeZone: environ.prettyLogTimeZone,
+    minLevel: 2, // logLevels['debug'],
+    hideLogPositionForProduction: false, // logLevels[environ.logLevel] > 2,
+    overwrite: {
+      transportJSON: (logObjWithMeta: any) => {
+        restructureJsonLog(logObjWithMeta);
+      },
+    },
+  });
+
+  // Validate that this works
+  jsonLogger.debug('sample message 1');
+  jsonLogger.info('sample message 2');
 });

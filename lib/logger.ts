@@ -34,7 +34,7 @@ export interface RevolverLogObject {
  * Writes JSON logs to the appropriate console.\{level\} function and converts any configured log prefixes
  * to object keys if they have a ':' separator. Splits out string messages and object messages to message and data.
  */
-function restructureJsonLog(log: any) {
+export function restructureJsonLog(log: any) {
   if (log === undefined) return;
   // biome-ignore lint/suspicious/noGlobalIsNan: we are relying on string-numbers being coerced to numbers
   const positionalEntries: string[] = Object.keys(log).filter((k: any) => !isNaN(k));
