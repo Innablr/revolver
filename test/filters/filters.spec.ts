@@ -255,6 +255,36 @@ const filterTests = [
     ],
   },
   {
+    name: 'not',
+    tests: [
+      // basicRds is accountId 123456789012
+      {
+        name: 'match single negative',
+        filter: { not: { accountId: '123456789012' } },
+        resource: basicRds,
+        matches: false,
+      },
+      {
+        name: 'match single positive',
+        filter: { not: { accountId: '554096786507' } },
+        resource: basicRds,
+        matches: true,
+      },
+      {
+        name: 'match list implicit-or negative',
+        filter: { not: { accountId: ['123456789012', '554096786507'] } },
+        resource: basicRds,
+        matches: false,
+      },
+      {
+        name: 'match list implicit-or positive',
+        filter: { not: { accountId: ['658730722470', '554096786507'] } },
+        resource: basicRds,
+        matches: true,
+      }
+    ],
+  },
+  {
     name: 'bool',
     tests: [
       { name: 'match true', filter: { bool: true }, resource: basicEc2, matches: true },
@@ -477,6 +507,63 @@ const filterTests = [
         resource: basicEc2,
         matches: false,
       }, // 22:00
+    ],
+  },
+  /*
+      {
+        name: 'match list implicit-or negative',
+        filter: { not: { accountId: ['123456789012', '554096786507'] } },
+        resource: basicRds,
+        matches: false,
+      },
+      {
+        name: 'match list implicit-or positive',
+        filter: { not: { accountId: ['658730722470', '554096786507'] } },
+        resource: basicRds,
+        matches: true,
+      }
+        */
+
+  {
+    name: 'composite',
+    tests: [
+      // basicRds is accountId 123456789012
+      {
+        name: 'composite match true true',
+        filter: [
+          { type: 'rdsInstance' },
+          { not: { accountId: ['658730722470', '554096786507'] } }
+        ],
+        resource: basicRds,
+        matches: true,
+      },
+      {
+        name: 'composite match true false',
+        filter: [
+          { type: 'rdsInstance' },
+          { not: { accountId: ['123456789012', '554096786507'] } }
+        ],
+        resource: basicRds,
+        matches: false,
+      },
+      {
+        name: 'composite match false true',
+        filter: [
+          { type: 'ec2' },
+          { not: { accountId: ['658730722470', '554096786507'] } }
+        ],
+        resource: basicRds,
+        matches: false,
+      },
+      {
+        name: 'composite match false false',
+        filter: [
+          { type: 'ec2' },
+          { not: { accountId: ['123456789012', '554096786507'] } }
+        ],
+        resource: basicRds,
+        matches: false,
+      },
     ],
   },
 ];
