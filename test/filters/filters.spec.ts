@@ -281,7 +281,7 @@ const filterTests = [
         filter: { not: { accountId: ['658730722470', '554096786507'] } },
         resource: basicRds,
         matches: true,
-      }
+      },
     ],
   },
   {
@@ -515,37 +515,25 @@ const filterTests = [
       // basicRds is accountId 123456789012
       {
         name: 'composite match true true',
-        filter: [
-          { type: 'rdsInstance' },
-          { not: { accountId: ['658730722470', '554096786507'] } }
-        ],
+        filter: [{ type: 'rdsInstance' }, { not: { accountId: ['658730722470', '554096786507'] } }],
         resource: basicRds,
         matches: true,
       },
       {
         name: 'composite match true false',
-        filter: [
-          { type: 'rdsInstance' },
-          { not: { accountId: ['123456789012', '554096786507'] } }
-        ],
+        filter: [{ type: 'rdsInstance' }, { not: { accountId: ['123456789012', '554096786507'] } }],
         resource: basicRds,
         matches: false,
       },
       {
         name: 'composite match false true',
-        filter: [
-          { type: 'ec2' },
-          { not: { accountId: ['658730722470', '554096786507'] } }
-        ],
+        filter: [{ type: 'ec2' }, { not: { accountId: ['658730722470', '554096786507'] } }],
         resource: basicRds,
         matches: false,
       },
       {
         name: 'composite match false false',
-        filter: [
-          { type: 'ec2' },
-          { not: { accountId: ['123456789012', '554096786507'] } }
-        ],
+        filter: [{ type: 'ec2' }, { not: { accountId: ['123456789012', '554096786507'] } }],
         resource: basicRds,
         matches: false,
       },
