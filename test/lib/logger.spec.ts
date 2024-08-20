@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ErrorTrackingLogger, logger, restructureJsonLog, RevolverLogObject } from '../../lib/logger.js';
+import { ErrorTrackingLogger, logger, logLevelsToConsole, restructureJsonLog, RevolverLogObject } from '../../lib/logger.js';
 
 // TODO: validate JSON format, including restructure
 // TODO: validate metadata
@@ -44,7 +44,24 @@ describe('Validate JSON logging', function () {
     },
   });
 
-  // Validate that this works
-  jsonLogger.debug('sample message 1');
-  jsonLogger.info('sample message 2');
+  // redirect console DEBUG messages
+  const debug_messages: any[] = [];
+  try {
+    logLevelsToConsole[2] = (message: any) => {
+      debug_messages.push(message);
+    }
+    // emit a debug message
+    jsonLogger.debug('sample message 1');
+  } finally {
+    // restore console
+    logLevelsToConsole[2] = console.debug;
+  }
+
+  // Validate that the messages were captured
+  expect(debug_messages.length).to.equal(1);
+  const event = JSON.parse(debug_messages[0]);
+  expect(event.message).to.equal('sample message 1');
+  expect(event._meta.logLevelId).to.equal(2);
+  expect(event._meta.logLevelName).to.equal('DEBUG');
+  expect(event._meta.path.fileName).to.equal('logger.spec.ts');
 });

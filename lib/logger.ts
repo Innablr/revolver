@@ -11,7 +11,7 @@ const logLevels: { [key: string]: number } = {
   fatal: 6,
 };
 
-const logLevelsToConsole: { [key: number]: (...args: any) => any } = {
+export const logLevelsToConsole: { [key: number]: (...args: any) => any } = {
   0: console.trace,
   1: console.trace,
   2: console.debug,
