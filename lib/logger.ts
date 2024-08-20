@@ -36,7 +36,8 @@ export interface RevolverLogObject {
  */
 function restructureJsonLog(log: any) {
   if (log === undefined) return;
-  const positionalEntries: string[] = Object.keys(log).filter((k: any) => !Number.isNaN(k));
+  // biome-ignore lint/suspicious/noGlobalIsNan: we are relying on string-numbers being coerced to numbers
+  const positionalEntries: string[] = Object.keys(log).filter((k: any) => !isNaN(k));
 
   const prefixEntries: string[] = positionalEntries.slice(0, logger.settings.prefix.length);
   const processedPrefix: { [key: string]: boolean } = {};
