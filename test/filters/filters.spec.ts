@@ -509,21 +509,6 @@ const filterTests = [
       }, // 22:00
     ],
   },
-  /*
-      {
-        name: 'match list implicit-or negative',
-        filter: { not: { accountId: ['123456789012', '554096786507'] } },
-        resource: basicRds,
-        matches: false,
-      },
-      {
-        name: 'match list implicit-or positive',
-        filter: { not: { accountId: ['658730722470', '554096786507'] } },
-        resource: basicRds,
-        matches: true,
-      }
-        */
-
   {
     name: 'composite',
     tests: [
