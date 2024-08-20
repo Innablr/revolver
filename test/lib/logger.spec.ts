@@ -1,5 +1,11 @@
 import { expect } from 'chai';
-import { ErrorTrackingLogger, logger, logLevelsToConsole, restructureJsonLog, RevolverLogObject } from '../../lib/logger.js';
+import {
+  ErrorTrackingLogger,
+  logger,
+  logLevelsToConsole,
+  restructureJsonLog,
+  RevolverLogObject,
+} from '../../lib/logger.js';
 
 // TODO: validate JSON format, including restructure
 // TODO: validate metadata
@@ -49,7 +55,7 @@ describe('Validate JSON logging', function () {
   try {
     logLevelsToConsole[2] = (message: any) => {
       debug_messages.push(message);
-    }
+    };
     // emit a debug message
     jsonLogger.debug('sample message 1');
   } finally {
