@@ -500,7 +500,12 @@ const filterTests = [
       { name: 'exact from', filter: { matchWindow: { from: '2024-02-19T21:56Z' } }, resource: basicEc2, matches: true },
       { name: 'from-01', filter: { matchWindow: { from: '2024-02-19T21:55:59Z' } }, resource: basicEc2, matches: true },
       { name: 'from+00', filter: { matchWindow: { from: '2024-02-19T21:56:00Z' } }, resource: basicEc2, matches: true },
-      { name: 'from+01', filter: { matchWindow: { from: '2024-02-19T21:56:01Z' } }, resource: basicEc2, matches: false },
+      {
+        name: 'from+01',
+        filter: { matchWindow: { from: '2024-02-19T21:56:01Z' } },
+        resource: basicEc2,
+        matches: false,
+      },
 
       { name: 'exact to', filter: { matchWindow: { to: '2024-02-19T21:56Z' } }, resource: basicEc2, matches: false },
       { name: 'to-01', filter: { matchWindow: { to: '2024-02-19T21:55:59Z' } }, resource: basicEc2, matches: false },
@@ -558,7 +563,10 @@ describe('filter', function () {
         it(t.name, async function () {
           const filter = await buildFilter(t.filter);
           dateTime.freezeTime('2024-02-19T21:56Z');
-          expect(filter.matches(new TestingResource(t.resource)), `${dateTime.getTime()} vs ${JSON.stringify(t.filter)}`).to.be.equal(t.matches);
+          expect(
+            filter.matches(new TestingResource(t.resource)),
+            `${dateTime.getTime()} vs ${JSON.stringify(t.filter)}`,
+          ).to.be.equal(t.matches);
         });
       }
     });
