@@ -56,7 +56,7 @@ export default class FilterMatchWindowStart implements Filter, FilterCtor {
     if (this.startTime && now < this.startTime) {
       return false; // too early
     }
-    if (this.endTime && now > this.endTime) {
+    if (this.endTime && now >= this.endTime) {
       return false; // too late
     }
     if (!this.startTime && !this.endTime) {
