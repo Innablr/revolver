@@ -497,6 +497,16 @@ const filterTests = [
       },
 
       // Time is frozen at '2024-02-19T21:56Z'
+      { name: 'exact from', filter: { matchWindow: { from: '2024-02-19T21:56Z' } }, resource: basicEc2, matches: true },
+      { name: 'from-01', filter: { matchWindow: { from: '2024-02-19T21:55:59Z' } }, resource: basicEc2, matches: true },
+      { name: 'from+00', filter: { matchWindow: { from: '2024-02-19T21:56:00Z' } }, resource: basicEc2, matches: true },
+      { name: 'from+01', filter: { matchWindow: { from: '2024-02-19T21:56:01Z' } }, resource: basicEc2, matches: false },
+
+      { name: 'exact to', filter: { matchWindow: { to: '2024-02-19T21:56Z' } }, resource: basicEc2, matches: false },
+      { name: 'to-01', filter: { matchWindow: { to: '2024-02-19T21:55:59Z' } }, resource: basicEc2, matches: false },
+      { name: 'to+00', filter: { matchWindow: { to: '2024-02-19T21:56:00Z' } }, resource: basicEc2, matches: false },
+      { name: 'to+01', filter: { matchWindow: { to: '2024-02-19T21:56:01Z' } }, resource: basicEc2, matches: true },
+
       { name: 'fine1', filter: { matchWindow: { from: '2024-02-19T21:00Z' } }, resource: basicEc2, matches: true },
       { name: 'fine2', filter: { matchWindow: { from: '2024-02-19T22:00Z' } }, resource: basicEc2, matches: false },
       { name: 'fine3', filter: { matchWindow: { from: '2024-02-19T21:00+10:00' } }, resource: basicEc2, matches: true }, // 11:00
@@ -548,7 +558,7 @@ describe('filter', function () {
         it(t.name, async function () {
           const filter = await buildFilter(t.filter);
           dateTime.freezeTime('2024-02-19T21:56Z');
-          expect(filter.matches(new TestingResource(t.resource))).to.be.equal(t.matches);
+          expect(filter.matches(new TestingResource(t.resource)), `${dateTime.getTime()} vs ${JSON.stringify(t.filter)}`).to.be.equal(t.matches);
         });
       }
     });
