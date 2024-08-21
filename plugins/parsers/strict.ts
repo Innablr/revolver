@@ -56,14 +56,19 @@ class ParsedComponent {
     [this.timeHourLiteral, this.timeMinuteLiteral] = time.split(':');
     if (days !== undefined) {
       this.hasDays = true;
-      [this.dayFrom, this.dayTo] = m[4].split('-').map((xd) => ParsedComponent.weekdays.indexOf(xd) + 1);
+      if (m[4].includes('-')) {
+        [this.dayFrom, this.dayTo] = m[4].split('-').map((xd) => ParsedComponent.weekdays.indexOf(xd) + 1);
+      } else {
+        this.dayFrom = ParsedComponent.weekdays.indexOf(m[4]) + 1;
+        this.dayTo = this.dayFrom;
+      }
     }
 
     return true;
   }
 
   constructor(tag: string, component: string) {
-    this.re = new RegExp(`(${component}=([0-9]{1,2}:[0-9]{1,2}))(\\|([a-z]{3}-[a-z]{3}))?`);
+    this.re = new RegExp(`(${component}=([0-9]{1,2}:[0-9]{1,2}))(\\|([a-z]{3}(?:-[a-z]{3})?))?`);
 
     this.parsed = this.parse(tag);
   }
