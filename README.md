@@ -226,7 +226,7 @@ All drivers support the following options:
 |Option|Description|Allowed values|Default|
 |-|-|-|-|
 |active|Whether the driver is active|`true` or `false`|`true`|
-|pretend|Prevents the driver from actually performing the actions. Good for debugging|`true` or `false`|`true`|
+|pretend|Prevents the driver from actually performing the actions. Good for debugging|`true` or `false`|`false`|
 
 Supported drivers:
 
@@ -359,7 +359,7 @@ If multiple matches filter the same resource, the matcher with the highest prior
 | filter   | Filter configuration to specify which resources this schedule will apply to | `Filter`. See [Filter](######Filter) section   | -       |
 | schedule | Resource power schedule, based on the format specified in plugin.parser     | `string`, See [strict](######strict) schedules | -       |
 | priority | How to rank this matcher against others, highest number is highest priority | `number` >= 0                                  | `0`     |
-| pretend  | Prevents the matcher from actually performing the actions.                  | `true` or `false`                              | `true`  |
+| pretend  | Prevents the matcher from actually performing the actions.                  | `true` or `false`                              | `false` |
 
 ##### Filter
 Filters specify a set of criteria for a resource to match against. They are comprised of several filter objects than can be joined together with `AND` or `OR` operations.
