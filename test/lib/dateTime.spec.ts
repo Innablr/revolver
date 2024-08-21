@@ -69,4 +69,19 @@ describe('Validate DateTime', function () {
     const uptime = dateTime.calculateUptime(previous);
     expect(uptime).to.equal(5.2);
   });
+
+  it('Check different Timezones', async function () {
+    //      * @param zone - a zone identifier. As a string, that can be any IANA zone supported by the host environment, or a fixed-offset name of the form 'UTC+3', or the strings 'local' or 'utc'.
+    //  * You may also supply an instance of a {@link Zone} class. Defaults to 'local'.
+    const time1 = dateTime.getTime('Australia/Melbourne');
+    expect(time1.isValid).to.be.true;
+    expect(time1.isOffsetFixed).to.be.false;
+
+    const time2 = dateTime.getTime('UTC+10');
+    expect(time2.isValid).to.be.true;
+    expect(time2.isOffsetFixed).to.be.true;
+
+    const time3 = dateTime.getTime('AEDT');
+    expect(time3.isValid).to.be.false;
+  });
 });
