@@ -1,6 +1,24 @@
 import { z } from 'zod';
 
-const AWSAccountId = z.string().regex(/\d{12}/);
+const AWSAccountId = z.string().regex(/^\d{12}$/, { message: 'AWS AccountID are 12 digits' });
+
+const AWSRegion = z
+  .string()
+  .regex(/^(af|il|ap|ca|eu|me|sa|us|cn|us-gov|us-iso|us-isob)-(central|(north|south)?(east|west)?)-\d{1}$/, {
+    message: 'Invalid AWS Region',
+  });
+
+// https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html
+// https://stackoverflow.com/questions/50480924/regex-for-s3-bucket-name
+const AWSBucketName = z
+  .string()
+  .regex(
+    /(?!(^((2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})\.){3}(2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})$|^xn--|.+-s3alias$))^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/,
+    { message: 'Invalid AWS Bucket Name' },
+  );
+
+// https://docs.aws.amazon.com/IAM/latest/UserGuide/reference-arns.html
+const AWSArn = z.string().regex(/^arn:.*$/, { message: 'Invalid AWS ARN' });
 
 const ShorthandFilter = z.string().regex(/^([^|]+)\|.*/);
 
@@ -21,7 +39,7 @@ const BaseFilters = z
     state: z.union([z.array(z.string()), z.string()]).optional(),
     type: z.union([z.array(z.string()), z.string()]).optional(),
     name: z.union([z.array(z.string()), z.string()]).optional(),
-    bool: z.boolean().optional(),
+    bool: z.boolean().optional(), // TODO: what is this?
     tag: z
       .union([
         z.array(ShorthandFilter),
@@ -72,22 +90,22 @@ const ObjectLogOptions = z.object({
   file: z.string().optional(),
   sqs: z
     .object({
-      url: z.string(),
+      url: z.string().url(),
       compress: z.boolean().default(true),
       attributes: z.record(z.string(), z.string()).optional(),
     })
     .optional(),
   sns: z
     .object({
-      url: z.string(),
+      url: AWSArn,
       compress: z.boolean().default(true),
       attributes: z.record(z.string(), z.string()).optional(),
     })
     .optional(),
   s3: z
     .object({
-      bucket: z.string(),
-      region: z.string(),
+      bucket: AWSBucketName,
+      region: AWSRegion,
       path: z.string(),
     })
     .optional(),
@@ -95,7 +113,7 @@ const ObjectLogOptions = z.object({
 
 // Used for defaults, and a partial used for org/account overrides
 const Settings = z.object({
-  region: z.string().optional(),
+  region: AWSRegion.optional(),
   timezone: z.string().default('utc'),
   timezoneTag: z.string().default('Timezone'),
   concurrency: z.number().default(0),

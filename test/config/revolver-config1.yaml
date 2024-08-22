@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../revolver-config-schema.json
 ---
 defaults:
   settings:
@@ -22,7 +23,7 @@ defaults:
           attributes:
             thing: "some value"
         sns:
-          url: 'TOPIC_ARN'
+          url: arn:something:sns:topic
           attributes:
             thing: "some other value"
     excludeResources:
@@ -103,7 +104,7 @@ organizations:
     settings:
       name: some-org-name
       stuff: 123 # ignored
-      region: whatever # override default
+      region: ap-southeast-2 # override default
       # revolverRoleName from defaults
   - accountId: "111111111111"
     settings:
@@ -112,7 +113,7 @@ organizations:
   - accountId: "777777777777"
     accountNameRegex: '-nonprod$'
     settings:
-      region: 'somewhere'
+      region: us-west-2
       name: 'org1'
 
 accounts:
@@ -123,7 +124,7 @@ accounts:
     - accountId: "000000000123"
       settings:
         name: someother
-        region: somewhere
+        region: ap-southeast-1
   excludeList:
     - accountId: "000000000789"
       settings:

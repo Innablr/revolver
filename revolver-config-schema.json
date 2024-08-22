@@ -1,0 +1,854 @@
+{
+  "type": "object",
+  "properties": {
+    "defaults": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "type": "object",
+          "properties": {
+            "region": {
+              "type": "string",
+              "pattern": "^(af|il|ap|ca|eu|me|sa|us|cn|us-gov|us-iso|us-isob)-(central|(north|south)?(east|west)?)-\\d{1}$"
+            },
+            "timezone": {
+              "type": "string",
+              "default": "utc"
+            },
+            "timezoneTag": {
+              "type": "string",
+              "default": "Timezone"
+            },
+            "concurrency": {
+              "type": "number",
+              "default": 0
+            },
+            "organizationRoleName": {
+              "type": "string"
+            },
+            "revolverRoleName": {
+              "type": "string"
+            },
+            "resourceLog": {
+              "type": "object",
+              "properties": {
+                "json": {
+                  "type": "object",
+                  "properties": {
+                    "overwrite": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "file": {
+                      "type": "string"
+                    },
+                    "sqs": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "compress": {
+                          "type": "boolean",
+                          "default": true
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "sns": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "pattern": "^arn:.*$"
+                        },
+                        "compress": {
+                          "type": "boolean",
+                          "default": true
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "s3": {
+                      "type": "object",
+                      "properties": {
+                        "bucket": {
+                          "type": "string",
+                          "pattern": "(?!(^((2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})\\.){3}(2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})$|^xn--|.+-s3alias$))^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
+                        },
+                        "region": {
+                          "$ref": "#/properties/defaults/properties/settings/properties/region"
+                        },
+                        "path": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "bucket",
+                        "region",
+                        "path"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "html": {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/json/properties/file"
+                    },
+                    "sqs": {
+                      "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/json/properties/sqs"
+                    },
+                    "sns": {
+                      "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/json/properties/sns"
+                    },
+                    "s3": {
+                      "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/json/properties/s3"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "csv": {
+                  "type": "object",
+                  "properties": {
+                    "append": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "overwrite": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "reportTags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "file": {
+                      "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/json/properties/file"
+                    },
+                    "sqs": {
+                      "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/json/properties/sqs"
+                    },
+                    "sns": {
+                      "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/json/properties/sns"
+                    },
+                    "s3": {
+                      "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/json/properties/s3"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "console": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "reportTags": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
+            "localResourcesFile": {
+              "type": "string"
+            },
+            "localOrgAccountsFile": {
+              "type": "string"
+            },
+            "localOrgAccountsWriteFile": {
+              "type": "string"
+            },
+            "auditLog": {
+              "type": "object",
+              "properties": {
+                "console": {
+                  "type": "null"
+                },
+                "html": {
+                  "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/html"
+                },
+                "csv": {
+                  "type": "object",
+                  "properties": {
+                    "append": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "file": {
+                      "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/json/properties/file"
+                    },
+                    "sqs": {
+                      "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/json/properties/sqs"
+                    },
+                    "sns": {
+                      "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/json/properties/sns"
+                    },
+                    "s3": {
+                      "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/json/properties/s3"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "json": {
+                  "$ref": "#/properties/defaults/properties/settings/properties/resourceLog/properties/html"
+                }
+              },
+              "additionalProperties": false
+            },
+            "excludeResources": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "accountId": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "region": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "state": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "type": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "name": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "bool": {
+                        "type": "boolean"
+                      },
+                      "tag": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "pattern": "^([^|]+)\\|.*"
+                            }
+                          },
+                          {
+                            "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items/properties/tag/anyOf/0/items"
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "equals": {
+                                "type": "string"
+                              },
+                              "iequals": {
+                                "type": "string"
+                              },
+                              "contains": {
+                                "type": "string"
+                              },
+                              "startswith": {
+                                "type": "string"
+                              },
+                              "endswith": {
+                                "type": "string"
+                              },
+                              "regexp": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "name"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      },
+                      "resource": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items/properties/tag/anyOf/0/items"
+                            }
+                          },
+                          {
+                            "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items/properties/tag/anyOf/0/items"
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "path": {
+                                "type": "string"
+                              },
+                              "equals": {
+                                "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items/properties/tag/anyOf/2/properties/equals"
+                              },
+                              "iequals": {
+                                "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items/properties/tag/anyOf/2/properties/iequals"
+                              },
+                              "contains": {
+                                "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items/properties/tag/anyOf/2/properties/contains"
+                              },
+                              "startswith": {
+                                "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items/properties/tag/anyOf/2/properties/startswith"
+                              },
+                              "endswith": {
+                                "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items/properties/tag/anyOf/2/properties/endswith"
+                              },
+                              "regexp": {
+                                "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items/properties/tag/anyOf/2/properties/regexp"
+                              }
+                            },
+                            "required": [
+                              "path"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      },
+                      "matchWindow": {
+                        "type": "object",
+                        "properties": {
+                          "from": {
+                            "type": "string"
+                          },
+                          "to": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "not": {
+                        "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items"
+                      },
+                      "or": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items"
+                        }
+                      },
+                      "and": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items"
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                {
+                  "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items"
+                }
+              ]
+            },
+            "includeResourceTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "organizationRoleName",
+            "revolverRoleName"
+          ],
+          "additionalProperties": false
+        },
+        "drivers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "active": {
+                "type": "boolean",
+                "default": true
+              },
+              "pretend": {
+                "type": "boolean",
+                "default": false
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "default": []
+        },
+        "plugins": {
+          "type": "object",
+          "properties": {
+            "powercycle": {
+              "type": "object",
+              "properties": {
+                "active": {
+                  "type": "boolean"
+                },
+                "configs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tagging": {
+                        "type": "string",
+                        "default": "strict"
+                      },
+                      "availabilityTag": {
+                        "type": "string",
+                        "default": "Schedule"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "active",
+                "configs"
+              ],
+              "additionalProperties": false
+            },
+            "powercycleCentral": {
+              "type": "object",
+              "properties": {
+                "active": {
+                  "type": "boolean"
+                },
+                "configs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "parser": {
+                        "type": "string",
+                        "default": "strict"
+                      },
+                      "availabilityTag": {
+                        "type": "string",
+                        "default": "Schedule"
+                      },
+                      "availabilityTagPriority": {
+                        "type": "number",
+                        "default": 0
+                      },
+                      "predefinedSchedules": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string"
+                        },
+                        "default": {}
+                      },
+                      "matchers": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "schedule": {
+                              "type": "string"
+                            },
+                            "priority": {
+                              "type": "number",
+                              "default": 0
+                            },
+                            "filter": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items"
+                                  }
+                                },
+                                {
+                                  "$ref": "#/properties/defaults/properties/settings/properties/excludeResources/anyOf/0/items"
+                                }
+                              ]
+                            },
+                            "pretend": {
+                              "type": "boolean",
+                              "default": false
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "schedule",
+                            "filter"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "matchers"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "active",
+                "configs"
+              ],
+              "additionalProperties": false
+            },
+            "validateTags": {
+              "type": "object",
+              "properties": {
+                "active": {
+                  "type": "boolean"
+                },
+                "configs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tag": {
+                        "type": "string"
+                      },
+                      "tagMissing": {
+                        "type": "array",
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "setDefault": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "setDefault"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "onlyResourceTypes": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "tagNotMatch": {
+                        "type": "array"
+                      }
+                    },
+                    "required": [
+                      "tag",
+                      "tagMissing",
+                      "onlyResourceTypes",
+                      "tagNotMatch"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "active",
+                "configs"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "settings",
+        "plugins"
+      ],
+      "additionalProperties": false
+    },
+    "organizations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "string",
+            "pattern": "^\\d{12}$"
+          },
+          "accountNameRegex": {
+            "type": "string"
+          },
+          "settings": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "region": {
+                "$ref": "#/properties/defaults/properties/settings/properties/region"
+              },
+              "timezone": {
+                "$ref": "#/properties/defaults/properties/settings/properties/timezone"
+              },
+              "timezoneTag": {
+                "$ref": "#/properties/defaults/properties/settings/properties/timezoneTag"
+              },
+              "concurrency": {
+                "$ref": "#/properties/defaults/properties/settings/properties/concurrency"
+              },
+              "organizationRoleName": {
+                "$ref": "#/properties/defaults/properties/settings/properties/organizationRoleName"
+              },
+              "revolverRoleName": {
+                "$ref": "#/properties/defaults/properties/settings/properties/revolverRoleName"
+              },
+              "resourceLog": {
+                "$ref": "#/properties/defaults/properties/settings/properties/resourceLog"
+              },
+              "localResourcesFile": {
+                "$ref": "#/properties/defaults/properties/settings/properties/localResourcesFile"
+              },
+              "localOrgAccountsFile": {
+                "$ref": "#/properties/defaults/properties/settings/properties/localOrgAccountsFile"
+              },
+              "localOrgAccountsWriteFile": {
+                "$ref": "#/properties/defaults/properties/settings/properties/localOrgAccountsWriteFile"
+              },
+              "auditLog": {
+                "$ref": "#/properties/defaults/properties/settings/properties/auditLog"
+              },
+              "excludeResources": {
+                "$ref": "#/properties/defaults/properties/settings/properties/excludeResources"
+              },
+              "includeResourceTags": {
+                "$ref": "#/properties/defaults/properties/settings/properties/includeResourceTags"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "accountId",
+          "settings"
+        ],
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "accounts": {
+      "type": "object",
+      "properties": {
+        "includeList": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "accountId": {
+                "$ref": "#/properties/organizations/items/properties/accountId"
+              },
+              "settings": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "region": {
+                    "$ref": "#/properties/defaults/properties/settings/properties/region"
+                  },
+                  "timezone": {
+                    "$ref": "#/properties/defaults/properties/settings/properties/timezone"
+                  },
+                  "timezoneTag": {
+                    "$ref": "#/properties/defaults/properties/settings/properties/timezoneTag"
+                  },
+                  "concurrency": {
+                    "$ref": "#/properties/defaults/properties/settings/properties/concurrency"
+                  },
+                  "organizationRoleName": {
+                    "$ref": "#/properties/defaults/properties/settings/properties/organizationRoleName"
+                  },
+                  "revolverRoleName": {
+                    "$ref": "#/properties/defaults/properties/settings/properties/revolverRoleName"
+                  },
+                  "resourceLog": {
+                    "$ref": "#/properties/defaults/properties/settings/properties/resourceLog"
+                  },
+                  "localResourcesFile": {
+                    "$ref": "#/properties/defaults/properties/settings/properties/localResourcesFile"
+                  },
+                  "localOrgAccountsFile": {
+                    "$ref": "#/properties/defaults/properties/settings/properties/localOrgAccountsFile"
+                  },
+                  "localOrgAccountsWriteFile": {
+                    "$ref": "#/properties/defaults/properties/settings/properties/localOrgAccountsWriteFile"
+                  },
+                  "auditLog": {
+                    "$ref": "#/properties/defaults/properties/settings/properties/auditLog"
+                  },
+                  "excludeResources": {
+                    "$ref": "#/properties/defaults/properties/settings/properties/excludeResources"
+                  },
+                  "includeResourceTags": {
+                    "$ref": "#/properties/defaults/properties/settings/properties/includeResourceTags"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "accountId",
+              "settings"
+            ],
+            "additionalProperties": false
+          },
+          "default": []
+        },
+        "excludeList": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "accountId": {
+                "$ref": "#/properties/organizations/items/properties/accountId"
+              },
+              "settings": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "accountId",
+              "settings"
+            ],
+            "additionalProperties": false
+          },
+          "default": []
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "defaults",
+    "accounts"
+  ],
+  "additionalProperties": false,
+  "description": "Revolver configuration schema",
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
