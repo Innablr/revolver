@@ -126,9 +126,8 @@ it('Print schedule coverage', async function () {
   const startTime = DateTime.utc(2017, 3, 12, 0, 0, 0, 0);
   const schedules = [
     'Start=09:00|mon-fri;Stop=18:00|mon-fri', // ok
-    'Stop=08:45|tue-tue;Start=13:00|tue-tue', // wrong - see https://github.com/Innablr/revolver/issues/382
-    'Start=08:30|mon,thu-fri;Stop=09:00|mon,thu-fri', // wrong - see https://github.com/Innablr/revolver/issues/382
-    'Start=05:00|mon-fri;Stop=00:00|tue-sat', // wrong - see https://github.com/Innablr/revolver/issues/401
+    'Start=09:00|mon-fri;Stop=00:00|tue-sat', // ok
+    'Stop=08:45|wed-wed;Start=13:00|tue-tue', // ok
   ];
   for (const schedule of schedules) {
     await showSchedule(schedule, startTime);
