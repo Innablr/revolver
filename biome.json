@@ -15,9 +15,7 @@
       "style": {
         "useImportType": "off",
         "noUselessElse": "off",
-        "noNonNullAssertion": "off",
-        "noInferrableTypes": "off",
-        "useEnumInitializers": "off"
+        "noNonNullAssertion": "off"
       },
       "performance": {
         "noAccumulatingSpread": "off"

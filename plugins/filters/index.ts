@@ -48,7 +48,7 @@ export async function arrayToOr(filterName: string, config: any): Promise<Filter
 
 // filter user only. Controls the string value interpretation of all filters to facilite several comparison options
 export class StringCompareOptions {
-  static defaultCompare: string = 'equals';
+  static defaultCompare = 'equals';
 
   equals: string | undefined;
   iequals: string | undefined;
