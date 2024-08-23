@@ -176,6 +176,33 @@ class ParsedAvailability {
     }
     return sideDayIn(d);
   }
+
+  dayAndTimeIn(t: DateTime) {
+    const d = t.weekday;
+    if (this.isWindow) {
+      const startTime = t.set({ hour: this.start.timeHour, minute: this.start.timeMinute });
+      const stopTime = t.set({ hour: this.stop.timeHour, minute: this.stop.timeMinute }); // maybe be next day
+      if (startTime > stopTime) {
+        // wrap around, eg Start=23:00|Mon  Stop=01:00|Tue
+        if (t >= startTime && this.timeIn(t) && this.start.dayIn(d)) {
+          return true; // after startTime on start day
+        }
+        if (t < stopTime && this.timeIn(t) && this.stop.dayIn(d)) {
+          return true; // before stopTime on stop day
+        }
+        return false;
+      } else {
+        // normal, eg Start=08:00|Mon  Stop=17:00|Mon
+        if (this.start.days === null) {
+          return this.stop.dayIn(d) && this.timeIn(t);
+        } else {
+          return this.start.dayIn(d) && this.timeIn(t);
+        }
+      }
+    } else {
+      return this.dayIn(t);
+    }
+  }
 }
 
 function startOrStop(tag: string, timeNow: DateTime) {
@@ -203,7 +230,7 @@ function startOrStop(tag: string, timeNow: DateTime) {
     const r = `It's ${timeNow.toFormat(reasonDateFormat)}, availability is from ${t.start.time} till ${t.stop.time} ${
       t.days ? t.days : 'all week'
     }`;
-    if (t.timeIn(timeNow) && t.dayIn(timeNow)) {
+    if (t.dayAndTimeIn(timeNow)) {
       return ['START', r];
     }
     return ['STOP', r];

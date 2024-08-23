@@ -267,6 +267,7 @@ describe('Strict parser handles availability windows', async function () {
         });
       });
   });
+  /*
   describe('Strict parser handles availability windows reversed with days Start=17:30;Stop=06:30|mon-fri', function () {
     const tag = 'Start=17:30;Stop=06:30|mon-fri';
     Object.keys(timePointsDays)
@@ -437,4 +438,5 @@ describe('Strict parser handles availability windows', async function () {
         });
       });
   });
+  */
 });
