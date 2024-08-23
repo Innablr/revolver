@@ -8,7 +8,7 @@ class ParsedComponent {
   private timeMinuteLiteral: string | null;
   private dayFrom: number | null = null;
   private dayTo: number | null = null;
-  private parsed: boolean = false;
+  private parsed = false;
   private hasDays: boolean;
   private re: RegExp;
 
