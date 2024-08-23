@@ -36,6 +36,9 @@ it('Strict parser calculates coverage correctly', async function () {
     ['Start=23:00', 24 * 7 * 60, true], // started, still started after 11pm
     ['Start=08:30|mon-mon;Stop=09:00|mon-mon', 30, false],
     ['Start=08:30|mon;Stop=09:00|mon', 30, false],
+    ['Start=21:00|mon;Stop=05:00|tue', 8 * 60, false], // 8 hours overnight
+    ['Start=21:00|mon-fri;Stop=05:00|tue-sat', 5 * 8 * 60, false], // 5 * 8 hours overnight
+    ['Start=21:00;Stop=05:00', 7 * 8 * 60, false], // 7 * 8 hours overnight
     // currently not supported - see https://github.com/Innablr/revolver/issues/382
     // ['Start=08:30|mon,thu-fri;Stop=09:00|mon,thu-fri', 30 * 3],
     // ['Start=08:30|mon-tue,thu-fri;Stop=09:00|mon-tue,thu-fri', 30 * 4],
