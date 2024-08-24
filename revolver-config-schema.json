@@ -13,7 +13,7 @@
             },
             "timezone": {
               "type": "string",
-              "default": "utc"
+              "pattern": "^([A-Za-z]+\\/[A-Za-z_]+|UTC(?:[+-]\\d+))$"
             },
             "timezoneTag": {
               "type": "string",
@@ -449,6 +449,7 @@
             }
           },
           "required": [
+            "timezone",
             "organizationRoleName",
             "revolverRoleName"
           ],
