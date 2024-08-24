@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../revolver-config-schema.json
 ---
 defaults:
   settings:

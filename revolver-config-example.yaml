@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=revolver-config-schema.json
 ---
 # defaults are applied to each account unless that account specifies something different
 defaults:
@@ -60,7 +61,7 @@ defaults:
             recordId: "0000001"
         # Option to write output to an SNS topic
         sns:
-          url: "TOPIC_ARN"
+          url: arn:xxx
           # compress messages before sending to queue, defaults to true
           compress: true
           # attributes can be any key/value string pair and are submitted as message attributes for each SQS message
