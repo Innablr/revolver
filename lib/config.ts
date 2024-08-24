@@ -1,14 +1,14 @@
-import { logger } from './logger.js';
 import { promises as fs } from 'node:fs';
+import { logger } from './logger.js';
 import path = require('node:path');
-import yaml from 'js-yaml';
 import { Organizations, paginateListAccounts } from '@aws-sdk/client-organizations';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-import { paginateAwsCall } from './common.js';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import yaml from 'js-yaml';
 import { merge } from 'ts-deepmerge';
+import { ZodError, ZodInvalidArgumentsIssue, ZodInvalidReturnTypeIssue, ZodInvalidUnionIssue, ZodIssueCode } from 'zod';
 import { getAwsConfig } from './awsConfig.js';
+import { paginateAwsCall } from './common.js';
 import { ConfigSchema } from './config-schema.js';
-import { ZodError, ZodIssueCode, ZodInvalidUnionIssue, ZodInvalidArgumentsIssue, ZodInvalidReturnTypeIssue } from 'zod';
 import { ObjectLogJson } from './objectLog.js';
 
 function flattenZodErrors(ze: ZodError, depth: number): string[] {

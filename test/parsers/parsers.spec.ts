@@ -1,6 +1,6 @@
 import * as chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 import getParser from '../../plugins/parsers/index.js';
 
 chai.use(chaiAsPromised);

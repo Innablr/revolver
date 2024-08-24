@@ -1,6 +1,6 @@
-import getParser from '../../../plugins/parsers/index.js';
 import { expect } from 'chai';
 import { DateTime } from 'luxon';
+import getParser from '../../../plugins/parsers/index.js';
 import { reasonDateFormat } from '../../../plugins/parsers/strict.js';
 
 const startBarriers: { [key: string]: DateTime } = {

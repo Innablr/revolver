@@ -1,10 +1,10 @@
+import { CreateTagsCommand, DeleteTagsCommand, EC2Client } from '@aws-sdk/client-ec2';
+import { AddTagsToResourceCommand, RDSClient, RemoveTagsFromResourceCommand } from '@aws-sdk/client-rds';
 import { Logger } from 'tslog';
-import { RevolverLogObject } from '../lib/logger.js';
-import { ToolingInterface } from './instrumentedResource.js';
 import { RevolverActionWithTags } from '../actions/actions.js';
 import { chunkArray, unique } from '../lib/common.js';
-import { EC2Client, CreateTagsCommand, DeleteTagsCommand } from '@aws-sdk/client-ec2';
-import { AddTagsToResourceCommand, RDSClient, RemoveTagsFromResourceCommand } from '@aws-sdk/client-rds';
+import { RevolverLogObject } from '../lib/logger.js';
+import { ToolingInterface } from './instrumentedResource.js';
 
 export interface TagInterface {
   Key: string;

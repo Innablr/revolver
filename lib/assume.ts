@@ -1,9 +1,9 @@
-import { logger } from './logger.js';
 import { STS } from '@aws-sdk/client-sts';
-import { DateTime } from 'luxon';
-import { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
+import { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
+import { DateTime } from 'luxon';
 import { getAwsConfig } from './awsConfig.js';
+import { logger } from './logger.js';
 
 export interface Creds {
   expiration: DateTime;

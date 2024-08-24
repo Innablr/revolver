@@ -1,6 +1,6 @@
-import { logger } from '../lib/logger.js';
 import { DateTime } from 'luxon';
 import { RevolverAction } from '../actions/actions.js';
+import { logger } from '../lib/logger.js';
 
 export interface InstrumentedResource {
   resourceId: string;

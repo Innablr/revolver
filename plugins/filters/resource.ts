@@ -1,6 +1,6 @@
-import { ToolingInterface } from '../../drivers/instrumentedResource.js';
-import { arrayToOr, Filter, FilterCtor, StringCompareOptions } from './index.js';
 import { search } from 'jmespath';
+import { ToolingInterface } from '../../drivers/instrumentedResource.js';
+import { Filter, FilterCtor, StringCompareOptions, arrayToOr } from './index.js';
 
 export default class FilterResource implements Filter, FilterCtor {
   static readonly FILTER_NAME = 'resource';

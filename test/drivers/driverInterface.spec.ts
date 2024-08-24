@@ -1,9 +1,9 @@
 import * as chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
-import { InstrumentedResource, ToolingInterface } from '../../drivers/instrumentedResource.js';
+import chaiAsPromised from 'chai-as-promised';
 import { DateTime } from 'luxon';
 import { DriverInterface } from '../../drivers/driverInterface.js';
+import { InstrumentedResource, ToolingInterface } from '../../drivers/instrumentedResource.js';
 
 chai.use(chaiAsPromised);
 

@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import {
   ErrorTrackingLogger,
-  logger,
-  logLevelsToConsole,
-  restructureJsonLog,
   RevolverLogObject,
+  logLevelsToConsole,
+  logger,
+  restructureJsonLog,
 } from '../../lib/logger.js';
 
 // TODO: validate JSON format, including restructure

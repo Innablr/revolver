@@ -1,12 +1,12 @@
-import { EventBridgeEvent, SQSEvent, ScheduledEvent, ScheduledHandler, SQSHandler } from 'aws-lambda';
-import environ from './lib/environ.js';
-import { AccountRevolver } from './lib/accountRevolver.js';
-import { logger } from './lib/logger.js';
-import { RevolverConfig } from './lib/config.js';
-import dateTime from './lib/dateTime.js';
-import assume from './lib/assume.js';
 import zlib from 'node:zlib';
 import { PromisePool } from '@supercharge/promise-pool';
+import { EventBridgeEvent, SQSEvent, SQSHandler, ScheduledEvent, ScheduledHandler } from 'aws-lambda';
+import { AccountRevolver } from './lib/accountRevolver.js';
+import assume from './lib/assume.js';
+import { RevolverConfig } from './lib/config.js';
+import dateTime from './lib/dateTime.js';
+import environ from './lib/environ.js';
+import { logger } from './lib/logger.js';
 
 // Specify a SQS message attribute to log out to the console
 const sqsLogAttribute = process.env.SQS_LOG_ATTRIBUTE;

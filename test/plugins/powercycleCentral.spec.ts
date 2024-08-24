@@ -1,13 +1,13 @@
-import { expect } from 'chai';
-import path from 'node:path';
-import { Context, EventBridgeEvent } from 'aws-lambda';
-import { handler as revolverHandle } from '../../revolver.js';
-import environ from '../../lib/environ.js';
 import * as fs from 'node:fs';
-import { RevolverConfig } from '../../lib/config.js';
-import { ObjectLogJson } from '../../lib/objectLog.js';
-import { parse } from 'csv-parse/sync';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { Context, EventBridgeEvent } from 'aws-lambda';
+import { expect } from 'chai';
+import { parse } from 'csv-parse/sync';
+import { RevolverConfig } from '../../lib/config.js';
+import environ from '../../lib/environ.js';
+import { ObjectLogJson } from '../../lib/objectLog.js';
+import { handler as revolverHandle } from '../../revolver.js';
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
