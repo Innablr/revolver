@@ -111,7 +111,7 @@ const ObjectLogOptions = z.object({
     .optional(),
 });
 
-const TimeZoneString = z.string().regex(/^([A-Za-z]+\/[A-Za-z_]+|UTC(?:[+-]\d+))$/, {
+const TimeZoneString = z.string().regex(/^([A-Za-z]+\/[A-Za-z_]+|UTC(?:[+-]\d+)?)$/, {
   message: 'Invalid Timezone',
 });
 
@@ -126,7 +126,7 @@ const PowercycleCentralMatcher = z.object({
 // Used for defaults, and a partial used for org/account overrides
 const Settings = z.object({
   region: AWSRegion.optional(),
-  timezone: TimeZoneString,
+  timezone: TimeZoneString.default('UTC'),
   timezoneTag: z.string().default('Timezone'),
   concurrency: z.number().default(0),
   organizationRoleName: z.string(),

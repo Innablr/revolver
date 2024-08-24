@@ -56,7 +56,7 @@ describe('Validate test config', function () {
 
     // basic settings, defaults
     expect(config.defaults.settings.region).to.equal('ap-southeast-2');
-    expect(config.defaults.settings.timezone).to.equal('utc');
+    expect(config.defaults.settings.timezone).to.equal('UTC');
     expect(config.defaults.settings.timezoneTag).to.equal('Timezone');
     expect(config.accounts.includeList).to.have.lengthOf(3);
     expect(config.accounts.includeList[0].accountId).to.equal('002222222222');
