@@ -111,10 +111,22 @@ const ObjectLogOptions = z.object({
     .optional(),
 });
 
+const TimeZoneString = z.string().regex(/^([A-Za-z]+\/[A-Za-z_]+|UTC(?:[+-]\d+))$/, {
+  message: 'Invalid Timezone',
+});
+
+const PowercycleCentralMatcher = z.object({
+  name: z.string(),
+  schedule: z.string(),
+  priority: z.number().default(0),
+  filter: z.union([z.array(Filters), Filters]),
+  pretend: z.boolean().default(false),
+});
+
 // Used for defaults, and a partial used for org/account overrides
 const Settings = z.object({
   region: AWSRegion.optional(),
-  timezone: z.string().default('utc'),
+  timezone: TimeZoneString,
   timezoneTag: z.string().default('Timezone'),
   concurrency: z.number().default(0),
   organizationRoleName: z.string(),
@@ -201,15 +213,7 @@ const ConfigSchema = z
                   availabilityTag: z.string().default('Schedule'),
                   availabilityTagPriority: z.number().default(0),
                   predefinedSchedules: z.record(z.string(), z.string()).default({}),
-                  matchers: z.array(
-                    z.object({
-                      name: z.string(),
-                      schedule: z.string(),
-                      priority: z.number().default(0),
-                      filter: z.union([z.array(Filters), Filters]),
-                      pretend: z.boolean().default(false),
-                    }),
-                  ),
+                  matchers: z.array(PowercycleCentralMatcher),
                 }),
               ),
             })
@@ -278,4 +282,4 @@ const ConfigSchema = z
     return config;
   });
 
-export { ConfigSchema };
+export { ConfigSchema, Filters, AWSRegion, TimeZoneString, PowercycleCentralMatcher };
