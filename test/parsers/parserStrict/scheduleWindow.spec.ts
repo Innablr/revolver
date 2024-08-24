@@ -1,6 +1,6 @@
-import getParser from '../../../plugins/parsers/index.js';
 import { expect } from 'chai';
 import { DateTime, Interval } from 'luxon';
+import getParser from '../../../plugins/parsers/index.js';
 
 // a set of results for each 15 minute interval over a week
 type ScheduleResults = Map<DateTime<true>, boolean>;

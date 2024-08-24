@@ -1,9 +1,9 @@
-import { RevolverPlugin } from './pluginInterface.js';
-import dateTime from '../lib/dateTime.js';
 import { NoopAction, StartAction, StopAction } from '../actions/actions.js';
+import { ToolingInterface } from '../drivers/instrumentedResource.js';
+import dateTime from '../lib/dateTime.js';
 import { Filter, buildFilter } from './filters/index.js';
 import getParser from './parsers/index.js';
-import { ToolingInterface } from '../drivers/instrumentedResource.js';
+import { RevolverPlugin } from './pluginInterface.js';
 
 interface Matcher {
   name: string;

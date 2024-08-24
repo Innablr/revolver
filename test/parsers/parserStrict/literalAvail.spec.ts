@@ -1,6 +1,6 @@
-import getParser from '../../../plugins/parsers/index.js';
 import { expect } from 'chai';
 import { DateTime } from 'luxon';
+import getParser from '../../../plugins/parsers/index.js';
 
 const timeVariety: { [key: string]: DateTime } = {
   monday630: DateTime.fromJSDate(new Date('2017-06-05 06:30')),

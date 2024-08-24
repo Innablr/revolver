@@ -6,13 +6,13 @@ import {
   StopDBInstanceCommand,
   Tag,
 } from '@aws-sdk/client-rds';
-import { InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
-import { DriverInterface } from './driverInterface.js';
 import { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
-import { rdsTagger } from './tags.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';
 import { makeResourceTags } from '../lib/common.js';
 import dateTime from '../lib/dateTime.js';
+import { DriverInterface } from './driverInterface.js';
+import { InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
+import { rdsTagger } from './tags.js';
 
 class InstrumentedRdsInstance extends ToolingInterface {
   public tags: Tag[] = [];
