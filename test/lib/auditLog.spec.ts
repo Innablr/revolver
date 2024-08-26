@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { parse } from 'csv-parse/sync';
 import { DateTime } from 'luxon';
 import { ActionAuditEntry } from '../../actions/audit.js';
-import { ActionAuditTable, ObjectLogCsv } from '../../lib/objectLog.js';
+import { ActionAuditTable, ObjectLogCsv, ObjectLogJson } from '../../lib/objectLog.js';
 
 // A dummy AWS resource for testing
 class FakeActionAuditEntry implements ActionAuditEntry {
@@ -14,6 +14,7 @@ class FakeActionAuditEntry implements ActionAuditEntry {
   driver: string;
   resourceType: string;
   resourceId: string;
+  region: string;
   status: string;
   action: string;
   reason: string;
@@ -25,6 +26,7 @@ class FakeActionAuditEntry implements ActionAuditEntry {
     this.driver = 'fakedriver';
     this.resourceType = `type_${randomBytes(20).toString('hex')}`;
     this.resourceId = `id_${randomBytes(20).toString('hex')}`;
+    this.region = 'ap-southeast-2';
     this.status = status;
     this.action = action;
     this.reason = reason;
@@ -38,6 +40,9 @@ const AUDIT_LOG_CONFIG = {
     file: 'auditlog-out.csv',
     reportTags: ['F1', 'F2'],
     append: true,
+  },
+  json: {
+    file: 'auditlog-out.json',
   },
 };
 
@@ -97,5 +102,30 @@ describe('Validate auditLog', function () {
     expect(records2.length).to.equal(5);
     expect(records2[3].STATUS).to.equal('orange');
     expect(records2[4].STATUS).to.equal('pink');
+  });
+
+  it('Check ObjectLogJson', async function () {
+    fs.rmSync(AUDIT_LOG_CONFIG.json.file, { force: true });
+
+    const entries = [
+      new FakeActionAuditEntry('red', 'dosomething', 'just because'),
+      new FakeActionAuditEntry('green', 'dosomething', 'another reason'),
+      new FakeActionAuditEntry('blue', 'dosomething else', 'random'),
+    ];
+    await new ObjectLogJson(
+      new ActionAuditTable(ACCOUNT_CONFIG, entries, true),
+      AUDIT_LOG_CONFIG.json,
+      ACCOUNT_CONFIG.settings,
+    ).process();
+
+    expect(fs.existsSync(AUDIT_LOG_CONFIG.json.file)).to.be.true;
+
+    const auditJsonText = fs.readFileSync(AUDIT_LOG_CONFIG.json.file, 'utf-8');
+    const auditInfo = JSON.parse(auditJsonText);
+    expect(auditInfo.entries.length).to.equal(3);
+    expect(auditInfo.entries[0].status).to.equal('red');
+    expect(auditInfo.entries[1].reason).to.equal('another reason');
+    expect(auditInfo.entries[2].action).to.equal('dosomething else');
+    expect(auditInfo.entries[0].region).to.equal('ap-southeast-2');
   });
 });

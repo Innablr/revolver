@@ -7,6 +7,7 @@ export interface ActionAuditEntry {
   driver: string;
   resourceType: string;
   resourceId: string;
+  region: string;
   status: string;
   action: string;
   reason: string;

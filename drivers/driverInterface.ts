@@ -66,6 +66,7 @@ export abstract class DriverInterface {
         driver: this.name,
         resourceType: ti.awsResourceType || '',
         resourceId: ti.resourceId,
+        region: ti.region || '',
         action: action,
         reason: reason,
         status: status,
