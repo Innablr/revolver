@@ -21,7 +21,6 @@ describe('Validate DateTime', function () {
     const d5 = dateTime.getTime('Australia/Melbourne');
     expect(d5.invalidReason).to.equal('unparsable');
     expect(d5.toISO()).to.be.null;
-    console.info('D5: %s', d5);
   });
 
   it('Check DateTime getUtcDateTime', async function () {
