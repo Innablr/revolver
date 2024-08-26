@@ -51,7 +51,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
     "@types/aws-lambda": "^8.10.143",
-    "@types/chai": "^4.3.17",
+    "@types/chai": "^4.3.18",
     "@types/chai-as-promised": "^7.1.8",
     "@types/jest": "^29.5.12",
     "@types/jmespath": "^0.15.2",
