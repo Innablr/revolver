@@ -12,7 +12,11 @@ const __dirname = path.dirname(__filename); // get the name of the directory
 
 const TEST_INTERVAL = 15; // number of minutes between samples
 
-function runRevolver(timeStamp: DateTime) {
+/**
+ * Run a single cycle of Revolver with the time set to the given value
+ * @param timeStamp 
+ */
+async function runRevolver(timeStamp: DateTime) {
   // Copied from invoke.ts
   const event: EventBridgeEvent<'Scheduled Event', 'test-event'> = {
     id: '0',
@@ -36,20 +40,19 @@ function runRevolver(timeStamp: DateTime) {
     logGroupName: 'revolver',
     logStreamName: '0',
     getRemainingTimeInMillis: () => 0,
-    done: () => {},
-    fail: () => {},
-    succeed: () => {},
+    done: () => { },
+    fail: () => { },
+    succeed: () => { },
   };
 
   console.log(`Running revolver at timestamp [${timeStamp}]`);
-  const r = revolverHandle(event, context, () => {});
-  if (r instanceof Promise) {
-    r.then(() => {
-      console.log('Done');
-    }).catch((e: Error) => {
-      console.error(e);
-      process.exit(1);
-    });
+  const blah = await revolverHandle(event, context, () => { });
+}
+
+async function cleanOutputDirectory(dir: string) {
+  // TODO: mkdir if not exists
+  for await (const fn of await fs.readdir(dir)) {
+    fs.unlink(path.join(dir, fn));
   }
 }
 
@@ -69,25 +72,42 @@ async function runRevolverWeek(configFile: string, resourceFile: string) {
   const tempConfigFile = path.join(__dirname, 'temp-config.yaml');
   const config: any = yaml.load(await fs.readFile(configFile, { encoding: 'utf8' }));
   config.defaults.settings.resourceLog = {
-    csv: { file: 'output/resources.%name.csv', overwrite: true, append: false },
+    csv: { file: 'output/resources.%name.csv', overwrite: true, append: true },
   };
   config.defaults.settings.auditLog = undefined;
   await fs.writeFile(tempConfigFile, yaml.dump(config));
 
   environ.configPath = tempConfigFile;
-  runRevolver(startTime);
 
   // evaluate the parser across every test time
   // const results: ScheduleResults = new Map();
-  // testTimes.forEach((t) => {
-  //   // TODO: fiddle with config file to make unique output
-  //   // TODO: change log output to non-console
 
-  //   runRevolver(t!.toJSDate());
-  //   // const [action] = parser(schedule, t);
-  //   // results.set(t!, action === 'START');
+  // attempt 1
+  // testTimes.forEach((t) => {
+  //   runRevolver(t!);
   // });
+
+  // attempt 2
+  for (const t of testTimes) {
+    console.log(`XXXXXX Before ${t}`);
+    await runRevolver(t!);
+    console.log(`XXXXXX After ${t}`);
+  }
+
+  // attempt 3
+  // for await (const t of testTimes) {
+  //   console.log(`XXXXXX Before ${t}`);
+  //   await runRevolver(t!);
+  //   console.log(`XXXXXX After ${t}`);
+  // }
+
+
 }
+
+
+
+
+
 
 const scriptName = path.basename(__filename);
 if (process.argv.length < 4) {
@@ -95,7 +115,12 @@ if (process.argv.length < 4) {
   process.exit(1);
 }
 
+cleanOutputDirectory('./output');
+
 // 0 and 1 are node program and script
 const configFile = process.argv[2];
 const resourceFile = process.argv[3];
 runRevolverWeek(configFile, resourceFile);
+
+// TODO: load the CSV and turn the "running,StopAction" etc into a list of "target stte"
+// Summarise and output
