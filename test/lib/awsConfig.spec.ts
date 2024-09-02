@@ -1,8 +1,8 @@
-import { expect } from 'chai';
-import { getAwsClientForAccount, getAwsConfig } from '../../lib/awsConfig.js';
 import { EC2Client } from '@aws-sdk/client-ec2';
-import sinon from 'sinon';
 import { STS } from '@aws-sdk/client-sts';
+import { expect } from 'chai';
+import sinon from 'sinon';
+import { getAwsClientForAccount, getAwsConfig } from '../../lib/awsConfig.js';
 import environ from '../../lib/environ.js';
 
 describe('Validate getAwsConfig', function () {
