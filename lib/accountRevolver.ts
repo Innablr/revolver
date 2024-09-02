@@ -4,6 +4,7 @@ import { DriverInterface } from '../drivers/driverInterface.js';
 import { InstrumentedResource, ToolingInterface } from '../drivers/instrumentedResource.js';
 import { buildFilter } from '../plugins/filters/index.js';
 import { RevolverPlugin } from '../plugins/pluginInterface.js';
+import { resolveFilename } from './common.js';
 import dateTime from './dateTime.js';
 import { getSubLogger } from './logger.js';
 import {
@@ -81,7 +82,8 @@ export class AccountRevolver {
     let localResources: InstrumentedResource[];
     if (local !== undefined) {
       this.logger.info(`Loading resources locally from ${local}`);
-      const resourcesFilePath = path.resolve(local);
+      const context = Object.assign({}, this.config.settings, { accountId: this.config.accountId });
+      const resourcesFilePath = path.resolve(resolveFilename(local, context));
       const localResourcesStr = await fs.readFile(resourcesFilePath, { encoding: 'utf-8' });
       localResources = JSON.parse(localResourcesStr);
     }

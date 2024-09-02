@@ -14,6 +14,7 @@ import { stringify } from 'csv-stringify/sync';
 import { ActionAuditEntry } from '../actions/audit.js';
 import { ToolingInterface } from '../drivers/instrumentedResource.js';
 import { getAwsConfig } from './awsConfig.js';
+import { resolveFilename } from './common.js';
 import dateTime from './dateTime.js';
 import { getSubLogger } from './logger.js';
 import { htmlTableReport } from './templater.js';
@@ -218,25 +219,7 @@ abstract class AbstractOutputWriter {
    * @returns a version of `path` with tokens replaced with their values; unmatched tokens will be retained as `%token`
    */
   public resolveFilename(path?: string): string {
-    if (path === undefined) {
-      return '';
-    }
-    // Replace all tokens from this.context
-    let usePath = path;
-    if (this.context && Object.keys(this.context).length) {
-      const re = new RegExp(`%(${Object.keys(this.context).join('|')})`, 'g');
-      usePath = usePath.replace(re, (match) => {
-        const key = match.replace('%', '');
-        return this.context![key as keyof WriterContext] || '??';
-      });
-    }
-    // If filename contains any %xxx tokens (same character is repeated) attempt to use Luxon to resolve (date/time) tokens.
-    usePath = usePath.replace(/%(\w)\1*(?!\w)/g, (match) => {
-      return dateTime.getTime(this.context?.timezone).toFormat(match.replace('%', ''));
-    });
-
-    // unmatched tokens will be retained as `%token`
-    return usePath;
+    return resolveFilename(path, this.context);
   }
 
   process(): any {

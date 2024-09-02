@@ -1,3 +1,5 @@
+import dateTime from './dateTime.js';
+
 async function paginateAwsCall(paginatorRef: any, client: any, what: string, params?: any) {
   // TODO: improve parameter typing:
   //   paginatorRef = f(PaginationConfiguration, request)
@@ -58,4 +60,32 @@ function makeResourceTags(tagList: any, filterTags?: string[]): { [key: string]:
   return useTagList.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
 }
 
-export { paginateAwsCall, chunkArray, uniqueBy, unique, makeResourceTags };
+/**
+ * Replace `%token` tokens in the given path with values from the Writer context, and date/time.
+ * @param path - the string to be substituted
+ * @returns a version of `path` with tokens replaced with their values; unmatched tokens will be retained as `%token`
+ */
+function resolveFilename(path?: string, context?: any): string {
+  if (path === undefined) {
+    return '';
+  }
+  // Replace all tokens from this.context
+  let usePath = path;
+  if (context && Object.keys(context).length) {
+    const re = new RegExp(`%(${Object.keys(context).join('|')})`, 'g');
+    usePath = usePath.replace(re, (match) => {
+      const key = match.replace('%', '');
+      // return context![key as keyof WriterContext] || '??';
+      return context[key] || '??';
+    });
+  }
+  // If filename contains any %xxx tokens (same character is repeated) attempt to use Luxon to resolve (date/time) tokens.
+  usePath = usePath.replace(/%(\w)\1*(?!\w)/g, (match) => {
+    return dateTime.getTime(context?.timezone).toFormat(match.replace('%', ''));
+  });
+
+  // unmatched tokens will be retained as `%token`
+  return usePath;
+}
+
+export { paginateAwsCall, chunkArray, uniqueBy, unique, makeResourceTags, resolveFilename };
