@@ -1,11 +1,14 @@
-import { DateTime, DurationLike, Interval } from 'luxon';
-import { Context, EventBridgeEvent } from 'aws-lambda';
+import fs from 'node:fs';
+import { promises as fs2 } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { handler as revolverHandle } from '../revolver.js';
-import environ from '../lib/environ.js';
-import { promises as fs } from 'node:fs';
+import { Context, EventBridgeEvent } from 'aws-lambda';
 import yaml from 'js-yaml';
+import { DateTime, Interval } from 'luxon';
+import environ from '../lib/environ.js';
+import { handler as revolverHandle } from '../revolver.js';
+import { parse } from 'csv-parse';
+import { DateTime as LuxonDateTime } from 'luxon';
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
@@ -14,7 +17,7 @@ const TEST_INTERVAL = 15; // number of minutes between samples
 
 /**
  * Run a single cycle of Revolver with the time set to the given value
- * @param timeStamp 
+ * @param timeStamp
  */
 async function runRevolver(timeStamp: DateTime) {
   // Copied from invoke.ts
@@ -40,23 +43,23 @@ async function runRevolver(timeStamp: DateTime) {
     logGroupName: 'revolver',
     logStreamName: '0',
     getRemainingTimeInMillis: () => 0,
-    done: () => { },
-    fail: () => { },
-    succeed: () => { },
+    done: () => {},
+    fail: () => {},
+    succeed: () => {},
   };
 
   console.log(`Running revolver at timestamp [${timeStamp}]`);
-  const blah = await revolverHandle(event, context, () => { });
+  const blah = await revolverHandle(event, context, () => {});
 }
 
 async function cleanOutputDirectory(dir: string) {
   // TODO: mkdir if not exists
-  for await (const fn of await fs.readdir(dir)) {
-    fs.unlink(path.join(dir, fn));
+  for await (const fn of await fs2.readdir(dir)) {
+    await fs2.unlink(path.join(dir, fn));
   }
 }
 
-async function runRevolverWeek(configFile: string, resourceFile: string) {
+async function runRevolverWeek(configFile: string, resourceFile: string, outputDirectory = './output') {
   const startTime = DateTime.utc(2017, 3, 12, 0, 0, 0, 0);
   const testInterval = { minutes: TEST_INTERVAL };
   const testDuration = { days: 7 };
@@ -65,49 +68,59 @@ async function runRevolverWeek(configFile: string, resourceFile: string) {
   const interval = Interval.fromDateTimes(startTime, startTime.plus(testDuration));
   const testTimes = interval.splitBy(testInterval).map((d) => d.start);
 
+  cleanOutputDirectory(outputDirectory);
+
   // TOOD: make a copy of config file, with some hacks:
   // - update localResourcesFile
   // - set output to a unique file
   // - disable console logging
+  // - disable AWS roles, drivers
   const tempConfigFile = path.join(__dirname, 'temp-config.yaml');
-  const config: any = yaml.load(await fs.readFile(configFile, { encoding: 'utf8' }));
+  const config: any = yaml.load(await fs2.readFile(configFile, { encoding: 'utf8' }));
+  config.defaults.settings.organizationRoleName = 'none';
+  config.defaults.settings.revolverRoleName = 'none';
+  config.defaults.settings.localResourcesFile = resourceFile;
   config.defaults.settings.resourceLog = {
-    csv: { file: 'output/resources.%name.csv', overwrite: true, append: true },
+    csv: { file: `${outputDirectory}/resources.%name.csv`, overwrite: true, append: true },
   };
   config.defaults.settings.auditLog = undefined;
-  await fs.writeFile(tempConfigFile, yaml.dump(config));
+  config.defaults.drivers.forEach((d: any) => {
+    d.pretend = true;
+  });
+  await fs2.writeFile(tempConfigFile, yaml.dump(config));
 
   environ.configPath = tempConfigFile;
 
   // evaluate the parser across every test time
-  // const results: ScheduleResults = new Map();
-
-  // attempt 1
-  // testTimes.forEach((t) => {
-  //   runRevolver(t!);
-  // });
-
-  // attempt 2
   for (const t of testTimes) {
     console.log(`XXXXXX Before ${t}`);
     await runRevolver(t!);
     console.log(`XXXXXX After ${t}`);
   }
-
-  // attempt 3
-  // for await (const t of testTimes) {
-  //   console.log(`XXXXXX Before ${t}`);
-  //   await runRevolver(t!);
-  //   console.log(`XXXXXX After ${t}`);
-  // }
-
-
 }
 
-
-
-
-
+async function summariseOutputData(dir: string) {
+  for await (const fn of await fs2.readdir(dir)) {
+    // Summarise the CSV file
+    console.log(`Processing ${fn}`);
+    const records: { [key: string]: any[] } = {};
+    const parser = fs.createReadStream(`${dir}/${fn}`).pipe(parse({ columns: true }));
+    for await (const record of parser) {
+      const key = `${record.ACCOUNT_ID}:${record.ACCOUNT_NAME}:${record.REGION}:${record.TYPE}:${record.ID}`;
+      if (!records[key]) {
+        records[key] = [];
+      }
+      let state = record.STATE;
+      if (record.ACTION === 'stop') {
+        state = 'stopped';
+      } else if (record.ACTION === 'start') {
+        state = 'running';
+      }
+      records[key].push([LuxonDateTime.fromISO(record.TIME).toUTC(), state, record.MATCHER]);
+    }
+    // Emit the summary
+  }
+}
 
 const scriptName = path.basename(__filename);
 if (process.argv.length < 4) {
@@ -115,12 +128,11 @@ if (process.argv.length < 4) {
   process.exit(1);
 }
 
-cleanOutputDirectory('./output');
-
 // 0 and 1 are node program and script
 const configFile = process.argv[2];
 const resourceFile = process.argv[3];
-runRevolverWeek(configFile, resourceFile);
+// runRevolverWeek(configFile, resourceFile);
+await summariseOutputData('./output');
 
 // TODO: load the CSV and turn the "running,StopAction" etc into a list of "target stte"
 // Summarise and output
