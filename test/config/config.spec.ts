@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename); // get the name of the directory
 
 const EXAMPLE_CONFIG = path.join(__dirname, '..', '..', 'revolver-config-example.yaml');
 const SAMPLE_CONFIG_1 = path.join(__dirname, 'revolver-config1.yaml');
+const INVALID_CONFIG = path.join(__dirname, 'revolver-config.invalid.yaml');
 
 const ORG_ACCOUNTS = [
   {
@@ -47,6 +48,12 @@ describe('Validate example config', function () {
   it('Check simple parsing', async function () {
     const config = await RevolverConfig.readConfigFromFile(EXAMPLE_CONFIG);
     expect(config.defaults.settings.region).to.equal('ap-southeast-2');
+  });
+});
+
+describe('Validate invalid config', function () {
+  it('Check invalid parsing', async function () {
+    await expect(RevolverConfig.readConfigFromFile(INVALID_CONFIG)).to.be.rejectedWith(/^ZodError: Failed to parse/);
   });
 });
 

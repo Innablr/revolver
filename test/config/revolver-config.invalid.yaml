@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../../revolver-config-schema.json
+---
+defaults:
+  settings:
+    region: ap-southeast-2
+    # timezone: Australia/Melbourne
+    # timezoneTag: Timezone
+    # organizationRoleName: AWSOrganizationsReadOnly
+    revolverRoleName: ssPowerCycle
+    resourceLog:
+      json:
+        file: resources.json
+      csv:
+        file: resources.csv
+        overwrite: false
+        reportTags: ["Name", "Schedule"]
+    excludeResources:
+      - tag: 'Schedule|ignore'
+
+  drivers:
+    - name: ec2
+      # active: true
+      # pretend: false
+
+
+  plugins:
+    powercycle:
+      active: true
+      configs:
+        - tagging: strict
+          availabilityTag: Schedule
+
+organizations: []
+
+accounts:
+  includeList: []
+  excludeList: []

@@ -591,4 +591,39 @@ describe('filter matchWindow', function () {
       expect(matches).to.be.equal(t >= fromTime);
     }
   });
+
+  it('matchWindow OR', async function () {
+    const from1 = DateTime.utc(2024, 2, 19, 21, 0, 0, 0);
+    const to1 = from1.plus({ days: 2 });
+
+    const from2 = DateTime.utc(2024, 2, 25, 21, 0, 0, 0);
+    const to2 = from2.plus({ days: 2 });
+
+    const testTimes = [
+      { time: from1.minus({ days: 1 }), matches: false },
+      { time: from1.minus({ hours: 1 }), matches: false },
+      { time: from1, matches: true },
+      { time: from1.plus({ days: 1 }), matches: true },
+      { time: from1.plus({ days: 2 }), matches: false },
+
+      { time: from2.minus({ days: 1 }), matches: false },
+      { time: from2.minus({ hours: 1 }), matches: false },
+      { time: from2, matches: true },
+      { time: from2.plus({ days: 1 }), matches: true },
+      { time: from2.plus({ days: 2 }), matches: false },
+    ];
+
+    const filter = await buildFilter({
+      matchWindow: [
+        { from: from1.toISO(), to: to1.toISO() },
+        { from: from2.toISO(), to: to2.toISO() },
+      ],
+    });
+    for (const tt of testTimes) {
+      dateTime.freezeTime(tt.time.toString());
+      const matches = filter.matches(new TestingResource(basicEc2));
+      console.log('%s (%s) = %s', tt.time, tt.time.toUTC(), matches);
+      expect(matches).to.be.equal(tt.matches);
+    }
+  });
 });
