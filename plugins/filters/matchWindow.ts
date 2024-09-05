@@ -11,7 +11,7 @@ import { Filter, FilterCtor, arrayToOr } from './index.js';
  * If the time component of datetime is omitted, a time of 00:00 is used.
  */
 export default class FilterMatchWindowStart implements Filter, FilterCtor {
-  static readonly FILTER_NAME = 'match_window';
+  static readonly FILTER_NAME = 'matchWindow';
   private startTime: LuxonDateTime | undefined = undefined;
   private endTime: LuxonDateTime | undefined = undefined;
 
