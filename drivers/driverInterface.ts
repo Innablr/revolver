@@ -59,6 +59,10 @@ export abstract class DriverInterface {
         reason = ownAction.reason;
       }
 
+      if (action === 'noop') {
+        continue; // exclude noop events from audit log
+      }
+
       this.actionAuditLog.push({
         accountId: ti.accountId || '',
         time: dateTime.getTime(),
