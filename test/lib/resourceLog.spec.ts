@@ -1,14 +1,14 @@
 import { randomBytes } from 'node:crypto';
 import * as fs from 'node:fs';
+import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { expect } from 'chai';
 import { parse } from 'csv-parse/sync';
 import { DateTime } from 'luxon';
+import sinon from 'sinon';
 import { ToolingInterface } from '../../drivers/instrumentedResource.js';
 import dateTime from '../../lib/dateTime.js';
 import { ObjectLogCsv, ObjectLogHtml, ObjectLogJson, ObjectLogTable, ResourceTable } from '../../lib/objectLog.js';
-import sinon from 'sinon';
-import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
-import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
 
 // A dummy AWS resource for testing
 class FakeResource extends ToolingInterface {
