@@ -6,6 +6,9 @@ import { DateTime } from 'luxon';
 import { ToolingInterface } from '../../drivers/instrumentedResource.js';
 import dateTime from '../../lib/dateTime.js';
 import { ObjectLogCsv, ObjectLogHtml, ObjectLogJson, ObjectLogTable, ResourceTable } from '../../lib/objectLog.js';
+import sinon from 'sinon';
+import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
+import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
 
 // A dummy AWS resource for testing
 class FakeResource extends ToolingInterface {
@@ -46,6 +49,14 @@ class FakeResource extends ToolingInterface {
 const RESOURCE_LOG_CONFIG = {
   json: {
     file: 'resourcelog-out.json',
+    sns: {
+      url: 'arn:aws:sns:ap-southeast-2:333333333333:revolver-nonprod-audit-topic',
+      compress: false,
+    },
+    sqs: {
+      url: 'https://sqs.ap-southeast-2.amazonaws.com/123456789012/sqs-queue',
+      compress: false,
+    },
   },
   html: {
     file: 'resourcelog-out.html',
@@ -148,6 +159,10 @@ describe('Validate ResourceLog', function () {
     const originalContent = 'test-content';
     fs.writeFileSync(RESOURCE_LOG_CONFIG.json.file, originalContent);
 
+    // Stub out the SNS send method
+    const snsSendStub = sinon.stub(SNSClient.prototype, 'send').resolves({ Something: 123 });
+    const sqsSendStub = sinon.stub(SQSClient.prototype, 'send').resolves({ Another: 456 });
+
     // Execute the ObjectLogJson process (overwrite=false)
     await new ObjectLogJson(
       TEST_RESOURCES,
@@ -157,12 +172,37 @@ describe('Validate ResourceLog', function () {
     const contents = fs.readFileSync(RESOURCE_LOG_CONFIG.json.file).toString('utf-8');
     expect(contents).to.equal(originalContent);
 
+    // Check SNS.send was called once with correct arguments
+    expect(snsSendStub.callCount).to.equal(1);
+    expect(snsSendStub.getCall(0).args.length).to.equal(1);
+    expect(snsSendStub.getCall(0).args[0]).to.be.instanceOf(PublishCommand);
+    const snsCallArg: any = snsSendStub.getCall(0).args[0];
+    expect(snsCallArg.input.TopicArn).to.equal(RESOURCE_LOG_CONFIG.json.sns.url);
+    const snsCallMessage = JSON.parse(snsCallArg.input.Message!);
+    expect(snsCallMessage.length).to.equal(4); // donkey1, shrek, fiona, lord-farquaad
+    expect(snsCallMessage[0].resourceId).to.equal('donkey1');
+    expect(snsCallMessage[1].resourceId).to.equal('shrek');
+
+    // Check SQS.send was called once with correct arguments
+    expect(sqsSendStub.callCount).to.equal(1);
+    expect(sqsSendStub.getCall(0).args.length).to.equal(1);
+    expect(sqsSendStub.getCall(0).args[0]).to.be.instanceOf(SendMessageCommand);
+    const sqsCallArg: any = sqsSendStub.getCall(0).args[0];
+    expect(sqsCallArg.input.QueueUrl).to.equal(RESOURCE_LOG_CONFIG.json.sqs.url);
+    const sqsCallMessage = JSON.parse(sqsCallArg.input.MessageBody!);
+    expect(sqsCallMessage.length).to.equal(4); // donkey1, shrek, fiona, lord-farquaad
+    expect(sqsCallMessage[0].resourceId).to.equal('donkey1');
+    expect(sqsCallMessage[1].resourceId).to.equal('shrek');
+
     if (fs.existsSync(RESOURCE_LOG_CONFIG.json.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.json.file);
     await new ObjectLogJson(TEST_RESOURCES, RESOURCE_LOG_CONFIG.json, ACCOUNT_CONFIG.settings).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.json.file)).to.be.true;
     // TODO: check the contents of RESOURCE_LOG_CONFIG.json.file
     const contents2 = fs.readFileSync(RESOURCE_LOG_CONFIG.json.file).toString('utf-8');
     expect(contents2).to.not.equal(originalContent);
+
+    snsSendStub.restore(); // should be finally
+    sqsSendStub.restore(); // should be finally
   });
 
   it('Check ObjectLogHtml', async function () {
