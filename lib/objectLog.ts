@@ -178,7 +178,9 @@ abstract class AbstractOutputWriter {
 
   protected async writeSQS() {
     const [attributes, output] = this.generateMessageOutput(this.options.sqs);
-    const config = getAwsConfig(this.context?.region);
+    // Use the region from the SQS URL, not the current account region
+    // eg: https://sqs.ap-southeast-2.amazonaws.com/ACCOUNT_ID/test-revolver-audit
+    const config = getAwsConfig(this.options.sqs?.url.split('.')[1]);
     const sqs = new SQSClient(Object.assign(config, { useQueueUrlAsEndpoint: false }));
     this.logger.info(`Sending message to SQS ${this.options.sqs?.url}`);
     return sqs.send(
@@ -196,7 +198,9 @@ abstract class AbstractOutputWriter {
       return; // don't send empty SNS messages
     }
 
-    const config = getAwsConfig(this.context?.region);
+    // Use the region from the SNS ARN, not the current account region
+    // eg: arn:aws:sns:ap-southeast-2:ACCOUNT_ID:revolver--audit-topic
+    const config = getAwsConfig(this.options.sns?.url.split(':')[3]);
     const sns = new SNSClient(config);
     this.logger.info(`Sending message to SNS ${this.options.sns?.url}`);
     return sns.send(
