@@ -40,6 +40,9 @@ function flattenZodErrors(ze: ZodError, depth: number): string[] {
       case ZodIssueCode.invalid_return_type:
         lines = lines.concat(flattenZodErrors((zi as ZodInvalidReturnTypeIssue).returnTypeError, depth + 1));
         break;
+      default:
+        // no change to default lines
+        break;
     }
   }
   return lines;
