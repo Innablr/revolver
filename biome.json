@@ -25,7 +25,14 @@
         "noDuplicateAtImportRules": "error",
         "noDuplicateElseIf": "error",
         "noEvolvingTypes": "error",
-        "noRestrictedImports": "error"
+        "noUnusedFunctionParameters": "error",
+        "noUselessStringConcat": "error",
+        "noUselessUndefinedInitialization": "error",
+        "noYodaExpression": "error",
+        "useAdjacentOverloadSignatures": "error",
+        "useDefaultSwitchClause": "error",
+        "useErrorMessage": "error",
+        "useNumberToFixedDigitsArgument": "error"
       }
     },
     "ignore": ["**/*.js", "**/*.d.ts", "**/docs", "**/coverage", "**/cdk.json", "**/.cdk.staging", "**/cdk.out", "output"]
