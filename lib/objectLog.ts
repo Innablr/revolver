@@ -244,7 +244,7 @@ abstract class AbstractOutputWriter {
   }
 
   process(): any {
-    const promises = [];
+    const promises: Promise<any>[] = [];
     if (this.options.console === null) {
       promises.push(this.writeConsole());
     }

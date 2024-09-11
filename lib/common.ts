@@ -12,7 +12,7 @@ async function paginateAwsCall(paginatorRef: any, client: any, what: string, par
 }
 
 function chunkArray<T>(arr: T[], len: number): T[][] {
-  const chunks = [];
+  const chunks: T[][] = [];
   let i = 0;
   const n = arr.length;
   while (i < n) {
