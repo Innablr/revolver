@@ -7,9 +7,6 @@
       "complexity": {
         "noForEach": "off"
       },
-      "correctness": {
-        "noUnusedImports": "warn"
-      },
       "suspicious": {
         "noExplicitAny": "off"
       },
