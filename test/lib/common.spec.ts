@@ -3,7 +3,7 @@ import { chunkArray, makeResourceTags, paginateAwsCall, unique } from '../../lib
 
 describe('Validate utility functions', function () {
   it('Check paginateAwsCall', async function () {
-    function* paginatorFunc(config: any, request: any) {
+    function* paginatorFunc(_config: any, _request: any) {
       yield { what: 'a', another: 1 };
       yield { what: 'b', thing: 2 };
       yield { what: 'c' };

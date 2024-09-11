@@ -9,7 +9,7 @@ const DATE_FORMAT = 'ccc DD T'; // 'Sun 12 Mar 2017'
 const TEST_INTERVAL = 15; // number of minutes between samples
 // const TEST_WINDOW = { days: 7 }; // over what interval to sample
 
-const everyNth = (arr: any[], nth: number) => arr.filter((e, i) => i % nth === nth - 1);
+const everyNth = (arr: any[], nth: number) => arr.filter((_e, i) => i % nth === nth - 1);
 
 const zeroPad = (num: any, places: number) => String(num).padStart(places, '0');
 
