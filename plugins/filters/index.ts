@@ -1,4 +1,4 @@
-import { ToolingInterface } from '../../drivers/instrumentedResource.js';
+import type { ToolingInterface } from '../../drivers/instrumentedResource.js';
 
 import FilterAnd from './and.js';
 import FilterOr from './or.js';

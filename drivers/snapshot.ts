@@ -1,16 +1,16 @@
 import {
   EC2Client,
-  Tag,
+  type Tag,
   paginateDescribeInstances,
   paginateDescribeSnapshots,
   paginateDescribeVolumes,
 } from '@aws-sdk/client-ec2';
-import { RevolverActionWithTags } from '../actions/actions.js';
+import type { RevolverActionWithTags } from '../actions/actions.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';
 import { makeResourceTags, paginateAwsCall } from '../lib/common.js';
 import dateTime from '../lib/dateTime.js';
 import { DriverInterface } from './driverInterface.js';
-import { InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
+import { type InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
 import { ec2Tagger } from './tags.js';
 
 class InstrumentedSnapshot extends ToolingInterface {

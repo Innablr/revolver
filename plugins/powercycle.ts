@@ -1,5 +1,5 @@
 import { NoopAction, SetTagAction, StartAction, StopAction } from '../actions/actions.js';
-import { ToolingInterface } from '../drivers/instrumentedResource.js';
+import type { ToolingInterface } from '../drivers/instrumentedResource.js';
 import dateTime from '../lib/dateTime.js';
 import getParser from './parsers/index.js';
 import { RevolverPlugin } from './pluginInterface.js';

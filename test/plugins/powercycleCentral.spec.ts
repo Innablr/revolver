@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Context, EventBridgeEvent } from 'aws-lambda';
+import type { Context, EventBridgeEvent } from 'aws-lambda';
 import { expect } from 'chai';
 import { parse } from 'csv-parse/sync';
 import { RevolverConfig } from '../../lib/config.js';

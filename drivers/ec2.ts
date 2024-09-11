@@ -6,18 +6,18 @@ import {
 } from '@aws-sdk/client-auto-scaling';
 import {
   EC2Client,
-  Instance,
+  type Instance,
   StartInstancesCommand,
   StopInstancesCommand,
-  Tag,
+  type Tag,
   paginateDescribeInstances,
 } from '@aws-sdk/client-ec2';
-import { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
+import type { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';
 import { chunkArray, makeResourceTags, paginateAwsCall } from '../lib/common.js';
 import dateTime from '../lib/dateTime.js';
 import { DriverInterface } from './driverInterface.js';
-import { InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
+import { type InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
 import { ec2Tagger } from './tags.js';
 
 class InstrumentedEc2 extends ToolingInterface {

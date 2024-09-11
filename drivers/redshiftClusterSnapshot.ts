@@ -1,5 +1,5 @@
 import {
-  Cluster,
+  type Cluster,
   CreateTagsCommand,
   DeleteClusterSnapshotCommand,
   DeleteTagsCommand,
@@ -8,14 +8,14 @@ import {
   DescribeTagsCommand,
   RedshiftClient,
   RestoreFromClusterSnapshotCommand,
-  Tag,
+  type Tag,
 } from '@aws-sdk/client-redshift';
-import { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
+import type { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';
 import { makeResourceTags } from '../lib/common.js';
 import dateTime from '../lib/dateTime.js';
 import { DriverInterface } from './driverInterface.js';
-import { InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
+import { type InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
 
 class InstrumentedRedshiftClusterSnapshot extends ToolingInterface {
   public tags: Tag[] = [];

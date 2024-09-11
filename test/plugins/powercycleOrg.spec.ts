@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Context, EventBridgeEvent } from 'aws-lambda';
+import type { Context, EventBridgeEvent } from 'aws-lambda';
 import environ from '../../lib/environ.js';
 import { handler as revolverHandle } from '../../revolver.js';
 

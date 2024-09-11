@@ -15,12 +15,17 @@
         "noExplicitAny": "off"
       },
       "style": {
-        "useImportType": "off",
         "noUselessElse": "off",
         "noNonNullAssertion": "off"
       },
       "performance": {
         "noAccumulatingSpread": "off"
+      },
+      "nursery": {
+        "noDuplicateAtImportRules": "error",
+        "noDuplicateElseIf": "error",
+        "noEvolvingTypes": "error",
+        "noRestrictedImports": "error"
       }
     },
     "ignore": ["**/*.js", "**/*.d.ts", "**/docs", "**/coverage", "**/cdk.json", "**/.cdk.staging", "**/cdk.out", "output"]

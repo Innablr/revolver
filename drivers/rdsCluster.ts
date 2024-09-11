@@ -4,14 +4,14 @@ import {
   RDSClient,
   StartDBClusterCommand,
   StopDBClusterCommand,
-  Tag,
+  type Tag,
 } from '@aws-sdk/client-rds';
-import { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
+import type { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';
 import { makeResourceTags } from '../lib/common.js';
 import dateTime from '../lib/dateTime.js';
 import { DriverInterface } from './driverInterface.js';
-import { InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
+import { type InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
 import { rdsTagger } from './tags.js';
 
 class InstrumentedRdsCluster extends ToolingInterface {

@@ -1,6 +1,6 @@
 import { STS } from '@aws-sdk/client-sts';
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
-import { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
+import type { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
 import { DateTime } from 'luxon';
 import { getAwsConfig } from './awsConfig.js';
 import { logger } from './logger.js';

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import {
   ErrorTrackingLogger,
-  RevolverLogObject,
+  type RevolverLogObject,
   logLevelsToConsole,
   logger,
   restructureJsonLog,

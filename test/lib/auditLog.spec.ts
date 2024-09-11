@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import { expect } from 'chai';
 import { parse } from 'csv-parse/sync';
 import { DateTime } from 'luxon';
-import { ActionAuditEntry } from '../../actions/audit.js';
+import type { ActionAuditEntry } from '../../actions/audit.js';
 import { ActionAuditTable, ObjectLogCsv, ObjectLogJson } from '../../lib/objectLog.js';
 
 // A dummy AWS resource for testing

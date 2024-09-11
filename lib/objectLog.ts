@@ -9,10 +9,10 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
-import { MessageAttributeValue, SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
+import { type MessageAttributeValue, SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { stringify } from 'csv-stringify/sync';
-import { ActionAuditEntry } from '../actions/audit.js';
-import { ToolingInterface } from '../drivers/instrumentedResource.js';
+import type { ActionAuditEntry } from '../actions/audit.js';
+import type { ToolingInterface } from '../drivers/instrumentedResource.js';
 import { getAwsConfig } from './awsConfig.js';
 import dateTime from './dateTime.js';
 import { getSubLogger } from './logger.js';

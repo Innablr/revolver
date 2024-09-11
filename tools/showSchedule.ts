@@ -1,4 +1,4 @@
-import { DateTime, DurationLike, Interval } from 'luxon';
+import { DateTime, type DurationLike, Interval } from 'luxon';
 import getParser from '../plugins/parsers/index.js';
 
 // a set of results for each 15 minute interval over a week

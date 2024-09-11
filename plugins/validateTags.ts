@@ -1,6 +1,6 @@
 import { Duration } from 'luxon';
 import { NoopAction, SetTagAction, StopAction, UnsetTagAction } from '../actions/actions.js';
-import { ToolingInterface } from '../drivers/instrumentedResource.js';
+import type { ToolingInterface } from '../drivers/instrumentedResource.js';
 import dateTime from '../lib/dateTime.js';
 import { RevolverPlugin } from './pluginInterface.js';
 

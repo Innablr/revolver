@@ -1,4 +1,4 @@
-import { DateTime, Interval } from 'luxon';
+import { type DateTime, Interval } from 'luxon';
 
 const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
 export const reasonDateFormat = 'ccc T Z'; //  Format is 'Wed 15:02 +11'
