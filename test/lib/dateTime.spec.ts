@@ -2,8 +2,8 @@ import { expect } from 'chai';
 import { FixedOffsetZone, DateTime as LuxonDateTime } from 'luxon';
 import dateTime from '../../lib/dateTime.js';
 
-describe('Validate DateTime', function () {
-  it('Check DateTime freeze', async function () {
+describe('Validate DateTime', () => {
+  it('Check DateTime freeze', async () => {
     const d1 = dateTime.getTime();
     expect(d1.zone).to.equal(FixedOffsetZone.instance(0));
 
@@ -23,7 +23,7 @@ describe('Validate DateTime', function () {
     expect(d5.toISO()).to.be.null;
   });
 
-  it('Check DateTime getUtcDateTime', async function () {
+  it('Check DateTime getUtcDateTime', async () => {
     // check basic Luxon date
     const nowUTC = LuxonDateTime.utc();
     const d1 = LuxonDateTime.utc(2017, 3, 12, 5, 45, 10, 765, { locale: 'fr' }); //~> 2017-03-12T05:45:10.765Z with a French locale
@@ -61,7 +61,7 @@ describe('Validate DateTime', function () {
     expect(d5.toISO()).to.equal('2017-03-12T05:45:10.765Z');
   });
 
-  it('Check DateTime calculateUptime', async function () {
+  it('Check DateTime calculateUptime', async () => {
     const now = LuxonDateTime.utc();
     const previous = now.minus({ minutes: 60 * 5 + 12 });
     dateTime.freezeTime(now.toISO());
@@ -69,7 +69,7 @@ describe('Validate DateTime', function () {
     expect(uptime).to.equal(5.2);
   });
 
-  it('Check different Timezones', async function () {
+  it('Check different Timezones', async () => {
     //      * @param zone - a zone identifier. As a string, that can be any IANA zone supported by the host environment, or a fixed-offset name of the form 'UTC+3', or the strings 'local' or 'utc'.
     //  * You may also supply an instance of a {@link Zone} class. Defaults to 'local'.
     const time1 = dateTime.getTime('Australia/Melbourne');

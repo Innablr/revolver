@@ -14,31 +14,31 @@ const timeVariety: { [key: string]: DateTime } = {
   sunday2130: DateTime.fromJSDate(new Date('2017-06-11 21:30')),
 };
 
-describe('Strict parser handles literal availability', async function () {
+describe('Strict parser handles literal availability', async () => {
   const strictParser = await getParser('strict');
-  describe('Strict parser handles 24x7', function () {
-    Object.keys(timeVariety).forEach(function (k) {
-      it(`start at ${timeVariety[k]}`, function () {
+  describe('Strict parser handles 24x7', () => {
+    Object.keys(timeVariety).forEach((k) => {
+      it(`start at ${timeVariety[k]}`, () => {
         const [action, reason] = strictParser('24x7', timeVariety[k]);
         expect(action).to.equal('START');
         expect(reason).to.equal('Availability 24x7');
       });
     });
   });
-  describe('Strict parser handles 0x7', function () {
-    Object.keys(timeVariety).forEach(function (k) {
-      it(`stop at ${timeVariety[k]}`, function () {
+  describe('Strict parser handles 0x7', () => {
+    Object.keys(timeVariety).forEach((k) => {
+      it(`stop at ${timeVariety[k]}`, () => {
         const [action, reason] = strictParser('0x7', timeVariety[k]);
         expect(action).to.equal('STOP');
         expect(reason).to.equal('Availability 0x7');
       });
     });
   });
-  describe('Strict parser handles 24x5', function () {
+  describe('Strict parser handles 24x5', () => {
     Object.keys(timeVariety)
       .filter((k) => /mon|tue|wed|thu|fri/.test(k))
-      .forEach(function (k) {
-        it(`start on weekdays at ${timeVariety[k]}`, function () {
+      .forEach((k) => {
+        it(`start on weekdays at ${timeVariety[k]}`, () => {
           const [action, reason] = strictParser('24x5', timeVariety[k]);
           expect(action).to.equal('START');
           expect(reason).to.equal(`Availability 24x5 and it is ${timeVariety[k].toFormat('cccc')} now`);
@@ -46,8 +46,8 @@ describe('Strict parser handles literal availability', async function () {
       });
     Object.keys(timeVariety)
       .filter((k) => /sat|sun/.test(k))
-      .forEach(function (k) {
-        it(`stop over weekend at ${timeVariety[k]}`, function () {
+      .forEach((k) => {
+        it(`stop over weekend at ${timeVariety[k]}`, () => {
           const [action, reason] = strictParser('24x5', timeVariety[k]);
           expect(action).to.equal('STOP');
           expect(reason).to.equal(`Availability 24x5 and it is ${timeVariety[k].toFormat('cccc')} now`);

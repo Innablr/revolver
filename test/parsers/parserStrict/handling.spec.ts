@@ -4,23 +4,23 @@ import getParser from '../../../plugins/parsers/index.js';
 
 const timeNow = DateTime.now();
 
-describe('Strict parser handles different corner cases', async function () {
+describe('Strict parser handles different corner cases', async () => {
   const strictParser = await getParser('strict');
-  describe('Strict parser handles tag letters case', function () {
+  describe('Strict parser handles tag letters case', () => {
     const cases = [
       'Start=08:30;Stop=17:30;Override=No',
       'start=08:30;stop=17:30;override=no',
       'START=08:30;STOP=17:30;OVERRIDE=NO',
     ];
     const er = strictParser('start=08:30;stop=17:30;override=no', timeNow);
-    cases.forEach(function (c) {
-      it(`for ${c}`, function () {
+    cases.forEach((c) => {
+      it(`for ${c}`, () => {
         const [_action, _reason] = strictParser(c, timeNow);
         expect(strictParser(c, timeNow)).to.have.ordered.members(er);
       });
     });
   });
-  describe('Strict parser handles non-window edge cases', function () {
+  describe('Strict parser handles non-window edge cases', () => {
     // Test Time, Schedule, Action
     const cases = [
       // baseline
@@ -48,8 +48,8 @@ describe('Strict parser handles different corner cases', async function () {
       ['2024-02-19T10:15', 'start=10:00', 'NOOP'], // outside window
       ['2024-02-19T10:20', 'start=10:00', 'NOOP'], // outside window
     ];
-    cases.forEach(function ([testTime, tag, answer]) {
-      it(`when ${testTime} and Schedule ${tag} -> ${answer}`, function () {
+    cases.forEach(([testTime, tag, answer]) => {
+      it(`when ${testTime} and Schedule ${tag} -> ${answer}`, () => {
         const [action, reason] = strictParser(tag, DateTime.fromISO(testTime));
         expect(action).to.equal(answer, reason);
       });

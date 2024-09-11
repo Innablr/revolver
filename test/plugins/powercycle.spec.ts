@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Context, EventBridgeEvent } from 'aws-lambda';
+import type { Context, EventBridgeEvent } from 'aws-lambda';
 import { expect } from 'chai';
 import { parse } from 'csv-parse/sync';
 import environ from '../../lib/environ.js';
@@ -51,7 +51,7 @@ function clearFiles() {
   if (fs.existsSync(OUTPUT_RESOURCES_JSON_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_JSON_FILE);
 }
 
-describe('Run powercycle full cycle', function () {
+describe('Run powercycle full cycle', () => {
   beforeEach(() => {
     clearFiles();
     environ.configPath = LOCAL_CONFIG;

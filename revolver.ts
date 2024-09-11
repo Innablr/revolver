@@ -1,6 +1,6 @@
 import zlib from 'node:zlib';
 import { PromisePool } from '@supercharge/promise-pool';
-import { EventBridgeEvent, SQSEvent, SQSHandler, ScheduledEvent, ScheduledHandler } from 'aws-lambda';
+import type { EventBridgeEvent, SQSEvent, SQSHandler, ScheduledEvent, ScheduledHandler } from 'aws-lambda';
 import { AccountRevolver } from './lib/accountRevolver.js';
 import assume from './lib/assume.js';
 import { RevolverConfig } from './lib/config.js';
@@ -43,7 +43,7 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   const config = await (environ.configPath
     ? RevolverConfig.readConfigFromFile(environ.configPath)
     : RevolverConfig.readConfigFromS3(environ.configBucket!, environ.configKey!)
-  ).catch(function (e: Error) {
+  ).catch((e: Error) => {
     throw new Error(`Unable to parse config object: ${e}. Exiting.`);
   });
 

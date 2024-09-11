@@ -5,7 +5,13 @@ import { Organizations, paginateListAccounts } from '@aws-sdk/client-organizatio
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import yaml from 'js-yaml';
 import { merge } from 'ts-deepmerge';
-import { ZodError, ZodInvalidArgumentsIssue, ZodInvalidReturnTypeIssue, ZodInvalidUnionIssue, ZodIssueCode } from 'zod';
+import {
+  ZodError,
+  type ZodInvalidArgumentsIssue,
+  type ZodInvalidReturnTypeIssue,
+  type ZodInvalidUnionIssue,
+  ZodIssueCode,
+} from 'zod';
 import { getAwsConfig } from './awsConfig.js';
 import { paginateAwsCall } from './common.js';
 import { ConfigSchema } from './config-schema.js';
@@ -33,6 +39,9 @@ function flattenZodErrors(ze: ZodError, depth: number): string[] {
         break;
       case ZodIssueCode.invalid_return_type:
         lines = lines.concat(flattenZodErrors((zi as ZodInvalidReturnTypeIssue).returnTypeError, depth + 1));
+        break;
+      default:
+        // no change to default lines
         break;
     }
   }

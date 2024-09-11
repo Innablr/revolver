@@ -1,5 +1,5 @@
 import {
-  Cluster,
+  type Cluster,
   CreateTagsCommand,
   DeleteClusterSnapshotCommand,
   DeleteTagsCommand,
@@ -8,14 +8,14 @@ import {
   DescribeTagsCommand,
   RedshiftClient,
   RestoreFromClusterSnapshotCommand,
-  Tag,
+  type Tag,
 } from '@aws-sdk/client-redshift';
-import { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
+import type { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';
 import { makeResourceTags } from '../lib/common.js';
 import dateTime from '../lib/dateTime.js';
 import { DriverInterface } from './driverInterface.js';
-import { InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
+import { type InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
 
 class InstrumentedRedshiftClusterSnapshot extends ToolingInterface {
   public tags: Tag[] = [];
@@ -63,7 +63,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
       .then((r) => {
         redshift = r;
       })
-      .then(async function () {
+      .then(async () => {
         logger.info(`Checking if Redshift Cluster ${snapshot.resource.ClusterIdentifier} have been restored before..`);
         const clusterRestored: Array<Cluster> = await redshift
           .send(new DescribeClustersCommand({ ClusterIdentifier: snapshot.resource.ClusterIdentifier }))
@@ -95,7 +95,7 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
         }
         return redshift.send(new RestoreFromClusterSnapshotCommand(opts));
       })
-      .catch(function (err) {
+      .catch((err) => {
         logger.error(`Error restoring Redshift snapshot ${snapshot.resourceId}, stack trace will follow`, err);
       });
   }
@@ -130,9 +130,9 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
 
   setTag(resources: InstrumentedRedshiftClusterSnapshot[], action: RevolverActionWithTags) {
     const logger = this.logger;
-    return getAwsClientForAccount(RedshiftClient, this.accountConfig).then(function (redshift) {
-      return Promise.all(
-        resources.map(function (xr) {
+    return getAwsClientForAccount(RedshiftClient, this.accountConfig).then((redshift) =>
+      Promise.all(
+        resources.map((xr) => {
           const safeValues = action.tags.map((xt) => ({
             Key: xt.Key,
             Value: xt.Value.replace(/[^A-Za-z0-9 _.:/=+\-@]/g, '_'),
@@ -145,12 +145,12 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
                 Tags: safeValues,
               }),
             )
-            .catch(function (err) {
+            .catch((err) => {
               logger.error(`Error settings tags for Redshift cluster ${xr.resourceId}, stack trace will follow`, err);
             });
         }),
-      );
-    });
+      ),
+    );
   }
 
   masksetTag(resource: InstrumentedRedshiftClusterSnapshot, action: RevolverActionWithTags) {
@@ -164,9 +164,9 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
 
   unsetTag(resources: InstrumentedRedshiftClusterSnapshot[], action: RevolverActionWithTags) {
     const logger = this.logger;
-    return getAwsClientForAccount(RedshiftClient, this.accountConfig).then(function (redshift) {
-      return Promise.all(
-        resources.map(function (xs) {
+    return getAwsClientForAccount(RedshiftClient, this.accountConfig).then((redshift) =>
+      Promise.all(
+        resources.map((xs) => {
           logger.info(`Redshift snapshot ${xs.resourceId} will be unset tags ${action.tags.map((xt) => xt.Key)}`);
           return redshift
             .send(
@@ -175,15 +175,15 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
                 TagKeys: action.tags.map((xt) => xt.Key),
               }),
             )
-            .catch(function (err) {
+            .catch((err) => {
               logger.error(
                 `Error unsettings tags for Redshift snapshot ${xs.resourceId}, stack trace will follow`,
                 err,
               );
             });
         }),
-      );
-    });
+      ),
+    );
   }
 
   maskunsetTag(resource: InstrumentedRedshiftClusterSnapshot, action: RevolverActionWithTags) {
@@ -223,14 +223,14 @@ class RedshiftClusterSnapshotDriver extends DriverInterface {
       )
       .then((r) =>
         Promise.all(
-          r.map(function (xs) {
-            return redshift
+          r.map((xs) =>
+            redshift
               .send(new DescribeTagsCommand({ ResourceName: xs.resourceArn }))
               .then((t) => {
                 xs.tags = t.TaggedResources!.map((xt) => xt.Tag).filter((xt) => xt) as Tag[];
               })
-              .then(() => xs);
-          }),
+              .then(() => xs),
+          ),
         ),
       );
 

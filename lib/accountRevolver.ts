@@ -1,9 +1,9 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import { DriverInterface } from '../drivers/driverInterface.js';
-import { InstrumentedResource, ToolingInterface } from '../drivers/instrumentedResource.js';
+import type { DriverInterface } from '../drivers/driverInterface.js';
+import type { InstrumentedResource, ToolingInterface } from '../drivers/instrumentedResource.js';
 import { buildFilter } from '../plugins/filters/index.js';
-import { RevolverPlugin } from '../plugins/pluginInterface.js';
+import type { RevolverPlugin } from '../plugins/pluginInterface.js';
 import dateTime from './dateTime.js';
 import { getSubLogger } from './logger.js';
 import {

@@ -1,5 +1,5 @@
-import { DateTime } from 'luxon';
-import { RevolverAction } from '../actions/actions.js';
+import type { DateTime } from 'luxon';
+import type { RevolverAction } from '../actions/actions.js';
 import { logger } from '../lib/logger.js';
 
 export interface InstrumentedResource {

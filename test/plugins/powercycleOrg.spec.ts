@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Context, EventBridgeEvent } from 'aws-lambda';
+import type { Context, EventBridgeEvent } from 'aws-lambda';
 import environ from '../../lib/environ.js';
 import { handler as revolverHandle } from '../../revolver.js';
 
@@ -39,8 +39,8 @@ const context: Context = {
   succeed: () => {},
 };
 
-describe('Run powercycle full cycle using org', function () {
-  beforeEach(function () {
+describe('Run powercycle full cycle using org', () => {
+  beforeEach(() => {
     environ.configPath = LOCAL_CONFIG;
   });
 

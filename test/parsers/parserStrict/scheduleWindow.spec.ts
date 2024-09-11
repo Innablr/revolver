@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { DateTime, Interval } from 'luxon';
 import getParser from '../../../plugins/parsers/index.js';
 
-it('Strict parser calculates coverage correctly', async function () {
+it('Strict parser calculates coverage correctly', async () => {
   const testInterval = 15; // number of minutes between samples
   const testWindow = { days: 7 }; // over what interval to sample
   const startTime = DateTime.utc(2017, 3, 12, 0, 0, 0, 0);
@@ -52,7 +52,7 @@ it('Strict parser calculates coverage correctly', async function () {
   });
 });
 
-it('Check Luxon Interval Edges', async function () {
+it('Check Luxon Interval Edges', async () => {
   const interval = Interval.fromDateTimes(DateTime.fromISO('2024-02-19T10:00'), DateTime.fromISO('2024-02-19T11:00'));
   // Validate Luxon Interval includes the lower range, and excludes the upper range
   expect(interval.contains(DateTime.fromISO('2024-02-19T09:59:59.999'))).to.be.false;

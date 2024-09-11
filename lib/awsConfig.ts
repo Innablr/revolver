@@ -1,4 +1,4 @@
-import { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
+import type { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import assume from '../lib/assume.js';

@@ -1,5 +1,5 @@
-import { Logger } from 'tslog';
-import { ToolingInterface } from '../drivers/instrumentedResource.js';
+import type { Logger } from 'tslog';
+import type { ToolingInterface } from '../drivers/instrumentedResource.js';
 import { getSubLogger } from '../lib/logger.js';
 
 /**

@@ -556,11 +556,11 @@ const filterTests = [
   },
 ];
 
-describe('filter', function () {
+describe('filter', () => {
   for (const filterTest of filterTests) {
-    describe(filterTest.name, async function () {
+    describe(filterTest.name, async () => {
       for (const t of filterTest.tests) {
-        it(t.name, async function () {
+        it(t.name, async () => {
           const filter = await buildFilter(t.filter);
           dateTime.freezeTime('2024-02-19T21:56Z');
           expect(
@@ -573,8 +573,8 @@ describe('filter', function () {
   }
 });
 
-describe('filter matchWindow', function () {
-  it('matchWindow', async function () {
+describe('filter matchWindow', () => {
+  it('matchWindow', async () => {
     const fromTime = DateTime.utc(2024, 2, 19, 21, 0, 0, 0);
     const filter = await buildFilter({ matchWindow: { from: fromTime.toISO() } });
 
@@ -592,7 +592,7 @@ describe('filter matchWindow', function () {
     }
   });
 
-  it('matchWindow OR', async function () {
+  it('matchWindow OR', async () => {
     const from1 = DateTime.utc(2024, 2, 19, 21, 0, 0, 0);
     const to1 = from1.plus({ days: 2 });
 

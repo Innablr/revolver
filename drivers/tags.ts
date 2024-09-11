@@ -1,10 +1,10 @@
-import { CreateTagsCommand, DeleteTagsCommand, EC2Client } from '@aws-sdk/client-ec2';
-import { AddTagsToResourceCommand, RDSClient, RemoveTagsFromResourceCommand } from '@aws-sdk/client-rds';
-import { Logger } from 'tslog';
-import { RevolverActionWithTags } from '../actions/actions.js';
+import { CreateTagsCommand, DeleteTagsCommand, type EC2Client } from '@aws-sdk/client-ec2';
+import { AddTagsToResourceCommand, type RDSClient, RemoveTagsFromResourceCommand } from '@aws-sdk/client-rds';
+import type { Logger } from 'tslog';
+import type { RevolverActionWithTags } from '../actions/actions.js';
 import { chunkArray, unique } from '../lib/common.js';
-import { RevolverLogObject } from '../lib/logger.js';
-import { ToolingInterface } from './instrumentedResource.js';
+import type { RevolverLogObject } from '../lib/logger.js';
+import type { ToolingInterface } from './instrumentedResource.js';
 
 export interface TagInterface {
   Key: string;
@@ -39,7 +39,7 @@ class RDSTagger implements Tagger {
     action: RevolverActionWithTags,
   ): Promise<any> {
     return Promise.all(
-      resources.map(async function (xr) {
+      resources.map(async (xr) => {
         const safeValues = action.tags.map((xt) => ({
           Key: xt.Key,
           Value: xt.Value.replace(/[^A-Za-z0-9 _.:/=+\-@]/g, '_'),
@@ -76,7 +76,7 @@ class RDSTagger implements Tagger {
     action: RevolverActionWithTags,
   ): Promise<any> {
     return Promise.all(
-      resources.map(async function (xr) {
+      resources.map(async (xr) => {
         logger.info(`RDS instance ${xr.resourceId} will be unset tags ${action.tags}`);
         try {
           return await rds.send(

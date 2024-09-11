@@ -1,4 +1,4 @@
-import { ISettingsParam, Logger } from 'tslog';
+import { type ISettingsParam, Logger } from 'tslog';
 import environ from './environ.js';
 
 const logLevels: { [key: string]: number } = {

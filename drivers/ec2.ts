@@ -6,18 +6,18 @@ import {
 } from '@aws-sdk/client-auto-scaling';
 import {
   EC2Client,
-  Instance,
+  type Instance,
   StartInstancesCommand,
   StopInstancesCommand,
-  Tag,
+  type Tag,
   paginateDescribeInstances,
 } from '@aws-sdk/client-ec2';
-import { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
+import type { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';
 import { chunkArray, makeResourceTags, paginateAwsCall } from '../lib/common.js';
 import dateTime from '../lib/dateTime.js';
 import { DriverInterface } from './driverInterface.js';
-import { InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
+import { type InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
 import { ec2Tagger } from './tags.js';
 
 class InstrumentedEc2 extends ToolingInterface {
@@ -96,7 +96,7 @@ class Ec2Driver extends DriverInterface {
       .reduce((x, y) => (x.includes(y) ? x : [...x, y]), []);
 
     await Promise.all(
-      resourceChunks.map(async function (chunk) {
+      resourceChunks.map(async (chunk) => {
         logger.info(`EC2 instances ${DriverInterface.toLimitedString(chunk)} will start`);
         return ec2.send(
           new StartInstancesCommand({
@@ -109,7 +109,7 @@ class Ec2Driver extends DriverInterface {
     if (asgs.length > 0) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       await Promise.all(
-        asgs.map(function (xa: string) {
+        asgs.map((xa: string) => {
           logger.info(`Resuming ASG ${xa}`);
           return autoscaling.send(new ResumeProcessesCommand({ AutoScalingGroupName: xa })).catch((e) => {
             logger.error(`Autoscaling group ${xa} failed to resume`, e);
@@ -143,7 +143,7 @@ class Ec2Driver extends DriverInterface {
       .reduce((x, y) => (x.includes(y) ? x : [...x, y]), []);
 
     await Promise.all(
-      asgs.map(function (xa: string) {
+      asgs.map((xa: string) => {
         logger.info(`Pausing ASG ${xa}`);
         return autoscaling.send(new SuspendProcessesCommand({ AutoScalingGroupName: xa })).catch((e) => {
           logger.error(`Autoscaling group ${xa} failed to resume`, e);
@@ -152,7 +152,7 @@ class Ec2Driver extends DriverInterface {
     );
 
     await Promise.all(
-      resourceChunks.map(async function (chunk) {
+      resourceChunks.map(async (chunk) => {
         logger.info(`EC2 instances ${DriverInterface.toLimitedString(chunk)} will stop`);
         return ec2.send(
           new StopInstancesCommand({
@@ -201,7 +201,7 @@ class Ec2Driver extends DriverInterface {
     const allEc2Iinstances = (await paginateAwsCall(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
       (xr) => xr.Instances,
     );
-    const ec2Instances = allEc2Iinstances.filter(function (xi) {
+    const ec2Instances = allEc2Iinstances.filter((xi) => {
       if (inoperableStates.find((x) => x === xi.State.Name)) {
         logger.info(`EC2 instance ${xi.InstanceId} state ${xi.State.Name} is inoperable`);
         return false;

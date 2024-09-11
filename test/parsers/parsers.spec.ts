@@ -5,13 +5,13 @@ import getParser from '../../plugins/parsers/index.js';
 
 chai.use(chaiAsPromised);
 
-describe('getParser', function () {
-  it('Supports strict parser', async function () {
+describe('getParser', () => {
+  it('Supports strict parser', async () => {
     const strict = await getParser('strict');
     expect(strict).to.be.a('function');
   });
 
-  it('Throws unsupported parsers', async function () {
+  it('Throws unsupported parsers', async () => {
     expect(getParser('blarg')).to.eventually.be.rejectedWith('Unsupported parser blarg');
   });
 });
