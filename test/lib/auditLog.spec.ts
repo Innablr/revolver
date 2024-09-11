@@ -52,8 +52,8 @@ const ACCOUNT_CONFIG = {
   },
 };
 
-describe('Validate auditLog', function () {
-  it('Check ObjectLogCsv audit', async function () {
+describe('Validate auditLog', () => {
+  it('Check ObjectLogCsv audit', async () => {
     fs.rmSync(AUDIT_LOG_CONFIG.csv.file, { force: true });
 
     const entries = [
@@ -104,7 +104,7 @@ describe('Validate auditLog', function () {
     expect(records2[4].STATUS).to.equal('pink');
   });
 
-  it('Check ObjectLogJson', async function () {
+  it('Check ObjectLogJson', async () => {
     fs.rmSync(AUDIT_LOG_CONFIG.json.file, { force: true });
 
     const entries = [

@@ -4,9 +4,9 @@ import getParser from '../../../plugins/parsers/index.js';
 
 const timeNow = DateTime.now();
 
-describe('Strict parser detects override', async function () {
+describe('Strict parser detects override', async () => {
   const strictParser = await getParser('strict');
-  describe('Strict parser detects override enabled', function () {
+  describe('Strict parser detects override enabled', () => {
     const cases = [
       'Start=08:30;Stop=17:30;Override=on',
       'Start=08:30;Stop=17:30;Override=yes',
@@ -16,15 +16,15 @@ describe('Strict parser detects override', async function () {
       'Override=yes',
       'Override',
     ];
-    cases.forEach(function (c) {
-      it(`in ${c}`, function () {
+    cases.forEach((c) => {
+      it(`in ${c}`, () => {
         const [action, reason] = strictParser(c, timeNow);
         expect(action).to.equal('NOOP');
         expect(reason).to.equal('Availability override');
       });
     });
   });
-  describe('Strict parser detects override disabled', function () {
+  describe('Strict parser detects override disabled', () => {
     const cases = [
       'Start=08:30;Stop=17:30;Override=off',
       'Start=08:30;Stop=17:30',
@@ -32,8 +32,8 @@ describe('Strict parser detects override', async function () {
       'Start=08:30;Override=no',
       'Override=off',
     ];
-    cases.forEach(function (c) {
-      it(`in ${c}`, function () {
+    cases.forEach((c) => {
+      it(`in ${c}`, () => {
         const [_action, reason] = strictParser(c, timeNow);
         expect(reason).to.not.equal('Availability override');
       });

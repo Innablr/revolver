@@ -43,7 +43,7 @@ export const handler: ScheduledHandler = async (event: EventBridgeEvent<'Schedul
   const config = await (environ.configPath
     ? RevolverConfig.readConfigFromFile(environ.configPath)
     : RevolverConfig.readConfigFromS3(environ.configBucket!, environ.configKey!)
-  ).catch(function (e: Error) {
+  ).catch((e: Error) => {
     throw new Error(`Unable to parse config object: ${e}. Exiting.`);
   });
 

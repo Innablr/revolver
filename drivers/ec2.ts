@@ -96,7 +96,7 @@ class Ec2Driver extends DriverInterface {
       .reduce((x, y) => (x.includes(y) ? x : [...x, y]), []);
 
     await Promise.all(
-      resourceChunks.map(async function (chunk) {
+      resourceChunks.map(async (chunk) => {
         logger.info(`EC2 instances ${DriverInterface.toLimitedString(chunk)} will start`);
         return ec2.send(
           new StartInstancesCommand({
@@ -109,7 +109,7 @@ class Ec2Driver extends DriverInterface {
     if (asgs.length > 0) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       await Promise.all(
-        asgs.map(function (xa: string) {
+        asgs.map((xa: string) => {
           logger.info(`Resuming ASG ${xa}`);
           return autoscaling.send(new ResumeProcessesCommand({ AutoScalingGroupName: xa })).catch((e) => {
             logger.error(`Autoscaling group ${xa} failed to resume`, e);
@@ -143,7 +143,7 @@ class Ec2Driver extends DriverInterface {
       .reduce((x, y) => (x.includes(y) ? x : [...x, y]), []);
 
     await Promise.all(
-      asgs.map(function (xa: string) {
+      asgs.map((xa: string) => {
         logger.info(`Pausing ASG ${xa}`);
         return autoscaling.send(new SuspendProcessesCommand({ AutoScalingGroupName: xa })).catch((e) => {
           logger.error(`Autoscaling group ${xa} failed to resume`, e);
@@ -152,7 +152,7 @@ class Ec2Driver extends DriverInterface {
     );
 
     await Promise.all(
-      resourceChunks.map(async function (chunk) {
+      resourceChunks.map(async (chunk) => {
         logger.info(`EC2 instances ${DriverInterface.toLimitedString(chunk)} will stop`);
         return ec2.send(
           new StopInstancesCommand({
@@ -201,7 +201,7 @@ class Ec2Driver extends DriverInterface {
     const allEc2Iinstances = (await paginateAwsCall(paginateDescribeInstances, ec2, 'Reservations')).flatMap(
       (xr) => xr.Instances,
     );
-    const ec2Instances = allEc2Iinstances.filter(function (xi) {
+    const ec2Instances = allEc2Iinstances.filter((xi) => {
       if (inoperableStates.find((x) => x === xi.State.Name)) {
         logger.info(`EC2 instance ${xi.InstanceId} state ${xi.State.Name} is inoperable`);
         return false;

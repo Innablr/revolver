@@ -11,7 +11,7 @@ import {
 // TODO: validate metadata
 // TODO: validate minLevel
 
-describe('Validate ErrorTrackingLogger behaviour', function () {
+describe('Validate ErrorTrackingLogger behaviour', () => {
   // hasError should start out false, and once error/fatal message has been
   // emitted, should be set to true, and stay that way.
   logger.hasError = false; // reset
@@ -35,7 +35,7 @@ describe('Validate ErrorTrackingLogger behaviour', function () {
   logger.hasError = false; // reset
 });
 
-describe('Validate JSON logging', function () {
+describe('Validate JSON logging', () => {
   const jsonLogger = new ErrorTrackingLogger<RevolverLogObject>({
     name: 'revolver',
     type: 'json',

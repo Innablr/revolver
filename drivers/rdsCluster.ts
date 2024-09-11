@@ -138,7 +138,7 @@ class RdsClusterDriver extends DriverInterface {
 
     const instrumentedClusters = clusters
       .DBClusters!.map((xc) => new InstrumentedRdsCluster(xc))
-      .map(function (xc) {
+      .map((xc) => {
         xc.resource.DBClusterMembers.forEach((xm: any) => {
           xm.instanceData = instances.DBInstances!.find((xi) => xi.DBInstanceIdentifier === xm.DBInstanceIdentifier);
         });

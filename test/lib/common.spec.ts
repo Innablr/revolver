@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { chunkArray, makeResourceTags, paginateAwsCall, unique } from '../../lib/common.js';
 
-describe('Validate utility functions', function () {
-  it('Check paginateAwsCall', async function () {
+describe('Validate utility functions', () => {
+  it('Check paginateAwsCall', async () => {
     function* paginatorFunc(_config: any, _request: any) {
       yield { what: 'a', another: 1 };
       yield { what: 'b', thing: 2 };

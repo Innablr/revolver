@@ -56,12 +56,12 @@ const timePointsDays: { [key: string]: DateTime } = {
   sunday2355: DateTime.fromJSDate(new Date('2017-06-11 23:55')),
 };
 
-describe('Strict parser handles availability windows', async function () {
+describe('Strict parser handles availability windows', async () => {
   const strictParser = await getParser('strict');
-  describe('Strict parser handles availability windows normal Start=6:30;Stop=17:30', function () {
+  describe('Strict parser handles availability windows normal Start=6:30;Stop=17:30', () => {
     const tag = 'Start=06:30;Stop=17:30';
-    ['monday629'].forEach(function (c) {
-      it(`stop at ${timePoints[c]}`, function () {
+    ['monday629'].forEach((c) => {
+      it(`stop at ${timePoints[c]}`, () => {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('STOP');
         expect(reason).to.equal(
@@ -69,8 +69,8 @@ describe('Strict parser handles availability windows', async function () {
         );
       });
     });
-    ['monday630', 'monday631', 'monday1330', 'monday1530', 'monday1729'].forEach(function (c) {
-      it(`start at ${timePoints[c]}`, function () {
+    ['monday630', 'monday631', 'monday1330', 'monday1530', 'monday1729'].forEach((c) => {
+      it(`start at ${timePoints[c]}`, () => {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('START');
         expect(reason).to.equal(
@@ -78,8 +78,8 @@ describe('Strict parser handles availability windows', async function () {
         );
       });
     });
-    ['monday1730', 'monday1731', 'monday2130', 'tuesday0000', 'tuesday0100', 'tuesday0400'].forEach(function (c) {
-      it(`stop at ${timePoints[c]}`, function () {
+    ['monday1730', 'monday1731', 'monday2130', 'tuesday0000', 'tuesday0100', 'tuesday0400'].forEach((c) => {
+      it(`stop at ${timePoints[c]}`, () => {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('STOP');
         expect(reason).to.equal(
@@ -88,10 +88,10 @@ describe('Strict parser handles availability windows', async function () {
       });
     });
   });
-  describe('Strict parser handles availability windows reversed Start=17:30;Stop=06:30', function () {
+  describe('Strict parser handles availability windows reversed Start=17:30;Stop=06:30', () => {
     const tag = 'Start=17:30;Stop=06:30';
-    ['monday629'].forEach(function (c) {
-      it(`start at ${timePoints[c]}`, function () {
+    ['monday629'].forEach((c) => {
+      it(`start at ${timePoints[c]}`, () => {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('START');
         expect(reason).to.equal(
@@ -99,8 +99,8 @@ describe('Strict parser handles availability windows', async function () {
         );
       });
     });
-    ['monday630', 'monday631', 'monday1330', 'monday1530', 'monday1729'].forEach(function (c) {
-      it(`stop at ${timePoints[c]}`, function () {
+    ['monday630', 'monday631', 'monday1330', 'monday1530', 'monday1729'].forEach((c) => {
+      it(`stop at ${timePoints[c]}`, () => {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('STOP');
         expect(reason).to.equal(
@@ -108,8 +108,8 @@ describe('Strict parser handles availability windows', async function () {
         );
       });
     });
-    ['monday1730', 'monday1731', 'monday2130', 'tuesday0000', 'tuesday0100', 'tuesday0400'].forEach(function (c) {
-      it(`not start at ${timePoints[c]}`, function () {
+    ['monday1730', 'monday1731', 'monday2130', 'tuesday0000', 'tuesday0100', 'tuesday0400'].forEach((c) => {
+      it(`not start at ${timePoints[c]}`, () => {
         const [action, reason] = strictParser(tag, timePoints[c]);
         expect(action).to.equal('START');
         expect(reason).to.equal(
@@ -118,12 +118,12 @@ describe('Strict parser handles availability windows', async function () {
       });
     });
   });
-  describe('Strict parser handles availability windows normal with days Start=06:30;Stop=17:30|mon-fri', function () {
+  describe('Strict parser handles availability windows normal with days Start=06:30;Stop=17:30|mon-fri', () => {
     const tag = 'Start=06:30;Stop=17:30|mon-fri';
     Object.keys(timePointsDays)
       .filter((k) => /(mon|tue|wed|thu|fri)\w+625$/.test(k))
-      .forEach(function (c) {
-        it(`weekday stop at ${timePointsDays[c]}`, function () {
+      .forEach((c) => {
+        it(`weekday stop at ${timePointsDays[c]}`, () => {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
           expect(reason).to.equal(
@@ -133,8 +133,8 @@ describe('Strict parser handles availability windows', async function () {
       });
     Object.keys(timePointsDays)
       .filter((k) => /(mon|tue|wed|thu|fri)\w+635$/.test(k))
-      .forEach(function (c) {
-        it(`weekday start at ${timePointsDays[c]}`, function () {
+      .forEach((c) => {
+        it(`weekday start at ${timePointsDays[c]}`, () => {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('START');
           expect(reason).to.equal(
@@ -144,8 +144,8 @@ describe('Strict parser handles availability windows', async function () {
       });
     Object.keys(timePointsDays)
       .filter((k) => /(mon|tue|wed|thu|fri)\w+1725$/.test(k))
-      .forEach(function (c) {
-        it(`weekday start at ${timePointsDays[c]}`, function () {
+      .forEach((c) => {
+        it(`weekday start at ${timePointsDays[c]}`, () => {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('START');
           expect(reason).to.equal(
@@ -155,8 +155,8 @@ describe('Strict parser handles availability windows', async function () {
       });
     Object.keys(timePointsDays)
       .filter((k) => /(mon|tue|wed|thu|fri)\w+1735$/.test(k))
-      .forEach(function (c) {
-        it(`weekday stop at ${timePointsDays[c]}`, function () {
+      .forEach((c) => {
+        it(`weekday stop at ${timePointsDays[c]}`, () => {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
           expect(reason).to.equal(
@@ -166,8 +166,8 @@ describe('Strict parser handles availability windows', async function () {
       });
     Object.keys(timePointsDays)
       .filter((k) => /sat|sun/.test(k))
-      .forEach(function (c) {
-        it(`weekend stop at ${timePointsDays[c]}`, function () {
+      .forEach((c) => {
+        it(`weekend stop at ${timePointsDays[c]}`, () => {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
           expect(reason).to.equal(
@@ -176,12 +176,12 @@ describe('Strict parser handles availability windows', async function () {
         });
       });
   });
-  describe('Strict parser handles availability windows normal with reversed days Start=06:30;Stop=17:30|fri-mon', function () {
+  describe('Strict parser handles availability windows normal with reversed days Start=06:30;Stop=17:30|fri-mon', () => {
     const tag = 'Start=06:30;Stop=17:30|fri-mon';
     Object.keys(timePointsDays)
       .filter((k) => /(tue|wed|thu)\w+625$/.test(k))
-      .forEach(function (c) {
-        it(`weekday stop at ${timePointsDays[c]}`, function () {
+      .forEach((c) => {
+        it(`weekday stop at ${timePointsDays[c]}`, () => {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
           expect(reason).to.equal(
@@ -191,8 +191,8 @@ describe('Strict parser handles availability windows', async function () {
       });
     Object.keys(timePointsDays)
       .filter((k) => /(tue|wed|thu)\w+635$/.test(k))
-      .forEach(function (c) {
-        it(`weekday stop at ${timePointsDays[c]}`, function () {
+      .forEach((c) => {
+        it(`weekday stop at ${timePointsDays[c]}`, () => {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
           expect(reason).to.equal(
@@ -202,8 +202,8 @@ describe('Strict parser handles availability windows', async function () {
       });
     Object.keys(timePointsDays)
       .filter((k) => /(tue|wed|thu)\w+1725$/.test(k))
-      .forEach(function (c) {
-        it(`weekday stop at ${timePointsDays[c]}`, function () {
+      .forEach((c) => {
+        it(`weekday stop at ${timePointsDays[c]}`, () => {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
           expect(reason).to.equal(
@@ -213,8 +213,8 @@ describe('Strict parser handles availability windows', async function () {
       });
     Object.keys(timePointsDays)
       .filter((k) => /(tue|wed|thu)\w+1735$/.test(k))
-      .forEach(function (c) {
-        it(`weekday stop at ${timePointsDays[c]}`, function () {
+      .forEach((c) => {
+        it(`weekday stop at ${timePointsDays[c]}`, () => {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
           expect(reason).to.equal(
@@ -224,8 +224,8 @@ describe('Strict parser handles availability windows', async function () {
       });
     Object.keys(timePointsDays)
       .filter((k) => /(fri|sat|sun|mon)\w+625$/.test(k))
-      .forEach(function (c) {
-        it(`weekday stop at ${timePointsDays[c]}`, function () {
+      .forEach((c) => {
+        it(`weekday stop at ${timePointsDays[c]}`, () => {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
           expect(reason).to.equal(
@@ -235,8 +235,8 @@ describe('Strict parser handles availability windows', async function () {
       });
     Object.keys(timePointsDays)
       .filter((k) => /(fri|sat|sun|mon)\w+635$/.test(k))
-      .forEach(function (c) {
-        it(`weekday stop at ${timePointsDays[c]}`, function () {
+      .forEach((c) => {
+        it(`weekday stop at ${timePointsDays[c]}`, () => {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('START');
           expect(reason).to.equal(
@@ -246,8 +246,8 @@ describe('Strict parser handles availability windows', async function () {
       });
     Object.keys(timePointsDays)
       .filter((k) => /(fri|sat|sun|mon)\w+1725$/.test(k))
-      .forEach(function (c) {
-        it(`weekday stop at ${timePointsDays[c]}`, function () {
+      .forEach((c) => {
+        it(`weekday stop at ${timePointsDays[c]}`, () => {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('START');
           expect(reason).to.equal(
@@ -257,8 +257,8 @@ describe('Strict parser handles availability windows', async function () {
       });
     Object.keys(timePointsDays)
       .filter((k) => /(fri|sat|sun|mon)\w+1735$/.test(k))
-      .forEach(function (c) {
-        it(`weekday stop at ${timePointsDays[c]}`, function () {
+      .forEach((c) => {
+        it(`weekday stop at ${timePointsDays[c]}`, () => {
           const [action, reason] = strictParser(tag, timePointsDays[c]);
           expect(action).to.equal('STOP');
           expect(reason).to.equal(

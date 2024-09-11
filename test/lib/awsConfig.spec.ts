@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import { getAwsClientForAccount, getAwsConfig } from '../../lib/awsConfig.js';
 import environ from '../../lib/environ.js';
 
-describe('Validate getAwsConfig', function () {
+describe('Validate getAwsConfig', () => {
   // check getAwsConfig
   const config = getAwsConfig('ap-southeast-2', { accessKeyId: 'blah', secretAccessKey: 'blah' });
   expect(config).to.be.an('object');
@@ -14,7 +14,7 @@ describe('Validate getAwsConfig', function () {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  it('Check getAwsClientForAccount', async function () {
+  it('Check getAwsClientForAccount', async () => {
     // stub STS.assumeRole
     environ.httpsProxy = 'https://localhost:1234';
     const stsAssumeRoleStub = sinon

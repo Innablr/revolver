@@ -31,7 +31,7 @@ class RandomInstrumentedResource extends ToolingInterface {
   }
 }
 
-describe('check toLimitedString', function () {
+describe('check toLimitedString', () => {
   class RandomDriver extends DriverInterface {
     constructor(accountConfig: any, driverConfig: any) {
       super(accountConfig, driverConfig);

@@ -44,21 +44,21 @@ const ORG_ACCOUNTS = [
   },
 ];
 
-describe('Validate example config', function () {
-  it('Check simple parsing', async function () {
+describe('Validate example config', () => {
+  it('Check simple parsing', async () => {
     const config = await RevolverConfig.readConfigFromFile(EXAMPLE_CONFIG);
     expect(config.defaults.settings.region).to.equal('ap-southeast-2');
   });
 });
 
-describe('Validate invalid config', function () {
-  it('Check invalid parsing', async function () {
+describe('Validate invalid config', () => {
+  it('Check invalid parsing', async () => {
     await expect(RevolverConfig.readConfigFromFile(INVALID_CONFIG)).to.be.rejectedWith(/^ZodError: Failed to parse/);
   });
 });
 
-describe('Validate test config', function () {
-  it('Check simple parsing', async function () {
+describe('Validate test config', () => {
+  it('Check simple parsing', async () => {
     const config = await RevolverConfig.readConfigFromFile(SAMPLE_CONFIG_1);
 
     // basic settings, defaults
@@ -107,8 +107,8 @@ describe('Validate test config', function () {
   });
 });
 
-describe('Validate org filtering config', function () {
-  it('Check simple parsing', async function () {
+describe('Validate org filtering config', () => {
+  it('Check simple parsing', async () => {
     const config = await RevolverConfig.readConfigFromFile(SAMPLE_CONFIG_1);
     const updatedAccountsList = RevolverConfig.filterAccountsList(ORG_ACCOUNTS, config);
     const accountIds = updatedAccountsList.map((a) => a.accountId);

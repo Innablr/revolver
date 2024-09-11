@@ -39,7 +39,7 @@ class RDSTagger implements Tagger {
     action: RevolverActionWithTags,
   ): Promise<any> {
     return Promise.all(
-      resources.map(async function (xr) {
+      resources.map(async (xr) => {
         const safeValues = action.tags.map((xt) => ({
           Key: xt.Key,
           Value: xt.Value.replace(/[^A-Za-z0-9 _.:/=+\-@]/g, '_'),
@@ -76,7 +76,7 @@ class RDSTagger implements Tagger {
     action: RevolverActionWithTags,
   ): Promise<any> {
     return Promise.all(
-      resources.map(async function (xr) {
+      resources.map(async (xr) => {
         logger.info(`RDS instance ${xr.resourceId} will be unset tags ${action.tags}`);
         try {
           return await rds.send(

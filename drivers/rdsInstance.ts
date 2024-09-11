@@ -63,16 +63,16 @@ class InstrumentedRdsInstance extends ToolingInterface {
 class RdsInstanceDriver extends DriverInterface {
   start(resources: InstrumentedRdsInstance[]) {
     const logger = this.logger;
-    return getAwsClientForAccount(RDSClient, this.accountConfig).then(function (rds) {
-      return Promise.all(
-        resources.map(function (xr) {
+    return getAwsClientForAccount(RDSClient, this.accountConfig).then((rds) =>
+      Promise.all(
+        resources.map((xr) => {
           logger.info(`RDS instance ${xr.resourceId} will start`);
-          return rds.send(new StartDBInstanceCommand({ DBInstanceIdentifier: xr.resourceId })).catch(function (err) {
+          return rds.send(new StartDBInstanceCommand({ DBInstanceIdentifier: xr.resourceId })).catch((err) => {
             logger.error(`Error starting RDS instance ${xr.resourceId}, stack trace will follow`, err);
           });
         }),
-      );
-    });
+      ),
+    );
   }
 
   maskstart(resource: InstrumentedRdsInstance) {
@@ -96,20 +96,20 @@ class RdsInstanceDriver extends DriverInterface {
 
   stop(resources: InstrumentedRdsInstance[]) {
     const logger = this.logger;
-    return getAwsClientForAccount(RDSClient, this.accountConfig).then(function (rds) {
-      return Promise.all(
-        resources.map(function (xr) {
+    return getAwsClientForAccount(RDSClient, this.accountConfig).then((rds) =>
+      Promise.all(
+        resources.map((xr) => {
           if (xr.resource.DBInstanceStatus !== 'available') {
             logger.info(`RDS instance xr.resourceId can't be stopped, status [${xr.resource.DBInstanceStatus}]`);
             return Promise.resolve();
           }
           logger.info(`RDS instance ${xr.resourceId} will stop`);
-          return rds.send(new StopDBInstanceCommand({ DBInstanceIdentifier: xr.resourceId })).catch(function (err) {
+          return rds.send(new StopDBInstanceCommand({ DBInstanceIdentifier: xr.resourceId })).catch((err) => {
             logger.error(`Error stopping RDS instance ${xr.resourceId}, stack trace will follow`, err);
           });
         }),
-      );
-    });
+      ),
+    );
   }
 
   maskstop(resource: InstrumentedRdsInstance) {
@@ -163,14 +163,14 @@ class RdsInstanceDriver extends DriverInterface {
       .then((r) => Promise.all([Promise.resolve(r), getAwsClientForAccount(RDSClient, this.accountConfig)]))
       .then(([r, rds]) =>
         Promise.all(
-          r.map(function (xr) {
-            return rds
+          r.map((xr) =>
+            rds
               .send(new ListTagsForResourceCommand({ ResourceName: xr.resourceArn }))
               .then((t) => {
                 xr.tags = t.TagList || [];
               })
-              .then(() => xr);
-          }),
+              .then(() => xr),
+          ),
         ),
       );
   }

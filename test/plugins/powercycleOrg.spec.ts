@@ -39,8 +39,8 @@ const context: Context = {
   succeed: () => {},
 };
 
-describe('Run powercycle full cycle using org', function () {
-  beforeEach(function () {
+describe('Run powercycle full cycle using org', () => {
+  beforeEach(() => {
     environ.configPath = LOCAL_CONFIG;
   });
 

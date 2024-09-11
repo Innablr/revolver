@@ -92,7 +92,7 @@ function clearFiles() {
   });
 }
 
-describe('Run powercycleCentral full cycle', function () {
+describe('Run powercycleCentral full cycle', () => {
   beforeEach(() => {
     clearFiles();
     environ.configPath = LOCAL_CONFIG;

@@ -83,7 +83,7 @@ const ACCOUNT_CONFIG = {
   },
 };
 
-describe('Validate filename tokens', function () {
+describe('Validate filename tokens', () => {
   const writer = new ObjectLogJson([], {}, { name: 'NAME', accountId: '123', timezone: 'Australia/Melbourne' });
   const timeStamp = '2024-02-19T04:40:44.526Z';
   dateTime.freezeTime(timeStamp);
@@ -115,8 +115,8 @@ describe('Validate filename tokens', function () {
   expect(writerDifferentContext.resolveFilename('file.%name.txt')).to.equal('file.%name.txt'); //
 });
 
-describe('Validate ResourceLog', function () {
-  it('Check ObjectLogConsole', async function () {
+describe('Validate ResourceLog', () => {
+  it('Check ObjectLogConsole', async () => {
     await new ObjectLogTable(
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags),
       { console: null },
@@ -126,7 +126,7 @@ describe('Validate ResourceLog', function () {
     // TODO: check the contents of console output
   });
 
-  it('Check ObjectLogCsv resources', async function () {
+  it('Check ObjectLogCsv resources', async () => {
     if (fs.existsSync(RESOURCE_LOG_CONFIG.csv.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.csv.file);
     await new ObjectLogCsv(
       new ResourceTable(ACCOUNT_CONFIG, TEST_RESOURCES, RESOURCE_LOG_CONFIG.csv.reportTags, { SPAM: '123' }),
@@ -154,7 +154,7 @@ describe('Validate ResourceLog', function () {
     expect(records2.length).to.equal(8);
   });
 
-  it('Check ObjectLogJson', async function () {
+  it('Check ObjectLogJson', async () => {
     // Write some known content to the output file before starting
     const originalContent = 'test-content';
     fs.writeFileSync(RESOURCE_LOG_CONFIG.json.file, originalContent);
@@ -205,7 +205,7 @@ describe('Validate ResourceLog', function () {
     sqsSendStub.restore(); // should be finally
   });
 
-  it('Check ObjectLogHtml', async function () {
+  it('Check ObjectLogHtml', async () => {
     if (fs.existsSync(RESOURCE_LOG_CONFIG.html.file)) fs.unlinkSync(RESOURCE_LOG_CONFIG.html.file);
     await new ObjectLogHtml(TEST_RESOURCES, 'Object Log Test', RESOURCE_LOG_CONFIG.html).process();
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.html.file)).to.be.true;
@@ -218,7 +218,7 @@ describe('Validate ResourceLog', function () {
     }
   });
 
-  it('Check ObjectLogCsv overwrite', async function () {
+  it('Check ObjectLogCsv overwrite', async () => {
     // Write some known content to the output file before starting
     const originalContent = 'test-content';
     fs.writeFileSync(RESOURCE_LOG_CONFIG.csv.file, originalContent);
