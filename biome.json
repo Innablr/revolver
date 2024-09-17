@@ -1,34 +1,35 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+  "$schema": "https://biomejs.dev/schemas/1.9.1/schema.json",
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
       "complexity": {
-        "noForEach": "off"
+        "noForEach": "off",
+        "noUselessStringConcat": "error",
+        "noUselessUndefinedInitialization": "error"
+      },
+      "correctness": {
+        "noUnusedFunctionParameters": "error"
+      },
+      "nursery": {
+        "noDuplicateElseIf": "error",
+        "useAdjacentOverloadSignatures": "error"
       },
       "suspicious": {
-        "noExplicitAny": "off"
+        "noEvolvingTypes": "error",
+        "noExplicitAny": "off",
+        "useErrorMessage": "error",
+        "useNumberToFixedDigitsArgument": "error"
       },
       "style": {
+        "noNonNullAssertion": "off",
         "noUselessElse": "off",
-        "noNonNullAssertion": "off"
+        "noYodaExpression": "error",
+        "useDefaultSwitchClause": "error"
       },
       "performance": {
         "noAccumulatingSpread": "off"
-      },
-      "nursery": {
-        "noDuplicateAtImportRules": "error",
-        "noDuplicateElseIf": "error",
-        "noEvolvingTypes": "error",
-        "noUnusedFunctionParameters": "error",
-        "noUselessStringConcat": "error",
-        "noUselessUndefinedInitialization": "error",
-        "noYodaExpression": "error",
-        "useAdjacentOverloadSignatures": "error",
-        "useDefaultSwitchClause": "error",
-        "useErrorMessage": "error",
-        "useNumberToFixedDigitsArgument": "error"
       }
     },
     "ignore": ["**/*.js", "**/*.d.ts", "**/docs", "**/coverage", "**/cdk.json", "**/.cdk.staging", "**/cdk.out", "output"]
