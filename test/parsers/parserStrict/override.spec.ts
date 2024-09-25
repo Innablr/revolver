@@ -15,6 +15,8 @@ describe('Strict parser detects override', async () => {
       'Override=on',
       'Override=yes',
       'Override',
+      'None',
+      'NONE',
     ];
     cases.forEach((c) => {
       it(`in ${c}`, () => {

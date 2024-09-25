@@ -107,6 +107,10 @@ class ParsedAvailability {
       }
     }
 
+    if (this.tag === 'none') {
+      return true; // tag=None is an alias for Override=on
+    }
+
     return false;
   }
 
