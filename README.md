@@ -280,7 +280,7 @@ Days are separated by the pipe symbol, must be a full range (`mon` or `-fri` is 
 
 If Start= or Stop= is omitted, the resource will be only brought up or down within 15 min range of the specified time. Useful for making sure that resources are always shut down in the end of the day but only brought up on-demand: `Stop=18:00|mon-fri`.
 
-`Override=On/Off` is optional, if set to `Override=On` resource will be ignored by the plugin.
+`Override=On/Off` is optional, if set to `Override=On` resource will be ignored by the plugin.  Using a schedule of `None` is an alias for `Override=On`.
 
 There is also special values for the schedule tag:
 
