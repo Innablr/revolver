@@ -58,7 +58,7 @@
     "@types/jsonfile": "^6.1.4",
     "@types/luxon": "^3.4.2",
     "@types/mocha": "^10.0.9",
-    "@types/node": "^22.7.7",
+    "@types/node": "^22.8.1",
     "@types/sinon": "^17.0.3",
     "c8": "^10.1.2",
     "chai": "^5.1.1",
@@ -74,6 +74,6 @@
     "typescript": "^5.6.3",
     "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4",
-    "zod-to-json-schema": "^3.23.3"
+    "zod-to-json-schema": "^3.23.5"
   }
 }
