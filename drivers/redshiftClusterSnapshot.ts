@@ -19,7 +19,7 @@ import { type InstrumentedResource, ToolingInterface } from './instrumentedResou
 
 class InstrumentedRedshiftClusterSnapshot extends ToolingInterface {
   public tags: Tag[] = [];
-  private snapshotARN: string;
+  private readonly snapshotARN: string;
 
   constructor(resource: Cluster, snapshotARN: string) {
     super(resource);

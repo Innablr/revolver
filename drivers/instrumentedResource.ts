@@ -16,7 +16,7 @@ export interface InstrumentedResource {
 export abstract class ToolingInterface implements InstrumentedResource {
   public resource: any;
   public actions: RevolverAction[];
-  private meta: any;
+  private readonly meta: any;
 
   constructor(awsResource: any) {
     this.resource = awsResource;
@@ -41,7 +41,7 @@ export abstract class ToolingInterface implements InstrumentedResource {
     }
     // Try and see if we already have an action that can swallow this one
     for (const xa of this.actions.filter((xxa) => xxa.what === action.what)) {
-      if (xa.swallow(action) === true) {
+      if (xa.swallow(action)) {
         return;
       }
     }

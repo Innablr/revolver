@@ -12,9 +12,9 @@ import { ObjectLogCsv, ObjectLogHtml, ObjectLogJson, ObjectLogTable, ResourceTab
 
 // A dummy AWS resource for testing
 class FakeResource extends ToolingInterface {
-  private myResourceId: string;
-  private myResourceType: string;
-  private myResourceState: string;
+  private readonly myResourceId: string;
+  private readonly myResourceType: string;
+  private readonly myResourceState: string;
   constructor(resourceId: string, resourceType: string, resourceState: string, resource: any) {
     super(resource);
     this.myResourceId = resourceId;

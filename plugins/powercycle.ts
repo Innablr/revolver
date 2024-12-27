@@ -9,10 +9,10 @@ import { RevolverPlugin } from './pluginInterface.js';
  */
 export default class PowerCyclePlugin extends RevolverPlugin {
   private parser: any;
-  private scheduleTagName: string;
-  private timezoneTagName: string;
-  private warningTagName: string;
-  private reasonTagName: string;
+  private readonly scheduleTagName: string;
+  private readonly timezoneTagName: string;
+  private readonly warningTagName: string;
+  private readonly reasonTagName: string;
   protected supportedResources = [
     'ec2',
     'rdsCluster',

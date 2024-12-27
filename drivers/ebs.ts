@@ -14,7 +14,7 @@ import { type InstrumentedResource, ToolingInterface } from './instrumentedResou
 import { ec2Tagger } from './tags.js';
 
 class InstrumentedEBS extends ToolingInterface {
-  private volumeARN: string;
+  private readonly volumeARN: string;
 
   constructor(resource: CreateVolumeCommandOutput, volumeARN: string) {
     super(resource);

@@ -132,6 +132,7 @@ abstract class AbstractOutputWriter {
   }
 
   // here as reference, unused
+  // noinspection JSUnusedLocalSymbols
   private static decompress(compressedB64: string): string {
     return zlib.inflateSync(Buffer.from(compressedB64, 'base64')).toString('utf-8');
   }

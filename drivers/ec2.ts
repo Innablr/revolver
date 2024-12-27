@@ -21,7 +21,7 @@ import { type InstrumentedResource, ToolingInterface } from './instrumentedResou
 import { ec2Tagger } from './tags.js';
 
 class InstrumentedEc2 extends ToolingInterface {
-  private instanceARN: string;
+  private readonly instanceARN: string;
 
   constructor(resource: Instance, instanceARN: string) {
     super(resource);

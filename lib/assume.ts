@@ -11,7 +11,7 @@ export interface Creds {
 }
 
 class RemoteCredentials {
-  private creds: { [key: string]: Creds };
+  private readonly creds: { [key: string]: Creds };
 
   constructor() {
     this.creds = {};
