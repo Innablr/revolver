@@ -211,7 +211,7 @@ class ParsedAvailability {
 
 function startOrStop(tag: string, timeNow: DateTime) {
   const t = new ParsedAvailability(tag);
-  if (t.override === true) {
+  if (t.override) {
     return ['NOOP', 'Availability override'];
   } else if (t.available === '24x7') {
     return ['START', 'Availability 24x7'];

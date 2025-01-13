@@ -76,7 +76,7 @@ async function main(config: any) {
   }
 
   // Filter final accounts list to be processed
-  const filteredAccountsList = await RevolverConfig.filterAccountsList(orgsAccountsList, config);
+  const filteredAccountsList = RevolverConfig.filterAccountsList(orgsAccountsList, config);
 
   // Try to assume role on the listed accounts and remove from the list if fails
   logger.info('Caching STS credentials...');

@@ -15,8 +15,11 @@ const zeroPad = (num: any, places: number) => String(num).padStart(places, '0');
 
 /**
  * Evaluate the schedule for every interval in the window and return a list of time:results.
+ * @param parser
  * @param schedule a Revolver schedule string
  * @param startTime when to start the test window
+ * @param testInterval how long between test steps
+ * @param testDuration total test duration
  * @returns a Map of DateTime to boolean representing "matches schedule"
  */
 async function runSchedule(
@@ -43,7 +46,6 @@ async function runSchedule(
 /**
  * Evaluate the schedule every `interval` within the `window` and print a table with results.
  * @param schedule a Revolver schedule string
- * @param startTime when to start the test window
  * @returns a Map of DateTime to boolean representing "matches schedule"
  */
 async function showSchedule(schedule: string) {
