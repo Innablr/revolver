@@ -622,7 +622,7 @@ describe('filter matchWindow', () => {
     for (const tt of testTimes) {
       dateTime.freezeTime(tt.time.toString());
       const matches = filter.matches(new TestingResource(basicEc2));
-      console.log('%s (%s) = %s', tt.time, tt.time.toUTC(), matches);
+      // console.log('%s (%s) = %s', tt.time, tt.time.toUTC(), matches);
       expect(matches).to.be.equal(tt.matches);
     }
   });

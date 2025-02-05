@@ -10,6 +10,7 @@
   "scripts": {
     "lint": "biome check",
     "test": "LOG_LEVEL=error mocha --require ts-node/register --require source-map-support/register --recursive --exit test",
+    "testxml": "mocha --require ts-node/register --require source-map-support/register --recursive --reporter xunit --reporter-option output=test-results.xml --exit test",
     "coverage": "c8 npm run test; rimraf ./coverage",
     "build": "tsc --build ./tsconfig.json",
     "watch": "tsc --build ./tsconfig.json --watch",
