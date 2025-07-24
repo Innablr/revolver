@@ -47,7 +47,7 @@
     "proxy-agent": "^6.5.0",
     "ts-deepmerge": "^7.0.3",
     "tslog": "^4.9.3",
-    "zod": "^3.24.4"
+    "zod": "^4.0.8"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.2",
@@ -74,7 +74,6 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "webpack": "^5.99.7",
-    "webpack-cli": "^6.0.1",
-    "zod-to-json-schema": "^3.24.5"
+    "webpack-cli": "^6.0.1"
   }
 }

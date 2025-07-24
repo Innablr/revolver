@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs';
 import { logger } from './logger.js';
 
-import path = require('node:path');
+// import path = require('node:path');
 
 import { Organizations, paginateListAccounts } from '@aws-sdk/client-organizations';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
@@ -9,18 +9,20 @@ import yaml from 'js-yaml';
 import { merge } from 'ts-deepmerge';
 import {
   ZodError,
-  type ZodInvalidArgumentsIssue,
-  type ZodInvalidReturnTypeIssue,
-  type ZodInvalidUnionIssue,
-  ZodIssueCode,
+  // type ZodInvalidArgumentsIssue,
+  // type ZodInvalidReturnTypeIssue,
+  // type ZodInvalidUnionIssue,
+  // ZodIssueCode,
 } from 'zod';
 import { getAwsConfig } from './awsConfig.js';
 import { paginateAwsCall } from './common.js';
 import { ConfigSchema } from './config-schema.js';
 import { ObjectLogJson } from './objectLog.js';
+import path from 'node:path';
 
 function flattenZodErrors(ze: ZodError, depth: number): string[] {
   let lines: string[] = [];
+  /*
   for (const zi of ze.errors) {
     const code = zi.code;
     const path = zi.path.join('.');
@@ -47,6 +49,7 @@ function flattenZodErrors(ze: ZodError, depth: number): string[] {
         break;
     }
   }
+    */
   return lines;
 }
 

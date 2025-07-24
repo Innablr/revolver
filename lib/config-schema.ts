@@ -5,7 +5,7 @@ const AWSAccountId = z.string().regex(/^\d{12}$/, { message: 'AWS AccountID are 
 const AWSRegion = z
   .string()
   .regex(/^(af|il|ap|ca|eu|me|sa|us|cn|us-gov|us-iso|us-isob)-(central|(north|south)?(east|west)?)-\d{1}$/, {
-    message: 'Invalid AWS Region',
+    error: 'Invalid AWS Region',
   });
 
 // https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html
@@ -14,11 +14,11 @@ const AWSBucketName = z
   .string()
   .regex(
     /(?!(^((2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})\.){3}(2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})$|^xn--|.+-s3alias$))^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/,
-    { message: 'Invalid AWS Bucket Name' },
+    { error: 'Invalid AWS Bucket Name' },
   );
 
 // https://docs.aws.amazon.com/IAM/latest/UserGuide/reference-arns.html
-const AWSArn = z.string().regex(/^arn:.*$/, { message: 'Invalid AWS ARN' });
+const AWSArn = z.string().regex(/^arn:.*$/, { error: 'Invalid AWS ARN' });
 
 const ShorthandFilter = z.string().regex(/^([^|]+)\|.*/);
 
@@ -48,7 +48,7 @@ const BaseFilters = z
           .object({
             name: z.string(),
           })
-          .merge(StringCompareOptions)
+          .extend(StringCompareOptions)
           .strict(),
       ])
       .optional(),
@@ -60,7 +60,7 @@ const BaseFilters = z
           .object({
             path: z.string(),
           })
-          .merge(StringCompareOptions)
+          .extend(StringCompareOptions)
           .strict(),
       ])
       .optional(),
@@ -112,7 +112,7 @@ const ObjectLogOptions = z.object({
 });
 
 const TimeZoneString = z.string().regex(/^([A-Za-z]+\/[A-Za-z_]+|UTC(?:[+-]\d+)?)$/, {
-  message: 'Invalid Timezone',
+  error: 'Invalid Timezone',
 });
 
 const PowercycleCentralMatcher = z.object({
@@ -137,7 +137,7 @@ const Settings = z.object({
         .object({
           overwrite: z.boolean().default(true),
         })
-        .merge(ObjectLogOptions)
+        .extend(ObjectLogOptions)
         .optional(),
       html: ObjectLogOptions.optional(),
       csv: z
@@ -146,7 +146,7 @@ const Settings = z.object({
           overwrite: z.boolean().default(true),
           reportTags: z.array(z.string()).optional(),
         })
-        .merge(ObjectLogOptions)
+        .extend(ObjectLogOptions)
         .optional(),
       console: z
         .null()
@@ -169,7 +169,7 @@ const Settings = z.object({
         .object({
           append: z.boolean().default(false),
         })
-        .merge(ObjectLogOptions)
+        .extend(ObjectLogOptions)
         .optional(),
       json: ObjectLogOptions.optional(),
     })
