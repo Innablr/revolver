@@ -48,7 +48,7 @@ const BaseFilters = z
           .object({
             name: z.string(),
           })
-          .extend(StringCompareOptions)
+          .merge(StringCompareOptions)
           .strict(),
       ])
       .optional(),
@@ -60,7 +60,7 @@ const BaseFilters = z
           .object({
             path: z.string(),
           })
-          .extend(StringCompareOptions)
+          .merge(StringCompareOptions)
           .strict(),
       ])
       .optional(),
@@ -137,7 +137,7 @@ const Settings = z.object({
         .object({
           overwrite: z.boolean().default(true),
         })
-        .extend(ObjectLogOptions)
+        .merge(ObjectLogOptions)
         .optional(),
       html: ObjectLogOptions.optional(),
       csv: z
@@ -146,7 +146,7 @@ const Settings = z.object({
           overwrite: z.boolean().default(true),
           reportTags: z.array(z.string()).optional(),
         })
-        .extend(ObjectLogOptions)
+        .merge(ObjectLogOptions)
         .optional(),
       console: z
         .null()
@@ -169,7 +169,7 @@ const Settings = z.object({
         .object({
           append: z.boolean().default(false),
         })
-        .extend(ObjectLogOptions)
+        .merge(ObjectLogOptions)
         .optional(),
       json: ObjectLogOptions.optional(),
     })
