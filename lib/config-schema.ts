@@ -48,7 +48,7 @@ const BaseFilters = z
           .object({
             name: z.string(),
           })
-          .merge(StringCompareOptions)
+          .extend(StringCompareOptions.shape)
           .strict(),
       ])
       .optional(),
@@ -60,7 +60,7 @@ const BaseFilters = z
           .object({
             path: z.string(),
           })
-          .merge(StringCompareOptions)
+          .extend(StringCompareOptions.shape)
           .strict(),
       ])
       .optional(),
@@ -126,7 +126,7 @@ const PowercycleCentralMatcher = z.object({
 // Used for defaults, and a partial used for org/account overrides
 const Settings = z.object({
   region: AWSRegion.optional(),
-  timezone: TimeZoneString.default('UTC'),
+  timezone: TimeZoneString, // .default('UTC') cause unwanted override
   timezoneTag: z.string().default('Timezone'),
   concurrency: z.number().default(0),
   organizationRoleName: z.string(),
@@ -137,7 +137,7 @@ const Settings = z.object({
         .object({
           overwrite: z.boolean().default(true),
         })
-        .merge(ObjectLogOptions)
+        .extend(ObjectLogOptions.shape)
         .optional(),
       html: ObjectLogOptions.optional(),
       csv: z
@@ -146,7 +146,7 @@ const Settings = z.object({
           overwrite: z.boolean().default(true),
           reportTags: z.array(z.string()).optional(),
         })
-        .merge(ObjectLogOptions)
+        .extend(ObjectLogOptions.shape)
         .optional(),
       console: z
         .null()
@@ -169,7 +169,7 @@ const Settings = z.object({
         .object({
           append: z.boolean().default(false),
         })
-        .merge(ObjectLogOptions)
+        .extend(ObjectLogOptions.shape)
         .optional(),
       json: ObjectLogOptions.optional(),
     })
@@ -241,7 +241,7 @@ const ConfigSchema = z
           .object({
             accountId: AWSAccountId,
             accountNameRegex: z.string().optional(),
-            settings: z.object({ name: z.string() }).merge(Settings.partial()),
+            settings: z.object({ name: z.string() }).extend(Settings.partial().shape),
           })
           .strict(),
       )
@@ -253,7 +253,7 @@ const ConfigSchema = z
           z
             .object({
               accountId: AWSAccountId,
-              settings: z.object({ name: z.string() }).merge(Settings.partial()),
+              settings: z.object({ name: z.string() }).extend(Settings.partial().shape),
             })
             .strict(),
         )
