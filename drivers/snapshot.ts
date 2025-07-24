@@ -1,9 +1,9 @@
 import {
   EC2Client,
-  type Tag,
   paginateDescribeInstances,
   paginateDescribeSnapshots,
   paginateDescribeVolumes,
+  type Tag,
 } from '@aws-sdk/client-ec2';
 import type { RevolverActionWithTags } from '../actions/actions.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';

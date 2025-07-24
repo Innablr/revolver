@@ -1,5 +1,5 @@
 import type { ToolingInterface } from '../../drivers/instrumentedResource.js';
-import { type Filter, type FilterCtor, StringCompareOptions, arrayToOr } from './index.js';
+import { arrayToOr, type Filter, type FilterCtor, StringCompareOptions } from './index.js';
 
 export default class FilterName implements Filter, FilterCtor {
   static readonly FILTER_NAME = 'name';

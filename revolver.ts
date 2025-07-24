@@ -1,6 +1,6 @@
 import zlib from 'node:zlib';
 import { PromisePool } from '@supercharge/promise-pool';
-import type { EventBridgeEvent, SQSEvent, SQSHandler, ScheduledEvent, ScheduledHandler } from 'aws-lambda';
+import type { EventBridgeEvent, ScheduledEvent, ScheduledHandler, SQSEvent, SQSHandler } from 'aws-lambda';
 import { AccountRevolver } from './lib/accountRevolver.js';
 import assume from './lib/assume.js';
 import { RevolverConfig } from './lib/config.js';

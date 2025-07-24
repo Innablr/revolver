@@ -1,16 +1,16 @@
 import {
   AutoScalingClient,
+  paginateDescribeAutoScalingGroups,
   ResumeProcessesCommand,
   SuspendProcessesCommand,
-  paginateDescribeAutoScalingGroups,
 } from '@aws-sdk/client-auto-scaling';
 import {
   EC2Client,
   type Instance,
+  paginateDescribeInstances,
   StartInstancesCommand,
   StopInstancesCommand,
   type Tag,
-  paginateDescribeInstances,
 } from '@aws-sdk/client-ec2';
 import type { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';

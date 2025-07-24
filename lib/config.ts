@@ -1,6 +1,8 @@
 import { promises as fs } from 'node:fs';
 import { logger } from './logger.js';
+
 import path = require('node:path');
+
 import { Organizations, paginateListAccounts } from '@aws-sdk/client-organizations';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import yaml from 'js-yaml';
@@ -48,7 +50,7 @@ function flattenZodErrors(ze: ZodError, depth: number): string[] {
   return lines;
 }
 
-// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
+// biome-ignore lint/complexity/noStaticOnlyClass: for reasons
 export class RevolverConfig {
   /**
    * Validate JSON configuration conforms to the schema and return a configuration object.

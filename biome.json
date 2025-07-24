@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
   "linter": {
     "enabled": true,
     "rules": {
@@ -12,15 +12,14 @@
       "correctness": {
         "noUnusedFunctionParameters": "error"
       },
-      "nursery": {
-        "noDuplicateElseIf": "error",
-        "useAdjacentOverloadSignatures": "error"
-      },
+      "nursery": {},
       "suspicious": {
         "noEvolvingTypes": "error",
         "noExplicitAny": "off",
         "useErrorMessage": "error",
-        "useNumberToFixedDigitsArgument": "error"
+        "useNumberToFixedDigitsArgument": "error",
+        "noDuplicateElseIf": "error",
+        "useAdjacentOverloadSignatures": "error"
       },
       "style": {
         "noNonNullAssertion": "off",
@@ -32,11 +31,21 @@
         "noAccumulatingSpread": "off"
       }
     },
-    "ignore": ["**/*.js", "**/*.d.ts", "**/docs", "**/coverage", "**/cdk.json", "**/.cdk.staging", "**/cdk.out", "output"]
+    "includes": [
+      "**",
+      "!**/*.js",
+      "!**/*.d.ts",
+      "!**/docs",
+      "!**/coverage",
+      "!**/cdk.json",
+      "!**/.cdk.staging",
+      "!**/cdk.out",
+      "!**/output"
+    ]
   },
   "overrides": [
     {
-      "include": ["*.spec.ts"],
+      "includes": ["**/*.spec.ts"],
       "linter": {
         "rules": {
           "correctness": {
@@ -54,7 +63,7 @@
   "formatter": {
     "enabled": true,
     "formatWithErrors": false,
-    "ignore": [],
+    "includes": ["**"],
     "attributePosition": "auto",
     "indentStyle": "space",
     "indentWidth": 2,

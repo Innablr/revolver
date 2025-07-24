@@ -1,7 +1,6 @@
-import { logger } from '../lib/logger.js';
-
 import { RevolverConfig } from '../lib/config.js';
 import environ from '../lib/environ.js';
+import { logger } from '../lib/logger.js';
 
 /**
  * Validate the configuration provided by $CONFIG_FILE environment variable

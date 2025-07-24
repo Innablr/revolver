@@ -1,4 +1,4 @@
-import { promises as fs, existsSync } from 'node:fs';
+import { existsSync, promises as fs } from 'node:fs';
 import zlib from 'node:zlib';
 import {
   GetObjectCommand,
@@ -9,7 +9,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
-import { type MessageAttributeValue, SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
+import { type MessageAttributeValue, SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { stringify } from 'csv-stringify/sync';
 import type { ActionAuditEntry } from '../actions/audit.js';
 import type { ToolingInterface } from '../drivers/instrumentedResource.js';
@@ -133,6 +133,7 @@ abstract class AbstractOutputWriter {
 
   // here as reference, unused
   // noinspection JSUnusedLocalSymbols
+  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: for completeness
   private static decompress(compressedB64: string): string {
     return zlib.inflateSync(Buffer.from(compressedB64, 'base64')).toString('utf-8');
   }

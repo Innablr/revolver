@@ -8,7 +8,7 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "lint": "biome check",
+    "lint": "biome check --fix",
     "test": "LOG_LEVEL=error mocha --require ts-node/register --require source-map-support/register --recursive --exit test",
     "testxml": "mocha --require ts-node/register --require source-map-support/register --recursive --reporter xunit --reporter-option output=test-results.xml --exit test",
     "coverage": "c8 npm run test; rimraf ./coverage",
@@ -50,7 +50,7 @@
     "zod": "^3.24.4"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "2.1.2",
     "@types/aws-lambda": "^8.10.149",
     "@types/chai": "^5.0.1",
     "@types/chai-as-promised": "^8.0.2",

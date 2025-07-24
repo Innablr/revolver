@@ -1,9 +1,9 @@
 import {
   type CreateVolumeCommandOutput,
   EC2Client,
-  type Tag,
   paginateDescribeInstances,
   paginateDescribeVolumes,
+  type Tag,
 } from '@aws-sdk/client-ec2';
 import type { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
 import { getAwsClientForAccount } from '../lib/awsConfig.js';

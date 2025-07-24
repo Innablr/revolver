@@ -1,7 +1,7 @@
 import { NoopAction, StartAction, StopAction } from '../actions/actions.js';
 import type { ToolingInterface } from '../drivers/instrumentedResource.js';
 import dateTime from '../lib/dateTime.js';
-import { type Filter, buildFilter } from './filters/index.js';
+import { buildFilter, type Filter } from './filters/index.js';
 import getParser from './parsers/index.js';
 import { RevolverPlugin } from './pluginInterface.js';
 

@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import {
   ErrorTrackingLogger,
-  type RevolverLogObject,
-  logLevelsToConsole,
   logger,
+  logLevelsToConsole,
+  type RevolverLogObject,
   restructureJsonLog,
 } from '../../lib/logger.js';
 

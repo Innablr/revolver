@@ -9,7 +9,7 @@ class ParsedComponent {
   private dayFrom: number | null = null;
   private dayTo: number | null = null;
   private parsed = false;
-  private hasDays: boolean;
+  // private hasDays: boolean;
   private re: RegExp;
 
   static get weekdays() {
@@ -55,7 +55,7 @@ class ParsedComponent {
     const [, , time, , days] = m;
     [this.timeHourLiteral, this.timeMinuteLiteral] = time.split(':');
     if (days !== undefined) {
-      this.hasDays = true;
+      // this.hasDays = true;
       if (m[4].includes('-')) {
         [this.dayFrom, this.dayTo] = m[4].split('-').map((xd) => ParsedComponent.weekdays.indexOf(xd) + 1);
       } else {

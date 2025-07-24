@@ -2,7 +2,7 @@ import type { Logger } from 'tslog';
 import type { RevolverAction } from '../actions/actions.js';
 import type { ActionAuditEntry } from '../actions/audit.js';
 import dateTime from '../lib/dateTime.js';
-import { type RevolverLogObject, getSubLogger } from '../lib/logger.js';
+import { getSubLogger, type RevolverLogObject } from '../lib/logger.js';
 import type { InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
 
 export abstract class DriverInterface {

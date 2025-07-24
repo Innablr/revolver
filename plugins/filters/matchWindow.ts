@@ -2,7 +2,7 @@ import { DateTime as LuxonDateTime } from 'luxon';
 import type { ToolingInterface } from '../../drivers/instrumentedResource.js';
 import dateTime from '../../lib/dateTime.js';
 import { logger } from '../../lib/logger.js';
-import { type Filter, type FilterCtor, arrayToOr } from './index.js';
+import { arrayToOr, type Filter, type FilterCtor } from './index.js';
 
 /**
  * A Filter that compares a given from/to datetime to the current time.

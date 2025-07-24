@@ -17,6 +17,7 @@ import { type InstrumentedResource, ToolingInterface } from './instrumentedResou
 
 class InstrumentedRedshiftCluster extends ToolingInterface {
   public tags: Tag[] = [];
+  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: for future
   private clusterARN: string;
 
   constructor(resource: Cluster, clusterARN: string) {
