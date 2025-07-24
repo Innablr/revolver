@@ -76,7 +76,7 @@ describe('Validate auditLog', () => {
     expect(auditCsvText).to.include('dosomething else,blue,random');
 
     // Parse the audit CSV back into records
-    const records = parse(auditCsvText, { bom: true, columns: true });
+    const records = parse<any>(auditCsvText, { bom: true, columns: true });
     expect(records.length).to.equal(3);
     expect(records[0].STATUS).to.equal('red');
     expect(records[0].REASON).to.equal('just because');
@@ -98,7 +98,7 @@ describe('Validate auditLog', () => {
     // Check append
     expect(fs.existsSync(AUDIT_LOG_CONFIG.csv.file)).to.be.true;
     const auditCsvText2 = fs.readFileSync(AUDIT_LOG_CONFIG.csv.file, 'utf-8');
-    const records2 = parse(auditCsvText2, { bom: true, columns: true });
+    const records2 = parse<any>(auditCsvText2, { bom: true, columns: true });
     expect(records2.length).to.equal(5);
     expect(records2[3].STATUS).to.equal('orange');
     expect(records2[4].STATUS).to.equal('pink');

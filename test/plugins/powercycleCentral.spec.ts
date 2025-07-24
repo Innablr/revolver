@@ -116,7 +116,7 @@ describe('Run powercycleCentral full cycle', () => {
         expect(a1_audit_text).to.include(',ec2,ec2,i-072b78745f1879e97,stop,');
         expect(a1_audit_text).to.not.include(',ec2,ec2,i-05b6baf37fc8f9454,stop,');
 
-        const auditRecords = parse(a1_audit_text, { columns: true });
+        const auditRecords = parse<any>(a1_audit_text, { columns: true });
         expect(auditRecords.length).to.equal(3);
         expect(auditRecords[0].ID).equals('i-0c688d35209d7f436');
         expect(auditRecords[0].ACTION).equals('stop');

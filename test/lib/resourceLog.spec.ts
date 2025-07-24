@@ -136,7 +136,7 @@ describe('Validate ResourceLog', () => {
     expect(fs.existsSync(RESOURCE_LOG_CONFIG.csv.file)).to.be.true;
     // Check the contents of RESOURCE_LOG_CONFIG.csv.file
     const auditCsvText = fs.readFileSync(RESOURCE_LOG_CONFIG.csv.file, 'utf-8');
-    const records = parse(auditCsvText, { bom: true, columns: true });
+    const records = parse<any>(auditCsvText, { bom: true, columns: true });
     expect(records.length).to.equal(4);
     expect(records[0].SPAM).to.equal('123');
     expect(records[0].ID).to.equal('donkey1');
