@@ -13,7 +13,7 @@ import {
   type ZodInvalidReturnTypeIssue,
   type ZodInvalidUnionIssue,
   ZodIssueCode,
-} from 'zod';
+} from 'zod/v4';
 import { getAwsConfig } from './awsConfig.js';
 import { paginateAwsCall } from './common.js';
 import { ConfigSchema } from './config-schema.js';
