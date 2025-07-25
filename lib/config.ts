@@ -1,7 +1,5 @@
 import { promises as fs } from 'node:fs';
-import { logger } from './logger.js';
-
-import path = require('node:path');
+import path from 'node:path';
 
 import { Organizations, paginateListAccounts } from '@aws-sdk/client-organizations';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
@@ -11,6 +9,7 @@ import { z } from 'zod/v4';
 import { getAwsConfig } from './awsConfig.js';
 import { paginateAwsCall } from './common.js';
 import { ConfigSchema } from './config-schema.js';
+import { logger } from './logger.js';
 import { ObjectLogJson } from './objectLog.js';
 
 /*
