@@ -4,6 +4,7 @@ defaults:
   settings:
     region: ap-southeast-2
     # timezone: Australia/Melbourne
+    timezone: 'UTC'
     # timezoneTag: Timezone
     organizationRoleName: AWSOrganizationsReadOnly
     revolverRoleName: ssPowerCycle
