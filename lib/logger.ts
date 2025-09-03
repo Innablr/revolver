@@ -69,7 +69,9 @@ export function restructureJsonLog(log: any) {
     .map((k) => log[k])
     .join(' ');
 
-  positionalEntries.forEach((k: string) => delete log[k]);
+  positionalEntries.forEach((k: string) => {
+    delete log[k];
+  });
 
   // assemble new object
   const messageObj: { [key: string]: any } = {

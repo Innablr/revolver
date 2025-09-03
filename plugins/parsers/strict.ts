@@ -20,14 +20,14 @@ class ParsedComponent {
     if (this.timeHourLiteral === null) {
       return 0;
     }
-    return Number.parseInt(this.timeHourLiteral);
+    return Number.parseInt(this.timeHourLiteral, 10);
   }
 
   get timeMinute(): number {
     if (this.timeMinuteLiteral === null) {
       return 0;
     }
-    return Number.parseInt(this.timeMinuteLiteral);
+    return Number.parseInt(this.timeMinuteLiteral, 10);
   }
 
   get time() {

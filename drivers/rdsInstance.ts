@@ -1,7 +1,6 @@
 import {
   DescribeDBInstancesCommand,
   ListTagsForResourceCommand,
-  ListTagsForResourceCommandOutput,
   RDSClient,
   StartDBInstanceCommand,
   StopDBInstanceCommand,

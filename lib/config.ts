@@ -58,7 +58,7 @@ export class RevolverConfig {
    */
   static validateJsonConfig(...data: string[]) {
     const merged = data.reduce((da: any, d) => {
-      merge.withOptions({ mergeArrays: true }, da, JSON.parse(d));
+      return merge.withOptions({ mergeArrays: true }, da, JSON.parse(d));
     }, {});
     return RevolverConfig.validateConfig(merged);
   }

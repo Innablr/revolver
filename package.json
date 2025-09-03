@@ -50,7 +50,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.1.2",
+    "@biomejs/biome": "^2.2.2",
     "@types/aws-lambda": "^8.10.152",
     "@types/chai": "^5.2.2",
     "@types/chai-as-promised": "^8.0.2",
