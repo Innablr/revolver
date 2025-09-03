@@ -1,6 +1,7 @@
 import {
   DescribeDBInstancesCommand,
   ListTagsForResourceCommand,
+  ListTagsForResourceCommandOutput,
   RDSClient,
   StartDBInstanceCommand,
   StopDBInstanceCommand,
@@ -160,7 +161,7 @@ class RdsInstanceDriver extends DriverInterface {
     return getAwsClientForAccount(RDSClient, this.accountConfig)
       .then((rds) => rds.send(new DescribeDBInstancesCommand({})))
       .then((r) => r.DBInstances!.map((xr) => new InstrumentedRdsInstance(xr)))
-      .then((r) => Promise.all([Promise.resolve(r), getAwsClientForAccount(RDSClient, this.accountConfig)]))
+      .then((r) => Promise.all([Promise.resolve(r), getAwsClientForAccount(RDSClient, this.accountConfig)] as const))
       .then(([r, rds]) =>
         Promise.all(
           r.map((xr) =>
