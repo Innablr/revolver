@@ -1,24 +1,18 @@
 import { promises as fs } from 'node:fs';
-import { logger } from './logger.js';
-
-import path = require('node:path');
+import path from 'node:path';
 
 import { Organizations, paginateListAccounts } from '@aws-sdk/client-organizations';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import yaml from 'js-yaml';
 import { merge } from 'ts-deepmerge';
-import {
-  ZodError,
-  type ZodInvalidArgumentsIssue,
-  type ZodInvalidReturnTypeIssue,
-  type ZodInvalidUnionIssue,
-  ZodIssueCode,
-} from 'zod';
+import { z } from 'zod/v4';
 import { getAwsConfig } from './awsConfig.js';
 import { paginateAwsCall } from './common.js';
 import { ConfigSchema } from './config-schema.js';
+import { logger } from './logger.js';
 import { ObjectLogJson } from './objectLog.js';
 
+/*
 function flattenZodErrors(ze: ZodError, depth: number): string[] {
   let lines: string[] = [];
   for (const zi of ze.errors) {
@@ -49,6 +43,7 @@ function flattenZodErrors(ze: ZodError, depth: number): string[] {
   }
   return lines;
 }
+*/
 
 // biome-ignore lint/complexity/noStaticOnlyClass: for reasons
 export class RevolverConfig {
@@ -87,9 +82,8 @@ export class RevolverConfig {
       logger.trace('Read Revolver config', config);
       return config;
     } catch (e: any) {
-      if (e instanceof ZodError) {
-        const ze = e as ZodError;
-        throw new Error(`ZodError: Failed to parse\n\t${flattenZodErrors(ze, 0).join('\n\t')}`);
+      if (e instanceof z.ZodError) {
+        throw new Error(`ZodError: Failed to parse\n${z.prettifyError(e)}`);
       } else {
         throw new Error(e);
       }
