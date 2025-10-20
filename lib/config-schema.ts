@@ -1,11 +1,13 @@
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
-const AWSAccountId = z.string().regex(/^\d{12}$/, { message: 'AWS AccountID are 12 digits' });
+const AWSAccountId = z.string().regex(/^\d{12}$/, {
+  error: 'AWS AccountID are 12 digits',
+});
 
 const AWSRegion = z
   .string()
   .regex(/^(af|il|ap|ca|eu|me|sa|us|cn|us-gov|us-iso|us-isob)-(central|(north|south)?(east|west)?)-\d{1}$/, {
-    message: 'Invalid AWS Region',
+    error: 'Invalid AWS Region',
   });
 
 // https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html
@@ -14,11 +16,15 @@ const AWSBucketName = z
   .string()
   .regex(
     /(?!(^((2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})\.){3}(2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})$|^xn--|.+-s3alias$))^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/,
-    { message: 'Invalid AWS Bucket Name' },
+    {
+      error: 'Invalid AWS Bucket Name',
+    },
   );
 
 // https://docs.aws.amazon.com/IAM/latest/UserGuide/reference-arns.html
-const AWSArn = z.string().regex(/^arn:.*$/, { message: 'Invalid AWS ARN' });
+const AWSArn = z.string().regex(/^arn:.*$/, {
+  error: 'Invalid AWS ARN',
+});
 
 const ShorthandFilter = z.string().regex(/^([^|]+)\|.*/);
 
@@ -31,47 +37,43 @@ const StringCompareOptions = z.object({
   regexp: z.string().optional(),
 });
 
-const BaseFilters = z
-  .object({
-    id: z.union([z.array(z.string()), z.string()]).optional(),
-    accountId: z.union([z.array(z.string()), z.string()]).optional(),
-    region: z.union([z.array(z.string()), z.string()]).optional(),
-    state: z.union([z.array(z.string()), z.string()]).optional(),
-    type: z.union([z.array(z.string()), z.string()]).optional(),
-    name: z.union([z.array(z.string()), z.string()]).optional(),
-    bool: z.boolean().optional(), // TODO: what is this?
-    tag: z
-      .union([
-        z.array(ShorthandFilter),
-        ShorthandFilter,
-        z
-          .object({
-            name: z.string(),
-          })
-          .merge(StringCompareOptions)
-          .strict(),
-      ])
-      .optional(),
-    resource: z
-      .union([
-        z.array(ShorthandFilter),
-        ShorthandFilter,
-        z
-          .object({
-            path: z.string(),
-          })
-          .merge(StringCompareOptions)
-          .strict(),
-      ])
-      .optional(),
-    matchWindow: z
-      .object({
-        from: z.string().optional(),
-        to: z.string().optional(),
-      })
-      .optional(),
-  })
-  .strict();
+const BaseFilters = z.strictObject({
+  id: z.union([z.array(z.string()), z.string()]).optional(),
+  accountId: z.union([z.array(z.string()), z.string()]).optional(),
+  region: z.union([z.array(z.string()), z.string()]).optional(),
+  state: z.union([z.array(z.string()), z.string()]).optional(),
+  type: z.union([z.array(z.string()), z.string()]).optional(),
+  name: z.union([z.array(z.string()), z.string()]).optional(),
+  bool: z.boolean().optional(), // TODO: what is this?
+  tag: z
+    .union([
+      z.array(ShorthandFilter),
+      ShorthandFilter,
+      z
+        .strictObject({
+          name: z.string(),
+        })
+        .extend(StringCompareOptions.shape),
+    ])
+    .optional(),
+  resource: z
+    .union([
+      z.array(ShorthandFilter),
+      ShorthandFilter,
+      z
+        .strictObject({
+          path: z.string(),
+        })
+        .extend(StringCompareOptions.shape),
+    ])
+    .optional(),
+  matchWindow: z
+    .strictObject({
+      from: z.string().optional(),
+      to: z.string().optional(),
+    })
+    .optional(),
+});
 
 // meta filters are recursive, need this to allow parsing to occur properly
 type FilterT = z.infer<typeof BaseFilters> & {
@@ -90,15 +92,15 @@ const ObjectLogOptions = z.object({
   file: z.string().optional(),
   sqs: z
     .object({
-      url: z.string().url(),
-      compress: z.boolean().default(true),
+      url: z.url(),
+      compress: z.boolean().prefault(true),
       attributes: z.record(z.string(), z.string()).optional(),
     })
     .optional(),
   sns: z
     .object({
       url: AWSArn,
-      compress: z.boolean().default(true),
+      compress: z.boolean().prefault(true),
       attributes: z.record(z.string(), z.string()).optional(),
     })
     .optional(),
@@ -112,41 +114,41 @@ const ObjectLogOptions = z.object({
 });
 
 const TimeZoneString = z.string().regex(/^([A-Za-z]+\/[A-Za-z_]+|UTC(?:[+-]\d+)?)$/, {
-  message: 'Invalid Timezone',
+  error: 'Invalid Timezone',
 });
 
 const PowercycleCentralMatcher = z.object({
   name: z.string(),
   schedule: z.string(),
-  priority: z.number().default(0),
+  priority: z.number().prefault(0),
   filter: z.union([z.array(Filters), Filters]),
-  pretend: z.boolean().default(false),
+  pretend: z.boolean().prefault(false),
 });
 
 // Used for defaults, and a partial used for org/account overrides
 const Settings = z.object({
   region: AWSRegion.optional(),
-  timezone: TimeZoneString.default('UTC'),
-  timezoneTag: z.string().default('Timezone'),
-  concurrency: z.number().default(0),
+  timezone: TimeZoneString, // .prefault('UTC'),
+  timezoneTag: z.string().prefault('Timezone'),
+  concurrency: z.number().prefault(0),
   organizationRoleName: z.string(),
   revolverRoleName: z.string(),
   resourceLog: z
     .object({
       json: z
         .object({
-          overwrite: z.boolean().default(true),
+          overwrite: z.boolean().prefault(true),
         })
-        .merge(ObjectLogOptions)
+        .extend(ObjectLogOptions.shape)
         .optional(),
       html: ObjectLogOptions.optional(),
       csv: z
         .object({
-          append: z.boolean().default(false),
-          overwrite: z.boolean().default(true),
+          append: z.boolean().prefault(false),
+          overwrite: z.boolean().prefault(true),
           reportTags: z.array(z.string()).optional(),
         })
-        .merge(ObjectLogOptions)
+        .extend(ObjectLogOptions.shape)
         .optional(),
       console: z
         .null()
@@ -167,9 +169,9 @@ const Settings = z.object({
       html: ObjectLogOptions.optional(),
       csv: z
         .object({
-          append: z.boolean().default(false),
+          append: z.boolean().prefault(false),
         })
-        .merge(ObjectLogOptions)
+        .extend(ObjectLogOptions.shape)
         .optional(),
       json: ObjectLogOptions.optional(),
     })
@@ -186,88 +188,80 @@ const ConfigSchema = z
         .array(
           z.object({
             name: z.string(),
-            active: z.boolean().default(true),
-            pretend: z.boolean().default(false),
+            active: z.boolean().prefault(true),
+            pretend: z.boolean().prefault(false),
           }),
         )
-        .default([]),
-      plugins: z
-        .object({
-          powercycle: z
-            .object({
-              active: z.boolean(),
-              configs: z.array(
-                z.object({
-                  tagging: z.string().default('strict'),
-                  availabilityTag: z.string().default('Schedule'),
-                }),
-              ),
-            })
-            .optional(),
-          powercycleCentral: z
-            .object({
-              active: z.boolean(),
-              configs: z.array(
-                z.object({
-                  parser: z.string().default('strict'),
-                  availabilityTag: z.string().default('Schedule'),
-                  availabilityTagPriority: z.number().default(0),
-                  predefinedSchedules: z.record(z.string(), z.string()).default({}),
-                  matchers: z.array(PowercycleCentralMatcher),
-                }),
-              ),
-            })
-            .optional(),
-          validateTags: z
-            .object({
-              active: z.boolean(),
-              configs: z.array(
-                z.object({
-                  tag: z.string(),
-                  tagMissing: z.array(z.union([z.string(), z.object({ setDefault: z.string() })])),
-                  onlyResourceTypes: z.array(z.string()),
-                  tagNotMatch: z.array(z.any()),
-                }),
-              ),
-            })
-            .optional(),
-        })
-        .strict(),
+        .prefault([]),
+      plugins: z.strictObject({
+        powercycle: z
+          .strictObject({
+            active: z.boolean(),
+            configs: z.array(
+              z.strictObject({
+                tagging: z.string().prefault('strict'),
+                availabilityTag: z.string().prefault('Schedule'),
+              }),
+            ),
+          })
+          .optional(),
+        powercycleCentral: z
+          .strictObject({
+            active: z.boolean(),
+            configs: z.array(
+              z.strictObject({
+                parser: z.string().prefault('strict'),
+                availabilityTag: z.string().prefault('Schedule'),
+                availabilityTagPriority: z.number().prefault(0),
+                predefinedSchedules: z.record(z.string(), z.string()).prefault({}),
+                matchers: z.array(PowercycleCentralMatcher),
+              }),
+            ),
+          })
+          .optional(),
+        validateTags: z
+          .strictObject({
+            active: z.boolean(),
+            configs: z.array(
+              z.strictObject({
+                tag: z.string(),
+                tagMissing: z.array(z.union([z.string(), z.strictObject({ setDefault: z.string() })])),
+                onlyResourceTypes: z.array(z.string()),
+                tagNotMatch: z.array(z.any()),
+              }),
+            ),
+          })
+          .optional(),
+      }),
     }),
 
     organizations: z
       .array(
-        z
-          .object({
-            accountId: AWSAccountId,
-            accountNameRegex: z.string().optional(),
-            settings: z.object({ name: z.string() }).merge(Settings.partial()),
-          })
-          .strict(),
+        z.strictObject({
+          accountId: AWSAccountId,
+          accountNameRegex: z.string().optional(),
+          settings: z.object({ name: z.string() }).extend(Settings.partial().shape),
+        }),
       )
-      .default([]),
+      .prefault([]),
 
     accounts: z.object({
       includeList: z
         .array(
-          z
-            .object({
-              accountId: AWSAccountId,
-              settings: z.object({ name: z.string() }).merge(Settings.partial()),
-            })
-            .strict(),
+          z.strictObject({
+            accountId: AWSAccountId,
+            settings: z.object({ name: z.string() }).extend(Settings.partial().shape),
+          }),
         )
-        .default([]),
+        .prefault([]),
       excludeList: z
         .array(
-          z
-            .object({
-              accountId: AWSAccountId,
-              settings: z.object({ name: z.string() }),
-            })
-            .strict(),
+          z.strictObject({
+            accountId: AWSAccountId,
+            settings: z.strictObject({ name: z.string() }),
+          }),
         )
-        .default([]),
+        .prefault([]),
     }),
   })
   .transform((config) => {
