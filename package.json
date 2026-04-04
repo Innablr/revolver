@@ -48,6 +48,10 @@
     "tslog": "^4.10.2",
     "zod": "^4.3.6"
   },
+  "overrides": {
+    "serialize-javascript": "^7.0.5",
+    "diff": "^8.0.3"
+  },
   "devDependencies": {
     "@biomejs/biome": "^2.4.10",
     "@types/aws-lambda": "^8.10.161",
