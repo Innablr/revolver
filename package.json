@@ -20,7 +20,7 @@
     "bundleTest": "npm run bundle; npm run bundleTestPrep; npm run bundleTestRun",
     "cleanIntermediate": "rimraf -g 'plugins/**/**.d.ts' 'plugins/**/*.js' 'drivers/**/*.d.ts' 'drivers/**/*.js' 'lib/**/*.d.ts' 'lib/**/*.js' 'test/**/*.d.ts' 'test/**/*.js' 'tools/**/*.d.ts' 'tools/**/*.js' 'actions/**/*.d.ts' 'actions/**/*.js' invoke.d.ts invoke.js revolver.d.ts revolver.js",
     "clean": "npm run cleanIntermediate; tsc --build ./tsconfig.build.json --clean && rimraf revolver.zip dist;",
-    "start": "CONFIG_FILE=revolver-config.yaml PRETTY_LOG_TIME_ZONE=local node invoke.js"
+    "start": "CONFIG_FILE=revolver-config.yaml PRETTY_LOG_TIME_ZONE=local node --experimental-strip-types invoke.ts"
   },
   "author": "Alex Bukharov",
   "license": "MIT",
