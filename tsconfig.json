@@ -17,7 +17,6 @@
     "noFallthroughCasesInSwitch": false,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "allowImportingTsExtensions": true,
     "noEmit": true,
