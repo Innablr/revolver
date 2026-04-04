@@ -28,13 +28,3 @@ cdk.context.json
 # Resource file output
 resources.json
 *.csv
-
-# Log and debug output
-auditlog-out.*
-resourcelog-out.*
-resources.json
-test-results.xml
-debug.txt
-junk.txt
-test.txt
-tmp/
