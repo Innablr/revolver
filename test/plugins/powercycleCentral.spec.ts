@@ -25,11 +25,12 @@ const ACCOUNTS = [
   },
 ];
 
-enum OutputFiles {
-  Audit = 0,
-  ResourcesCsv = 1,
-  ResourcesJson = 2,
-}
+const OutputFiles = {
+  Audit: 0,
+  ResourcesCsv: 1,
+  ResourcesJson: 2,
+} as const;
+type OutputFiles = (typeof OutputFiles)[keyof typeof OutputFiles];
 
 const configCopy = RevolverConfig.validateYamlConfig(fs.readFileSync(LOCAL_CONFIG, { encoding: 'utf8' }));
 
