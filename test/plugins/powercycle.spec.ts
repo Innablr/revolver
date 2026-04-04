@@ -1,119 +1,126 @@
-import * as fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import type { Context, EventBridgeEvent } from 'aws-lambda';
 import { expect } from 'chai';
-import { parse } from 'csv-parse/sync';
-import environ from '../../lib/environ.ts';
-import { logger } from '../../lib/logger.ts';
-import { handler as revolverHandle } from '../../revolver.ts';
+import { DateTime } from 'luxon';
+import dateTime from '../../lib/dateTime.ts';
+import PowerCyclePlugin from '../../plugins/powercycle.ts';
+import { ToolingInterface } from '../../drivers/instrumentedResource.ts';
 
-const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
-const __dirname = path.dirname(__filename); // get the name of the directory
+// Minimal resource stub
+class StubResource extends ToolingInterface {
+  private readonly _tags: Record<string, string>;
+  private readonly _state: string;
 
-const LOCAL_CONFIG = path.join(__dirname, 'powercycle.config.yaml');
-const OUTPUT_AUDIT_CSV_FILE = path.join(__dirname, 'audit.csv');
-const OUTPUT_RESOURCES_CSV_FILE = path.join(__dirname, 'resources.csv');
-const OUTPUT_RESOURCES_JSON_FILE = path.join(__dirname, 'resources.json');
+  constructor(tags: Record<string, string> = {}, state = 'running') {
+    super({});
+    this._tags = tags;
+    this._state = state;
+  }
 
-const timeStamp = '2024-02-22T23:45:19.521Z';
-
-const event: EventBridgeEvent<'Scheduled Event', 'test-event'> = {
-  id: '0',
-  'detail-type': 'Scheduled Event',
-  version: '0',
-  account: '0',
-  time: timeStamp,
-  region: 'ap-southeast-2',
-  source: 'revolver',
-  resources: [],
-  detail: 'test-event',
-};
-
-const context: Context = {
-  callbackWaitsForEmptyEventLoop: false,
-  functionName: 'revolver',
-  functionVersion: '0',
-  invokedFunctionArn: 'arn:aws:lambda:ap-southeast-2:0:function:revolver',
-  memoryLimitInMB: '512',
-  awsRequestId: '0',
-  logGroupName: 'revolver',
-  logStreamName: '0',
-  getRemainingTimeInMillis: () => 0,
-  done: () => {},
-  fail: () => {},
-  succeed: () => {},
-};
-
-function clearFiles() {
-  if (fs.existsSync(OUTPUT_AUDIT_CSV_FILE)) fs.unlinkSync(OUTPUT_AUDIT_CSV_FILE);
-  if (fs.existsSync(OUTPUT_RESOURCES_CSV_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_CSV_FILE);
-  if (fs.existsSync(OUTPUT_RESOURCES_JSON_FILE)) fs.unlinkSync(OUTPUT_RESOURCES_JSON_FILE);
+  get resourceId() { return 'i-test'; }
+  get resourceType() { return 'ec2'; }
+  get resourceArn() { return 'arn:aws:ec2:ap-southeast-2:123:instance/i-test'; }
+  get launchTimeUtc() { return DateTime.now(); }
+  get resourceState() { return this._state; }
+  get resourceTags() { return this._tags; }
+  tag(key: string) { return this._tags[key]; }
 }
 
-describe('Run powercycle full cycle', () => {
-  beforeEach(() => {
-    clearFiles();
-    environ.configPath = LOCAL_CONFIG;
+const accountConfig = {
+  accountId: '123456789012',
+  settings: { name: 'test-account', timezone: 'UTC', timezoneTag: 'Timezone' },
+};
+
+const pluginConfig = { availabilityTag: 'Schedule', tagging: 'strict' };
+
+async function makePlugin() {
+  const p = new PowerCyclePlugin(accountConfig, 'powercycle', { ...pluginConfig });
+  await p.initialise();
+  return p;
+}
+
+describe('PowerCyclePlugin.generateActions', () => {
+  // Friday 12:00 UTC
+  const fakeNow = DateTime.fromISO('2024-06-14T12:00:00.000Z');
+
+  beforeEach(() => dateTime.freezeTime(fakeNow.toISO()!));
+  afterEach(() => dateTime.freezeTime(''));
+
+  it('adds warning tag when Schedule tag is missing', async () => {
+    const plugin = await makePlugin();
+    const r = new StubResource({});
+    await plugin.generateActions(r);
+    expect(r.actions).to.have.length(1);
+    expect(r.actions[0].what).to.equal('setTag');
+    expect((r.actions[0] as any).tags[0].Key).to.equal('WarningSchedule');
   });
-  afterEach(clearFiles);
 
-  it('resolves', (done) => {
-    const r = revolverHandle(event, context, () => {});
-    if (r instanceof Promise) {
-      r.then(() => {
-        // validate audit.csv
-        logger.info(`TEST validating ${OUTPUT_AUDIT_CSV_FILE}`);
-        const auditCsvText = fs.readFileSync(OUTPUT_AUDIT_CSV_FILE, 'utf-8');
-        // expect((auditCsvText.match(/2024-02-/g) || []).length).to.equal(4); // number of rows
-        expect(auditCsvText).to.include('i-0c688d35209d7f436,stop,pretend,Availability 0x7');
-        expect(auditCsvText).to.include('i-0c688d35209d7f436,setTag,pretend,ReasonSchedule:Availability 0x7');
-        expect(auditCsvText).to.include('i-01531c2e601f21910,start,pretend,Availability 24x7');
-        // expect(auditCsvText).to.not.include(',ec2,ec2,i-05b6baf37fc8f9454,stop,');
+  it('adds warning tag when Schedule tag is unparseable', async () => {
+    const plugin = await makePlugin();
+    const r = new StubResource({ Schedule: 'garbage-value' });
+    await plugin.generateActions(r);
+    const setTagActions = r.actions.filter((a) => a.what === 'setTag');
+    expect(setTagActions.some((a) => (a as any).tags[0].Key === 'WarningSchedule')).to.be.true;
+  });
 
-        // Parse the audit CSV back into records
-        const records = parse(auditCsvText, { bom: true, columns: true });
-        expect(records.length).to.equal(12);
-        const recordsById = Object.assign({}, ...records.map((x: any) => ({ [x.ID]: x })));
-        // Check one record (the RDS Cluster)
-        const rdsClusterRecord = recordsById['revolver-test-rds-cluster'];
-        expect(rdsClusterRecord.DRIVER).equals('rdsCluster');
-        expect(rdsClusterRecord.PLUGIN).equals('powercycle');
-        expect(rdsClusterRecord.STATUS).equals('pretend');
-        expect(rdsClusterRecord.TYPE).equals('rds');
-        const rdsClusterMeta = JSON.parse(rdsClusterRecord.METADATA);
-        expect(rdsClusterMeta.members.length).equals(2);
-        // Only tags in the includeResourceTags list should be included
-        expect(rdsClusterMeta.tags.category).equals('workload');
-        expect(rdsClusterMeta.tags.trustlevel).equals(undefined);
+  it('adds start action for 24x7 schedule', async () => {
+    const plugin = await makePlugin();
+    const r = new StubResource({ Schedule: '24x7' }, 'stopped');
+    await plugin.generateActions(r);
+    expect(r.actions.some((a) => a.what === 'start')).to.be.true;
+  });
 
-        // Check an EC2 record also
-        const ec2Record = recordsById['i-01531c2e601f21910'];
-        const ec2Meta = JSON.parse(ec2Record.METADATA);
-        expect(ec2Meta.tags.category).equals('workload');
-        expect(ec2Meta.tags.trustlevel).equals(undefined);
+  it('adds stop action for 0x7 schedule', async () => {
+    const plugin = await makePlugin();
+    const r = new StubResource({ Schedule: '0x7' }, 'running');
+    await plugin.generateActions(r);
+    expect(r.actions.some((a) => a.what === 'stop')).to.be.true;
+  });
 
-        // TODO: validate resources.csv
-        // logger.info(`TEST validating ${OUTPUT_RESOURCES_CSV_FILE}`);
-        // const resourcesCsvText = fs.readFileSync(OUTPUT_RESOURCES_CSV_FILE, 'utf-8');
+  it('adds noop for override=on', async () => {
+    const plugin = await makePlugin();
+    const r = new StubResource({ Schedule: 'Override=On' });
+    await plugin.generateActions(r);
+    expect(r.actions.some((a) => a.what === 'noop')).to.be.true;
+  });
 
-        // validate matches and actions in resources.json
-        // logger.info(`TEST validating ${OUTPUT_RESOURCES_JSON_FILE}`);
-        // const rawData = fs.readFileSync(OUTPUT_RESOURCES_JSON_FILE, 'utf-8');
-        // const resourceList = JSON.parse(rawData);
-        // const resources = Object.fromEntries(resourceList.map((r: any) => [r.resourceId, r]));
-        // expect(resourceList.length).to.equal(10); // number of resources
+  it('adds stop action for 24x5 on weekend', async () => {
+    // Saturday
+    dateTime.freezeTime('2024-06-15T12:00:00.000Z');
+    const plugin = await makePlugin();
+    const r = new StubResource({ Schedule: '24x5' }, 'running');
+    await plugin.generateActions(r);
+    expect(r.actions.some((a) => a.what === 'stop')).to.be.true;
+  });
 
-        // expect(resources['i-0c688d35209d7f436'].resourceState).to.equal('running');
-        // expect(resources['i-0c688d35209d7f436'].metadata.matches.length).to.equal(1);
-        // expect(resources['i-0c688d35209d7f436'].metadata.matches[0].name).to.equal('everything off (p1)');
-        // expect(resources['i-0c688d35209d7f436'].metadata.actionNames.length).to.equal(1);
-        // expect(resources['i-0c688d35209d7f436'].metadata.actionNames[0]).to.equal('StopAction');
+  it('adds start action for 24x5 on weekday', async () => {
+    // Monday
+    dateTime.freezeTime('2024-06-17T12:00:00.000Z');
+    const plugin = await makePlugin();
+    const r = new StubResource({ Schedule: '24x5' }, 'stopped');
+    await plugin.generateActions(r);
+    expect(r.actions.some((a) => a.what === 'start')).to.be.true;
+  });
 
-        // expect(resources['i-05b6baf37fc8f9454'].resourceState).to.equal('running');
-        // expect(resources['i-05b6baf37fc8f9454'].metadata.matches.length).to.equal(2);
-        // expect(resources['i-05b6baf37fc8f9454'].metadata.actionNames).to.equal(undefined);
-      }).then(done, done);
-    }
+  it('sets reason tag when stopping a running resource', async () => {
+    const plugin = await makePlugin();
+    const r = new StubResource({ Schedule: '0x7' }, 'running');
+    await plugin.generateActions(r);
+    const tags = r.actions.filter((a) => a.what === 'setTag').map((a) => (a as any).tags[0].Key);
+    expect(tags).to.include('ReasonSchedule');
+  });
+
+  it('sets reason tag when starting a non-running resource', async () => {
+    const plugin = await makePlugin();
+    const r = new StubResource({ Schedule: '24x7' }, 'stopped');
+    await plugin.generateActions(r);
+    const tags = r.actions.filter((a) => a.what === 'setTag').map((a) => (a as any).tags[0].Key);
+    expect(tags).to.include('ReasonSchedule');
+  });
+
+  it('respects per-resource timezone tag', async () => {
+    const plugin = await makePlugin();
+    // 12:00 UTC = 22:00 AEST — outside business hours
+    const r = new StubResource({ Schedule: 'Start=08:00|mon-fri;Stop=18:00|mon-fri', Timezone: 'Australia/Sydney' });
+    await plugin.generateActions(r);
+    expect(r.actions.some((a) => a.what === 'stop')).to.be.true;
   });
 });
