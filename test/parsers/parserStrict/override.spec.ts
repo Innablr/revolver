@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { DateTime } from 'luxon';
-import getParser from '../../../plugins/parsers/index.js';
+import getParser from '../../../plugins/parsers/index.ts';
 
 const timeNow = DateTime.now();
 

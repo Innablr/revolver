@@ -1,6 +1,6 @@
 import type { DateTime } from 'luxon';
-import type { RevolverAction } from '../actions/actions.js';
-import { logger } from '../lib/logger.js';
+import type { RevolverAction } from '../actions/actions.ts';
+import { logger } from '../lib/logger.ts';
 
 export interface InstrumentedResource {
   resourceId: string;

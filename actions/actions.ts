@@ -1,5 +1,5 @@
-import type { TagInterface } from '../drivers/tags.js';
-import type { RevolverPlugin } from '../plugins/pluginInterface.js';
+import type { TagInterface } from '../drivers/tags.ts';
+import type { RevolverPlugin } from '../plugins/pluginInterface.ts';
 
 export abstract class RevolverAction {
   public who: RevolverPlugin;

@@ -1,8 +1,8 @@
 import { Duration } from 'luxon';
-import { NoopAction, SetTagAction, StopAction, UnsetTagAction } from '../actions/actions.js';
-import type { ToolingInterface } from '../drivers/instrumentedResource.js';
-import dateTime from '../lib/dateTime.js';
-import { RevolverPlugin } from './pluginInterface.js';
+import { NoopAction, SetTagAction, StopAction, UnsetTagAction } from '../actions/actions.ts';
+import type { ToolingInterface } from '../drivers/instrumentedResource.ts';
+import dateTime from '../lib/dateTime.ts';
+import { RevolverPlugin } from './pluginInterface.ts';
 
 export default class ValidateTagsPlugin extends RevolverPlugin {
   protected supportedResources = [

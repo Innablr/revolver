@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2022",
+    "target": "es2024",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "lib": ["es2022"],
+    "lib": ["es2024"],
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
@@ -17,9 +17,13 @@
     "noFallthroughCasesInSwitch": false,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "typeRoots": ["./node_modules/@types"]
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "erasableSyntaxOnly": true,
+    "typeRoots": ["./node_modules/@types"],
+    "skipLibCheck": true,
+    "types": ["mocha"]
   },
   "exclude": ["node_modules", "dist"]
 }

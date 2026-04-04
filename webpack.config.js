@@ -9,8 +9,13 @@ const config = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /\.d\.ts$/],
+        use: {
+          loader: 'ts-loader',
+          options: {
+            configFile: 'tsconfig.build.json',
+          },
+        },
       },
     ],
   },

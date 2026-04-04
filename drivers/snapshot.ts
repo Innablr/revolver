@@ -5,13 +5,13 @@ import {
   paginateDescribeVolumes,
   type Tag,
 } from '@aws-sdk/client-ec2';
-import type { RevolverActionWithTags } from '../actions/actions.js';
-import { getAwsClientForAccount } from '../lib/awsConfig.js';
-import { makeResourceTags, paginateAwsCall } from '../lib/common.js';
-import dateTime from '../lib/dateTime.js';
-import { DriverInterface } from './driverInterface.js';
-import { type InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
-import { ec2Tagger } from './tags.js';
+import type { RevolverActionWithTags } from '../actions/actions.ts';
+import { getAwsClientForAccount } from '../lib/awsConfig.ts';
+import { makeResourceTags, paginateAwsCall } from '../lib/common.ts';
+import dateTime from '../lib/dateTime.ts';
+import { DriverInterface } from './driverInterface.ts';
+import { type InstrumentedResource, ToolingInterface } from './instrumentedResource.ts';
+import { ec2Tagger } from './tags.ts';
 
 class InstrumentedSnapshot extends ToolingInterface {
   get resourceId() {

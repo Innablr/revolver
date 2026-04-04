@@ -1,8 +1,8 @@
 import type { AwsCredentialIdentity as Credentials, Provider } from '@aws-sdk/types';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import assume from '../lib/assume.js';
-import environ from './environ.js';
+import assume from '../lib/assume.ts';
+import environ from './environ.ts';
 
 // In version 3 , there is no longer a global configuration managed by the SDK
 function getAwsConfig(region?: string, credentials?: Credentials | Provider<Credentials>) {
@@ -48,4 +48,4 @@ async function getAwsClientForAccount<T>(ctor: Ctor<T>, accountConfig: any): Pro
   return getAwsClient(ctor, accountConfig.assumeRoleArn, accountConfig.region);
 }
 
-export { getAwsConfig, getAwsClientForAccount };
+export { getAwsClientForAccount, getAwsConfig };

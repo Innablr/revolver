@@ -1,9 +1,9 @@
 import type { Logger } from 'tslog';
-import type { RevolverAction } from '../actions/actions.js';
-import type { ActionAuditEntry } from '../actions/audit.js';
-import dateTime from '../lib/dateTime.js';
-import { getSubLogger, type RevolverLogObject } from '../lib/logger.js';
-import type { InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
+import type { RevolverAction } from '../actions/actions.ts';
+import type { ActionAuditEntry } from '../actions/audit.ts';
+import dateTime from '../lib/dateTime.ts';
+import { getSubLogger, type RevolverLogObject } from '../lib/logger.ts';
+import type { InstrumentedResource, ToolingInterface } from './instrumentedResource.ts';
 
 export abstract class DriverInterface {
   protected accountConfig: any;

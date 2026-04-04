@@ -1,8 +1,8 @@
-import { NoopAction, SetTagAction, StartAction, StopAction } from '../actions/actions.js';
-import type { ToolingInterface } from '../drivers/instrumentedResource.js';
-import dateTime from '../lib/dateTime.js';
-import getParser from './parsers/index.js';
-import { RevolverPlugin } from './pluginInterface.js';
+import { NoopAction, SetTagAction, StartAction, StopAction } from '../actions/actions.ts';
+import type { ToolingInterface } from '../drivers/instrumentedResource.ts';
+import dateTime from '../lib/dateTime.ts';
+import getParser from './parsers/index.ts';
+import { RevolverPlugin } from './pluginInterface.ts';
 
 /**
  * A plugin for Revolver that applies schedules to resources based on Tags on target resources

@@ -6,9 +6,9 @@ import { expect } from 'chai';
 import { parse } from 'csv-parse/sync';
 import { DateTime } from 'luxon';
 import sinon from 'sinon';
-import { ToolingInterface } from '../../drivers/instrumentedResource.js';
-import dateTime from '../../lib/dateTime.js';
-import { ObjectLogCsv, ObjectLogHtml, ObjectLogJson, ObjectLogTable, ResourceTable } from '../../lib/objectLog.js';
+import { ToolingInterface } from '../../drivers/instrumentedResource.ts';
+import dateTime from '../../lib/dateTime.ts';
+import { ObjectLogCsv, ObjectLogHtml, ObjectLogJson, ObjectLogTable, ResourceTable } from '../../lib/objectLog.ts';
 
 // A dummy AWS resource for testing
 class FakeResource extends ToolingInterface {

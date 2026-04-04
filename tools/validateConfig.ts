@@ -1,6 +1,6 @@
-import { RevolverConfig } from '../lib/config.js';
-import environ from '../lib/environ.js';
-import { logger } from '../lib/logger.js';
+import { RevolverConfig } from '../lib/config.ts';
+import environ from '../lib/environ.ts';
+import { logger } from '../lib/logger.ts';
 
 /**
  * Validate the configuration provided by $CONFIG_FILE environment variable

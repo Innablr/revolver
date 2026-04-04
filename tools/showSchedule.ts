@@ -1,5 +1,5 @@
 import { DateTime, type DurationLike, Interval } from 'luxon';
-import getParser from '../plugins/parsers/index.js';
+import getParser from '../plugins/parsers/index.ts';
 
 // a set of results for each 15 minute interval over a week
 type ScheduleResults = Map<DateTime<true>, boolean>;

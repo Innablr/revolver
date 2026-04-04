@@ -1,5 +1,5 @@
 import type { Context, EventBridgeEvent } from 'aws-lambda';
-import { handler as revolverHandle } from './revolver.js';
+import { handler as revolverHandle } from './revolver.ts';
 
 const timeStamp = process.env.CURRENT_TIME || new Date().toISOString();
 

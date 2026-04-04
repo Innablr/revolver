@@ -6,11 +6,11 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import yaml from 'js-yaml';
 import { merge } from 'ts-deepmerge';
 import { z } from 'zod/v4';
-import { getAwsConfig } from './awsConfig.js';
-import { paginateAwsCall } from './common.js';
-import { ConfigSchema } from './config-schema.js';
-import { logger } from './logger.js';
-import { ObjectLogJson } from './objectLog.js';
+import { getAwsConfig } from './awsConfig.ts';
+import { paginateAwsCall } from './common.ts';
+import { ConfigSchema } from './config-schema.ts';
+import { logger } from './logger.ts';
+import { ObjectLogJson } from './objectLog.ts';
 
 /*
 function flattenZodErrors(ze: ZodError, depth: number): string[] {
