@@ -40,7 +40,9 @@
       "!**/cdk.json",
       "!**/.cdk.staging",
       "!**/cdk.out",
-      "!**/output"
+      "!**/output",
+      "!**/tmp/**",
+      "!report-audit.html"
     ]
   },
   "overrides": [
