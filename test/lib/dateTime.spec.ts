@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { FixedOffsetZone, DateTime as LuxonDateTime } from 'luxon';
-import dateTime from '../../lib/dateTime.js';
+import dateTime from '../../lib/dateTime.ts';
 
 describe('Validate DateTime', () => {
   it('Check DateTime freeze', async () => {

@@ -1,8 +1,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Context, EventBridgeEvent } from 'aws-lambda';
-import environ from '../../lib/environ.js';
-import { handler as revolverHandle } from '../../revolver.js';
+import environ from '../../lib/environ.ts';
+import { handler as revolverHandle } from '../../revolver.ts';
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory

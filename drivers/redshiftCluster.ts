@@ -7,13 +7,13 @@ import {
   RedshiftClient,
   type Tag,
 } from '@aws-sdk/client-redshift';
-import type { RevolverAction, RevolverActionWithTags } from '../actions/actions.js';
-import assume from '../lib/assume.js';
-import { getAwsClientForAccount } from '../lib/awsConfig.js';
-import { makeResourceTags } from '../lib/common.js';
-import dateTime from '../lib/dateTime.js';
-import { DriverInterface } from './driverInterface.js';
-import { type InstrumentedResource, ToolingInterface } from './instrumentedResource.js';
+import type { RevolverAction, RevolverActionWithTags } from '../actions/actions.ts';
+import assume from '../lib/assume.ts';
+import { getAwsClientForAccount } from '../lib/awsConfig.ts';
+import { makeResourceTags } from '../lib/common.ts';
+import dateTime from '../lib/dateTime.ts';
+import { DriverInterface } from './driverInterface.ts';
+import { type InstrumentedResource, ToolingInterface } from './instrumentedResource.ts';
 
 class InstrumentedRedshiftCluster extends ToolingInterface {
   public tags: Tag[] = [];

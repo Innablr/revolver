@@ -4,9 +4,9 @@ import { fileURLToPath } from 'node:url';
 import type { Context, EventBridgeEvent } from 'aws-lambda';
 import { expect } from 'chai';
 import { parse } from 'csv-parse/sync';
-import environ from '../../lib/environ.js';
-import { logger } from '../../lib/logger.js';
-import { handler as revolverHandle } from '../../revolver.js';
+import environ from '../../lib/environ.ts';
+import { logger } from '../../lib/logger.ts';
+import { handler as revolverHandle } from '../../revolver.ts';
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory

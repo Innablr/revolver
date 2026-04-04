@@ -2,8 +2,8 @@ import * as chai from 'chai';
 import { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import type { DateTime } from 'luxon';
-import { DriverInterface } from '../../drivers/driverInterface.js';
-import { type InstrumentedResource, ToolingInterface } from '../../drivers/instrumentedResource.js';
+import { DriverInterface } from '../../drivers/driverInterface.ts';
+import { type InstrumentedResource, ToolingInterface } from '../../drivers/instrumentedResource.ts';
 
 chai.use(chaiAsPromised);
 

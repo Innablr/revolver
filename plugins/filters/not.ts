@@ -1,5 +1,5 @@
-import type { ToolingInterface } from '../../drivers/instrumentedResource.js';
-import type { Filter, FilterCtor } from './index.js';
+import type { ToolingInterface } from '../../drivers/instrumentedResource.ts';
+import type { Filter, FilterCtor } from './index.ts';
 
 export default class FilterNot implements Filter, FilterCtor {
   private element: Filter;
@@ -13,7 +13,7 @@ export default class FilterNot implements Filter, FilterCtor {
   constructor(config: any) {
     this.isReady = new Promise((resolve) => {
       const name = Object.keys(config)[0];
-      import(`./${name}.js`).then((i) => {
+      import(`./${name}.ts`).then((i) => {
         new i.default(config[name]).ready().then((filter: Filter) => {
           this.element = filter;
           resolve(this);

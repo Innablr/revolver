@@ -1,5 +1,5 @@
-import type { ToolingInterface } from '../../drivers/instrumentedResource.js';
-import type { Filter, FilterCtor } from './index.js';
+import type { ToolingInterface } from '../../drivers/instrumentedResource.ts';
+import type { Filter, FilterCtor } from './index.ts';
 
 export default class FilterBool implements Filter, FilterCtor {
   private yes: boolean;

@@ -11,12 +11,12 @@ import {
 import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
 import { type MessageAttributeValue, SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { stringify } from 'csv-stringify/sync';
-import type { ActionAuditEntry } from '../actions/audit.js';
-import type { ToolingInterface } from '../drivers/instrumentedResource.js';
-import { getAwsConfig } from './awsConfig.js';
-import dateTime from './dateTime.js';
-import { getSubLogger } from './logger.js';
-import { htmlTableReport } from './templater.js';
+import type { ActionAuditEntry } from '../actions/audit.ts';
+import type { ToolingInterface } from '../drivers/instrumentedResource.ts';
+import { getAwsConfig } from './awsConfig.ts';
+import dateTime from './dateTime.ts';
+import { getSubLogger } from './logger.ts';
+import { htmlTableReport } from './templater.ts';
 
 /**
  * Used by the writers to structure table style data

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { DateTime, Interval } from 'luxon';
-import getParser from '../../../plugins/parsers/index.js';
+import getParser from '../../../plugins/parsers/index.ts';
 
 it('Strict parser calculates coverage correctly', async () => {
   const testInterval = 15; // number of minutes between samples

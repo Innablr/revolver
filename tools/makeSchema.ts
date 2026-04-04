@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import { z } from 'zod/v4';
-import { ConfigSchema } from '../lib/config-schema.js';
+import { ConfigSchema } from '../lib/config-schema.ts';
 
 // Generate JSON schema for Revolver configuration
 console.log('Generating JSON schema for Revolver configuration');

@@ -1,6 +1,6 @@
 import type { Logger } from 'tslog';
-import type { ToolingInterface } from '../drivers/instrumentedResource.js';
-import { getSubLogger } from '../lib/logger.js';
+import type { ToolingInterface } from '../drivers/instrumentedResource.ts';
+import { getSubLogger } from '../lib/logger.ts';
 
 /**
  * Abstract class representing a Plugin for Revolver, which selects resources, and generates Actions, based on

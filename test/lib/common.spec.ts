@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { chunkArray, makeResourceTags, paginateAwsCall, unique } from '../../lib/common.js';
+import { chunkArray, makeResourceTags, paginateAwsCall, unique } from '../../lib/common.ts';
 
 describe('Validate utility functions', () => {
   it('Check paginateAwsCall', async () => {

@@ -2,10 +2,10 @@ import * as chai from 'chai';
 import { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { DateTime, Interval } from 'luxon';
-import { ToolingInterface } from '../../drivers/instrumentedResource.js';
-import { makeResourceTags } from '../../lib/common.js';
-import dateTime from '../../lib/dateTime.js';
-import { buildFilter } from '../../plugins/filters/index.js';
+import { ToolingInterface } from '../../drivers/instrumentedResource.ts';
+import { makeResourceTags } from '../../lib/common.ts';
+import dateTime from '../../lib/dateTime.ts';
+import { buildFilter } from '../../plugins/filters/index.ts';
 
 chai.use(chaiAsPromised);
 

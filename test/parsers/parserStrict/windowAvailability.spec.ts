@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { DateTime } from 'luxon';
-import getParser from '../../../plugins/parsers/index.js';
-import { reasonDateFormat } from '../../../plugins/parsers/strict.js';
+import getParser from '../../../plugins/parsers/index.ts';
+import { reasonDateFormat } from '../../../plugins/parsers/strict.ts';
 
 const timePoints: { [key: string]: DateTime } = {
   monday629: DateTime.fromJSDate(new Date('2017-06-05 06:29')),

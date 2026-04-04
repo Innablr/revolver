@@ -5,7 +5,7 @@ import {
   logLevelsToConsole,
   type RevolverLogObject,
   restructureJsonLog,
-} from '../../lib/logger.js';
+} from '../../lib/logger.ts';
 
 // TODO: validate JSON format, including restructure
 // TODO: validate metadata
@@ -69,5 +69,5 @@ describe('Validate JSON logging', () => {
   expect(event.message).to.equal('sample message 1');
   expect(event._meta.logLevelId).to.equal(2);
   expect(event._meta.logLevelName).to.equal('DEBUG');
-  expect(event._meta.path.fileName).to.equal('logger.spec.ts');
+  expect(event._meta.path.fileName).to.match(/^logger\.spec\.[jt]s$/);
 });
