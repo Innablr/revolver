@@ -131,7 +131,7 @@ export class AccountRevolver {
 
   async logAudit(): Promise<void> {
     this.logger.info('Processing action audit log');
-    const entries = this.drivers.map((d) => d.getAuditLog()).reduce((a, l) => a.concat(l), []);
+    const entries = this.drivers.map((d) => d.getAuditLog()).flat();
 
     const context = Object.assign({}, this.config.settings, { accountId: this.config.accountId });
     for (const auditFormat of Object.keys(this.config.settings.auditLog)) {

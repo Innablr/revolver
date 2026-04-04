@@ -55,7 +55,7 @@ function makeResourceTags(tagList: any, filterTags?: string[]): { [key: string]:
   if (filterTags !== undefined) {
     useTagList = tagList.filter((tag: any) => filterTags.includes(tag.Key));
   }
-  return useTagList.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
+  return Object.fromEntries(useTagList.map((n: any) => [n.Key, n.Value]));
 }
 
 export { chunkArray, makeResourceTags, paginateAwsCall, unique, uniqueBy };
