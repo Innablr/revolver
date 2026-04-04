@@ -41,10 +41,26 @@ How
 
 Revolver is packaged as an AWS Lambda function and is triggered by a Cloudwatch Event.
 
-This repository only contains the Revolver code and no deployment mechanisms. To prepare it for deploying you should use `npm run build` and `npm run bundle` commands to build the code and create a zip file.
-suitable for deployment in AWS Lambda.
+This repository only contains the Revolver code and no deployment mechanisms. To prepare it for deploying you should use `npm run bundle` to build the code and create a zip file suitable for deployment in AWS Lambda.
 
 You are free to choose your own deployment mechanism. We use [CDK](https://docs.aws.amazon.com/cdk/latest/guide/home.html) to deploy Revolver.
+
+**Requirements:** Node.js >= 24.0.0
+
+### Develop
+
+To run Revolver locally:
+
+```bash
+# Run directly (no build step required)
+npm start
+
+# Run tests
+npm test
+
+# Run with coverage
+npm run coverage
+```
 
 ### Configure
 
@@ -54,6 +70,7 @@ Revolver reads some of the low-level configuration from environment variables an
 
 |Variable|Description|Default|
 |-|-|-|
+|CONFIG_FILE|Path to a local config file, overrides S3_BUCKET/S3_KEY (useful for local development)|-|
 |S3_BUCKET|S3 bucket where the config file is stored|-|
 |S3_KEY|S3 key of the config file|-|
 |LOG_LEVEL|Log level|debug|
@@ -61,10 +78,7 @@ Revolver reads some of the low-level configuration from environment variables an
 |STYLE_PRETTY_LOGS|Defines whether logs should be styled and colorized|true|
 |PRETTY_LOG_TIME_ZONE|Set timezone of pretty log messages to either UTC (default) or local (based on your server/browser configuration)|-|
 
-In addition to that you can use:
-
-* `CONFIG_FILE` to run Revolver with a local config file instead of the one in S3, this is implemented for debugging purposes
-* `SDK_BASE_BACKOFF` and `SDK_MAX_RETRIES` to control the AWS SDK retry behavior, see [AWS SDK documentation](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property) for details
+In addition to that you can use `SDK_BASE_BACKOFF` and `SDK_MAX_RETRIES` to control the AWS SDK retry behavior.
 
 #### Config file
 
