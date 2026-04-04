@@ -58,4 +58,4 @@ function makeResourceTags(tagList: any, filterTags?: string[]): { [key: string]:
   return useTagList.reduce((a: any, n: any) => Object.assign(a, { [n.Key]: n.Value }), {});
 }
 
-export { paginateAwsCall, chunkArray, uniqueBy, unique, makeResourceTags };
+export { chunkArray, makeResourceTags, paginateAwsCall, unique, uniqueBy };
