@@ -45,7 +45,7 @@
     "jsonfile": "^6.2.0",
     "luxon": "^3.7.2",
     "proxy-agent": "^6.5.0",
-    "ts-deepmerge": "^7.0.3",
+    "ts-deepmerge": "^8.0.0",
     "tslog": "^4.10.0",
     "zod": "^4.1.13"
   },
